@@ -104,6 +104,7 @@
 **
 */
 #define		GUN_BONE_NAME				"GUNBONE"
+#define     LEFT_GUN_BONE_NAME      "GUNBONE_L"
 #define		BACK_GUN_BONE_NAME		"BACKGUNBONE"
 
 #define		POKE_ANGLE					DEG_TO_RAD( 22 )
@@ -304,6 +305,7 @@ bool	SoldierGameObj::DisplayDebugBoxForGhostCollision = false;
 //------------------------------------------------------------------------------------
 SoldierGameObj::SoldierGameObj() :
 	WeaponRenderModel( NULL ),
+	SecondaryWeaponRenderModel( NULL ),
 	BackWeaponRenderModel( NULL ),
 	BackFlagRenderModel( NULL ),
 	WeaponAnimControl( NULL ),
@@ -379,6 +381,12 @@ SoldierGameObj::~SoldierGameObj()
 		Peek_Model()->Remove_Sub_Object(BackFlagRenderModel);
 		BackFlagRenderModel->Release_Ref();
 		BackFlagRenderModel = NULL;
+	}
+
+	if (SecondaryWeaponRenderModel != NULL) {
+		Peek_Model()->Remove_Sub_Object(SecondaryWeaponRenderModel);
+		SecondaryWeaponRenderModel->Release_Ref();
+		SecondaryWeaponRenderModel = NULL;
 	}
 
 	if ( WeaponAnimControl != NULL ) {
@@ -620,7 +628,8 @@ enum	{
 	MICROCHUNKID_WEAPON_MODEL,
 	MICROCHUNKID_SPECIAL_DAMAGE_MODE, 
 	MICROCHUNKID_SPECIAL_DAMAGE_TIMER,
-	MICROCHUNKID_IS_USING_GHOST_COLLISION
+	MICROCHUNKID_IS_USING_GHOST_COLLISION,
+	MICROCHUNKID_SECONDARY_WEAPON_MODEL
 };
 
 //------------------------------------------------------------------------------------
@@ -666,6 +675,7 @@ bool	SoldierGameObj::Save( ChunkSaveClass & csave )
 		WRITE_MICRO_CHUNK( csave, MICROCHUNKID_SPECIAL_DAMAGE_TIMER, SpecialDamageTimer );
 		WRITE_MICRO_CHUNK( csave, MICROCHUNKID_AI_STATE, AIState );
 		WRITE_MICRO_CHUNK( csave, MICROCHUNKID_WEAPON_MODEL, WeaponRenderModel );
+		WRITE_MICRO_CHUNK( csave, MICROCHUNKID_SECONDARY_WEAPON_MODEL, SecondaryWeaponRenderModel);
 		WRITE_MICRO_CHUNK( csave, MICROCHUNKID_IS_USING_GHOST_COLLISION, IsUsingGhostCollision );
 				
 	csave.End_Chunk();
@@ -758,6 +768,8 @@ bool	SoldierGameObj::Load( ChunkLoadClass &cload )
 						READ_MICRO_CHUNK( cload, MICROCHUNKID_SPECIAL_DAMAGE_TIMER, SpecialDamageTimer );
 						READ_MICRO_CHUNK( cload, MICROCHUNKID_AI_STATE, AIState );
 						READ_MICRO_CHUNK( cload, MICROCHUNKID_WEAPON_MODEL, WeaponRenderModel );
+						READ_MICRO_CHUNK( cload, MICROCHUNKID_SECONDARY_WEAPON_MODEL, SecondaryWeaponRenderModel);
+
 						READ_MICRO_CHUNK( cload, MICROCHUNKID_IS_USING_GHOST_COLLISION, IsUsingGhostCollision );
 
 						default:
@@ -829,8 +841,13 @@ void	SoldierGameObj::On_Post_Load( void )
 
 	SmartGameObj::On_Post_Load();
 
-	if ( Peek_Model() && (WeaponRenderModel != NULL) ) {
-		Peek_Model()->Add_Sub_Object_To_Bone( WeaponRenderModel, GUN_BONE_NAME );
+	if (Peek_Model()) {
+		if (WeaponRenderModel != NULL) {
+			Peek_Model()->Add_Sub_Object_To_Bone(WeaponRenderModel, GUN_BONE_NAME);
+		}
+		if (SecondaryWeaponRenderModel != NULL) {
+			Peek_Model()->Add_Sub_Object_To_Bone(SecondaryWeaponRenderModel, LEFT_GUN_BONE_NAME);
+		}
 	}
 
 	Adjust_Skeleton( Get_Definition().SkeletonHeight, Get_Definition().SkeletonWidth );
@@ -2614,6 +2631,12 @@ void	SoldierGameObj::Think( void )
 																					Matrix3D(p0));
 		}
 	}
+	// Update animation if in the ANIMATION state and not in a vehicle BAD CRASHES ON LOAD
+	//if (Get_State() != HumanStateClass::IN_VEHICLE && HumanState.Get_State() == HumanStateClass::ANIMATION) {
+	//	if (HumanState.Get_Anim_Control() != NULL) {
+	//		HumanState.Get_Anim_Control()->Update(TimeManager::Get_Frame_Seconds());
+	//	}
+	//}
 
 
 	// Punish update
@@ -2683,20 +2706,20 @@ void	SoldierGameObj::Post_Think( void )
 }
 
 //------------------------------------------------------------------------------------
-const Matrix3D & SoldierGameObj::Get_Muzzle( int index )
+const Matrix3D& SoldierGameObj::Get_Muzzle(int index)
 {
 	static Matrix3D _muzzle(1);
-	if ( WeaponRenderModel != NULL ) {
-		Matrix3D true_muzzle = WeaponRenderModel->Get_Bone_Transform( "muzzlea0" );
+	if (WeaponRenderModel != NULL) {
+		Matrix3D true_muzzle = WeaponRenderModel->Get_Bone_Transform("muzzlea0");
 		Vector3 muzzle_pos = true_muzzle.Get_Translation();
-		_muzzle.Obj_Look_At( muzzle_pos, Get_Targeting_Pos(), 0 );
+		_muzzle.Obj_Look_At(muzzle_pos, Get_Targeting_Pos(), 0);
 
-		if ( !Is_Human_Controlled() ) {
+		if (!Is_Human_Controlled()) {
 			// If the bullet is not close to going down the muzzle, force it to be
 			Vector3	to_target = _muzzle.Get_X_Vector();
 			Vector3	down_muzzle = true_muzzle.Get_X_Vector();
-			float cos = Vector3::Dot_Product( to_target, down_muzzle );
-			if ( cos < WWMath::Cos( DEG_TO_RADF( 20 ) ) ) {
+			float cos = Vector3::Dot_Product(to_target, down_muzzle);
+			if (cos < WWMath::Cos(DEG_TO_RADF(20))) {
 				_muzzle = true_muzzle;
 			}
 		}
@@ -3001,6 +3024,14 @@ void SoldierGameObj::Set_Weapon_Model( const char *model_name )
 		WeaponRenderModel->Release_Ref();
 		WeaponRenderModel = NULL;
 	}
+	{
+		if (SecondaryWeaponRenderModel != NULL) {		
+			if (Peek_Model() != NULL) {
+				Peek_Model()->Remove_Sub_Object(SecondaryWeaponRenderModel);		
+			}
+			SecondaryWeaponRenderModel->Release_Ref();
+			SecondaryWeaponRenderModel = NULL;
+		}
 
 	if ( (model_name != NULL) && (*model_name != 0) ) {
 		//Debug_Say(( "Updating soldier Weapon model to %s!!!\n", model_name ));
@@ -3027,8 +3058,29 @@ void SoldierGameObj::Set_Weapon_Model( const char *model_name )
 
 		assert( Get_Weapon() );
 		Get_Weapon()->Set_Model( WeaponRenderModel );	// let the weapon know who's firing him
+		// --- NEW: Dual-wield support ---
+		if (Peek_Model() != NULL && Peek_Model()->Get_Bone_Index(LEFT_GUN_BONE_NAME) != -1) {
+			// Clone the same weapon model for the left hand
+			SecondaryWeaponRenderModel = SoldierGameObj::Find_RenderObj(stripped_name);
+			if (SecondaryWeaponRenderModel == NULL) {
+				SecondaryWeaponRenderModel = Create_Render_Obj_From_Filename(model_name);
+				WWASSERT(SecondaryWeaponRenderModel);
+				SET_REF_OWNER(SecondaryWeaponRenderModel);
+				Add_RenderObj(SecondaryWeaponRenderModel);
+				SecondaryWeaponRenderModel->Release_Ref();
+			}
+			SecondaryWeaponRenderModel->Add_Ref();
+
+			// Attach to left-hand bone
+			Peek_Model()->Add_Sub_Object_To_Bone(SecondaryWeaponRenderModel, LEFT_GUN_BONE_NAME);
+
+			// Optionally: inform the weapon system that we have two models?
+			// Get_Weapon()->Set_Left_Model(SecondaryWeaponRenderModel); // (not needed unless you define it)
+		}
 	}
-}
+	}
+	}
+
 
 //------------------------------------------------------------------------------------
 void SoldierGameObj::Set_Weapon_Animation( const char *anim_name )
@@ -3045,8 +3097,22 @@ void SoldierGameObj::Set_Weapon_Animation( const char *anim_name )
 		if ( ( anim_name != NULL ) && ( *anim_name != 0 ) ) {
 			WeaponAnimControl->Set_Animation( anim_name );
 		}
+		// --- NEW: Left-hand animation setup ---
+		if (SecondaryWeaponRenderModel != NULL) {
+			// Allocate control if not already created
+			if (WeaponAnimControl == NULL) {
+				WeaponAnimControl = new SimpleAnimControlClass;
+				WeaponAnimControl->Set_Model(SecondaryWeaponRenderModel);
+			}
+
+			// Play the same animation (for now)
+			if (WeaponAnimControl != NULL && (anim_name != NULL) && (*anim_name != 0)) {
+				WeaponAnimControl->Set_Animation(anim_name);
+			}
+		}
 	}
-}
+	}
+
 
 void SoldierGameObj::Set_Back_Weapon_Model( const char *model_name )
 {

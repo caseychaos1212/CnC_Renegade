@@ -403,18 +403,18 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 		StateLocked = false;
 	}
 
-	if ( StateLocked ) {
-		if ( state != DEATH ) {
+	//if ( StateLocked ) {
+	//	if ( state != DEATH ) {
 // Temp Test
 //			Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
 //			return;
-		}
+	//	}
 
-#pragma MESSAGE( "StateLocked Hack" )
-		if ( !IS_SOLOPLAY ) {		// E3 HACK
-			StateLocked = false;
-		}
-	}
+//#pragma MESSAGE( "StateLocked Hack" )
+	//	if ( !IS_SOLOPLAY ) {		// E3 HACK
+			//StateLocked = false;
+	//	}
+//	}
 
 	if ( State == state && SubState == sub_state ) {
 		if (CombatManager::I_Am_Server()) {
@@ -564,7 +564,7 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	float blend_time = blend ? 0.2 : 0;
 	AnimControl->Set_Animation( anim_name, blend_time );
 	AnimControl->Set_Mode( looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE );
-	AnimControl->Update( 0 );	// update 
+	AnimControl->Update(0.0667f);	// update 
 	StateLocked = true;
 }
 

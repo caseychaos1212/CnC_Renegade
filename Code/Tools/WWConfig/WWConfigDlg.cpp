@@ -26,7 +26,7 @@
 #include "audioconfigdialog.h"
 #include "performanceconfigdialog.h"
 #include "locale_api.h"
-#include "wwconfig_ids.h"
+#include "resource.h"
 
 extern int GlobalExitValue;
 

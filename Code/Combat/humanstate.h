@@ -144,6 +144,7 @@ public:
 	void				Init( HumanPhysClass	* human_phys );
 	void				Reset(void);
 	void				Set_Anim_Control( HumanAnimControlClass * anim_control );
+	HumanAnimControlClass* Get_Anim_Control(void) const { return AnimControl; }
 	void				Set_Human_Anim_Override( const char * name );
 	void				Set_Human_Anim_Override( int def_id );
 	void				Set_Human_Loiter_Collection( int def_id );

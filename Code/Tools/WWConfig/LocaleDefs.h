@@ -1,0 +1,15 @@
+#ifndef LOCALEDEFS_H
+#define LOCALEDEFS_H
+
+enum Locale_ID {
+    IDL_JAPANESE = 0,
+    IDL_KOREAN,
+    IDL_CHINESE,
+    IDL_GERMAN,
+    IDL_FRENCH,
+    IDL_ENGLISH,
+    LOCALE_LANGUAGE_COUNT
+};
+
+#endif // LOCALEDEFS_H
+

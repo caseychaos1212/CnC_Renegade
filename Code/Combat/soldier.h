@@ -245,7 +245,7 @@ public:
 	HumanStateClass	* Get_Human_State( void )			{ return &HumanState; }
 
 	void					Set_Model(const char *model_name);
-
+	//HumanAnimControlClass* Get_Anim_Control(void) const { return HumanState.Get_Anim_Control(); }
 	// Type identification
 	virtual SoldierGameObj		*As_SoldierGameObj()		{ return this; };
 
@@ -347,6 +347,7 @@ protected:
 	RenderObjClass		*	WeaponRenderModel;
 	RenderObjClass		*	BackWeaponRenderModel;
 	RenderObjClass		*	BackFlagRenderModel;
+	RenderObjClass      *   SecondaryWeaponRenderModel;
 
 	AnimControlClass	*	WeaponAnimControl;
 	bool						DetonateC4;

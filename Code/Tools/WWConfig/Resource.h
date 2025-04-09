@@ -111,3 +111,85 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+
+// Dialog Tab Titles
+#define IDS_WWCONFIG_TITLE            2000
+#define IDS_OK                        2001
+#define IDS_CANCEL                    2002
+#define IDS_VIDEO_TAB                 2003
+#define IDS_SOUND_TAB                 2004
+#define IDS_PERFORMANCE_TAB          2005
+
+// AudioConfigDialog
+#define IDS_DRIVER                    2010
+#define IDS_VOLUME                    2011
+#define IDS_SOUND_EFFECTS            2012
+#define IDS_MUSIC                     2013
+#define IDS_DIALOG                    2014
+#define IDS_CINEMATIC                 2015
+#define IDS_QUALITY                   2016
+#define IDS_8_BIT                     2017
+#define IDS_16_BIT                    2018
+#define IDS_PLAYBACK_RATE            2019
+#define IDS_11_KHZ                    2020
+#define IDS_22_KHZ                    2021
+#define IDS_44_KHZ                    2022
+#define IDS_SPEAKER_SETUP            2023
+#define IDS_2_SPEAKER                2024
+#define IDS_HEADPHONE                2025
+#define IDS_SURROUND_SOUND           2026
+#define IDS_4_SPEAKER                2027
+#define IDS_STEREO                   2028
+
+// VideoConfigDialog
+#define IDS_DISPLAY                  2030
+#define IDS_RESOLUTION              2031
+#define IDS_COLOR_DEPTH             2032
+#define IDS_WINDOWED_MODE           2033
+#define IDS_BIT                     2034
+
+// DriverVersionWarning
+#define IDS_GOOD_DRIVER             2040
+#define IDS_KNOW_PROBLEMS           2041
+#define IDS_DRIVER_NAME             2042
+#define IDS_DRIVER_VERSION          2043
+#define IDS_VERSION_MIN1            2044
+#define IDS_VERSION_MIN2            2045
+#define IDS_NO_DRIVER_SUPPORT       2046
+#define IDS_WARNING                 2047
+#define IDS_DO_NOT_SHOW_MSG_AGAIN   2048
+
+// PerformanceConfigDialog
+#define IDS_DETAIL                  2060
+#define IDS_LOW_DESC                2061
+#define IDS_HIGH_DESC               2062
+#define IDS_EXPERT_MODE             2063
+#define IDS_EXPERT_SETTINGS         2064
+#define IDS_AUTOCONFIG              2065
+#define IDS_GEOMETRY_DETAIL         2066
+#define IDS_CHARACTER_SHADOWS       2067
+#define IDS_TEXTURE_DETAIL          2068
+#define IDS_PARTICLE_DETAIL         2069
+#define IDS_SURFACE_EFFECT_DETAIL   2070
+#define IDS_LOW                     2071
+#define IDS_HIGH                    2072
+#define IDS_LIGHTING_MODE           2073
+#define IDS_TEXTURE_FILTER          2074
+#define IDS_TERRAIN_SHADOWS         2075
+#define IDS_VERTEX                  2076
+#define IDS_MULTI_PASS              2077
+#define IDS_MULTI_TEXTURE           2078
+#define IDS_BILINEAR                2079
+#define IDS_TRILINEAR               2080
+#define IDS_ANISOTROPIC             2081
+
+// Language IDs
+#define IDL_ENGLISH     3000
+#define IDL_FRENCH      3001
+#define IDL_GERMAN      3002
+#define IDL_JAPANESE    3003
+#define IDL_KOREAN      3004
+#define IDL_CHINESE     3005
+
+#define LOCALE_LANGUAGE_COUNT 6
