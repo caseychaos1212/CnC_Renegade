@@ -94,6 +94,7 @@ public:
 
 	// Set Animation
 	void			Set_Animation( const char *name );
+	void            Set_Animation(const char* name, float blend_time, float start_frame); //added overload -casey
 	void			Set_Animation( const HAnimClass *anim );
 	HAnimClass	*Peek_Animation( void )		{ return Animation; }
 
@@ -194,6 +195,7 @@ public:
 
 	// Set Animation
 	virtual	void	Set_Animation( const char *name, float blendtime = 0.0f, float start_frame = 0.0f )	= 0;
+
 	virtual	void	Set_Animation( const HAnimClass * anim, float blendtime = 0.0f, float start_frame = 0.0f  ) = 0;
 	virtual	void	Set_Mode( AnimMode mode, float frame = -1 )						= 0;
 	virtual	AnimMode	Get_Mode( void )														= 0;

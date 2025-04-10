@@ -161,7 +161,9 @@ bool	AnimChannelClass::Load( ChunkLoadClass &cload )
 }
 
 void AnimChannelClass::Set_Animation( const char *name )
+
 {
+
 	// If this is our current anim, bail
 	if ( ( Animation != NULL ) && ( name != NULL ) ) {
 		if ( stricmp( Animation->Get_Name(), name ) == 0 ) {
@@ -191,6 +193,15 @@ void AnimChannelClass::Set_Animation( const char *name )
 		Frame = 0;
 		TargetFrame = 0;
 	}
+}
+
+// New overload -casey
+void AnimChannelClass::Set_Animation(const char* name, float blend_time, float start_frame)
+{
+	Debug_Say((">>> AnimChannelClass::Set_Animation (overload): %s | start_frame = %.2f\n", name, start_frame));
+	Set_Animation(name);       // Call existing version
+	Frame = start_frame;       // Now override the frame
+	TargetFrame = start_frame;
 }
 
 void AnimChannelClass::Set_Animation( const HAnimClass *anim )
@@ -788,6 +799,9 @@ void	HumanAnimControlClass::Set_Animation( const char *name, float	blendtime, fl
 	Channel1.Set_Animation( new_name, blendtime, start_frame );
 	Channel2.Set_Animation( (const char *)NULL );
 	Channel2Ratio = 0;
+	Debug_Say((">>> HumanAnimControl::Set_Animation: %s | blendtime = %.2f | start = %.2f\n", name, blendtime, start_frame));
+	Debug_Say((">>> Skeleton character used for anim name: %c\n", Skeleton));
+
 }
 
 void	HumanAnimControlClass::Set_Animation( const HAnimClass * anim, float blendtime, float start_frame )
@@ -847,16 +861,36 @@ HumanAnimControlClass * _Monitor = NULL;
 
 void	HumanAnimControlClass::Update( float dtime )
 {
+	Debug_Say((">>> HumanAnimControlClass::Update: Channel1 Mode = %d | Frame = %.2f | dtime = %.4f\n",
+		Channel1.Get_Mode(), Channel1.Get_Frame(), dtime));
+
+	
+	
+
+
 	// Update channels
-	Channel1.Update( dtime * AnimSpeedScale );
+	
+    Channel1.Update( dtime * AnimSpeedScale );
 	Channel2.Update( dtime * AnimSpeedScale );
+
 
 	if ( Model != NULL ) {
 
-		// Get Animation data
-		DataList.Reset_Active();
+		AnimationDataList DataList;
 		Channel1.Get_Animation_Data( DataList, (1 - Channel2Ratio) );
 		Channel2.Get_Animation_Data( DataList, Channel2Ratio );
+		for (int i = 0; i < DataList.Count(); i++) {
+			AnimationDataRecord& data = DataList[i];
+			if (data.Animation != NULL) {
+				Debug_Say(("Anim[%d]: %s | Frame = %.2f | Weight = %.2f\n",
+					i,
+					data.Animation->Get_Name(),
+					data.Frame,
+					data.Weight));
+			}
+		}
+		
+	
 
 		// Use the cheapest anim method possible
 		int total_animations = DataList.Count();

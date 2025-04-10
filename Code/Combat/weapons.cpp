@@ -1212,9 +1212,11 @@ void	WeaponClass::Do_Firing_Effects( void )
 	}
 
 	// Play an anim on the human owner
-	if ( owner != NULL && owner->As_SoldierGameObj() ) {
-		if ( !Definition->HumanFiringAnimation.Is_Empty() ) {
-			owner->As_SoldierGameObj()->Set_Animation( Definition->HumanFiringAnimation, 0, 0 );
+	if (owner != NULL && owner->As_SoldierGameObj()) {
+		//if ( !Definition->HumanFiringAnimation.Is_Empty() ) { hard coded for now - casey 
+		{
+			owner->As_SoldierGameObj()->Set_Animation("s_a_human.spin", 0, 0);
+			;
 		}
 	}
 }

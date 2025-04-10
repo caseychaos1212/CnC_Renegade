@@ -392,6 +392,8 @@ void HumanStateClass::Update_Recoil(WeaponClass * weapon)
 
 void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 {
+	Debug_Say((">>> Set_State: from %d to %d | sub = %d\n", State, state, sub_state));
+
 	// Special case for death
 	if (( State == DEATH ) || ( State == DESTROY )) {
 		if ( state != DESTROY ) {
@@ -463,7 +465,7 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 
 bool	HumanStateClass::Is_State_Interruptable( void )
 {
-	return (State == UPRIGHT) || (State == WOUNDED) || (State == LAND) || (State == LOITER) || (State == ANIMATION);
+	return (State == UPRIGHT) || (State == WOUNDED) || (State == LAND) || (State == LOITER)|| (State == ANIMATION);  //try removing no diffrence   -casey
 }
 
 
@@ -541,12 +543,13 @@ void	HumanStateClass::Start_Transition_Animation( const char * anim_name, bool b
 
 void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool blend, bool looping )
 {
-#if 0
+#if 1
 	if ( StateLocked ) {
 		Debug_Say(( "State is Locked.  Can't Start Transition Anim %s\n", anim_name ));
 		return;
 	}
 #endif
+	Debug_Say((">>> Start_Scripted_Animation: anim = %s | blend = %d | looping = %d\n", anim_name, blend, looping));
 
 	//Debug_Say(("Start_Scripted_Animation %s\n", anim_name));
 
@@ -559,13 +562,13 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	}
 
 
-	Set_State( ANIMATION );
-
+	Set_State( ANIMATION ); //animation state can be interupted try removing from IS_STATE_INTERUPTABLE and see if that introduces a lock - casey
+	Debug_Say((">>> State set to ANIMATION\n"));
 	float blend_time = blend ? 0.2 : 0;
-	AnimControl->Set_Animation( anim_name, blend_time );
-	AnimControl->Set_Mode( looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE );
-	AnimControl->Update(0.0667f);	// update 
-	StateLocked = true;
+	AnimControl->Set_Animation( anim_name, blend_time, 0.0f); // force frame 0
+	AnimControl->Set_Mode( looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE, -1 ); //avoid overwriting the frame
+	AnimControl->Update(0.001f); // tiny tick to apply frame 0 immediately
+	StateLocked = true; // what happens if we set this to false? (rather then 1 frame then interupt you lock on frame one and stay there but only if the state is also not interuptable) - casey
 }
 
 void	HumanStateClass::Stop_Scripted_Animation( void )
@@ -682,6 +685,7 @@ static const char * _dive_anims[ 4 * 2 ] = {
 void	HumanStateClass::Update_Animation( void )
 {
 	WWPROFILE( "Human Animation" );
+
 
 	// no updates for visceroids
 	if ( AnimControl->Get_Skeleton() == 'V' ) {
@@ -991,13 +995,18 @@ void	HumanStateClass::Update_State( void )
 
 			StateLocked = false;
 
-			if ( State == DIVE ) {
-				Set_State( UPRIGHT );
-			} else if ( State == ANIMATION ) {
-				Set_State( UPRIGHT );
-			} else if ( State == DEATH ) {
-				
-				Set_State( DESTROY );
+			if (State == DIVE) {
+				Debug_Say((">>> HumanState: Transitioning from DIVE to UPRIGHT\n"));
+				Set_State(UPRIGHT);
+			}
+			else if (State == ANIMATION) {
+				Debug_Say((">>> HumanState: Transitioning from ANIMATION to UPRIGHT\n"));
+				Set_State(UPRIGHT);
+			}
+			else if (State == DEATH) {
+				Debug_Say((">>> HumanState: Transitioning from DEATH to DESTROY\n"));
+				Set_State(DESTROY);
+			
 				TransitionEffectClass * effect = CombatMaterialEffectManager::Get_Death_Effect();
 				this->HumanPhys->Add_Effect_To_Me(effect);
 				REF_PTR_RELEASE(effect);

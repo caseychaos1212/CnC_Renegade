@@ -2305,6 +2305,7 @@ static char * _profile_name = "Soldier Think";
 void	SoldierGameObj::Think( void )
 {
 	{	WWPROFILE( _profile_name );
+	
 
 		if ( this == COMBAT_STAR ) {
 			_shake_delay -= TimeManager::Get_Frame_Seconds();
@@ -3072,7 +3073,7 @@ void SoldierGameObj::Set_Weapon_Model( const char *model_name )
 			SecondaryWeaponRenderModel->Add_Ref();
 
 			// Attach to left-hand bone
-			Peek_Model()->Add_Sub_Object_To_Bone(SecondaryWeaponRenderModel, LEFT_GUN_BONE_NAME);
+//			Peek_Model()->Add_Sub_Object_To_Bone(SecondaryWeaponRenderModel, LEFT_GUN_BONE_NAME);
 
 			// Optionally: inform the weapon system that we have two models?
 			// Get_Weapon()->Set_Left_Model(SecondaryWeaponRenderModel); // (not needed unless you define it)
