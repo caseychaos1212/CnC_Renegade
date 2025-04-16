@@ -59,3 +59,14 @@ IDL_*.loc
 .clang-format
 /.vscode
 /build*
+/.vs/renegadez/copilot-chat/5077835c/sessions
+/.vs/renegadez/CopilotIndices/17.13.444.19527
+/.vs/renegadez/FileContentIndex
+/.vs/renegadez/v17/ipch/AutoPCH
+/.vs/renegadez/v17
+/.vs
+/Code/.vs/Code/v17
+/Code/.vs
+/Code/out/build/x64-Debug/.cmake/api/v1/reply
+/Code/out/build/x64-Debug
+/Code/.vs/Code/FileContentIndex/1518b3ec-d98c-493d-9744-87c2b4f620ab.vsidx
