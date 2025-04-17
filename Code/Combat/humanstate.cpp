@@ -405,18 +405,18 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 		StateLocked = false;
 	}
 
-	//if ( StateLocked ) {
-	//	if ( state != DEATH ) {
-// Temp Test
-//			Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
-//			return;
-	//	}
+	if ( StateLocked ) {
+		if ( state != DEATH ) {
+  
+			Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
+			return;
+		}
 
-//#pragma MESSAGE( "StateLocked Hack" )
-	//	if ( !IS_SOLOPLAY ) {		// E3 HACK
-			//StateLocked = false;
-	//	}
-//	}
+#pragma MESSAGE( "StateLocked Hack" )
+		if ( !IS_SOLOPLAY ) {		// E3 HACK
+			StateLocked = false;
+		}
+	}
 
 	if ( State == state && SubState == sub_state ) {
 		if (CombatManager::I_Am_Server()) {
@@ -465,7 +465,7 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 
 bool	HumanStateClass::Is_State_Interruptable( void )
 {
-	return (State == UPRIGHT) || (State == WOUNDED) || (State == LAND) || (State == LOITER)|| (State == ANIMATION);  //try removing no diffrence   -casey
+	return (State == UPRIGHT) || (State == WOUNDED) || (State == LAND) || (State == LOITER);  //try removing no diffrence (State == ANIMATION);   -casey
 }
 
 
@@ -560,15 +560,37 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	if (( Get_State() == DEATH ) || ( Get_State() == DESTROY ) ) {
 		return;
 	}
+	HAnimClass* preload_anim = WW3DAssetManager::Get_Instance()->Get_HAnim(anim_name);
+	if (preload_anim == NULL) {
+		Debug_Say((">>> FATAL: Scripted animation '%s' failed to load!\n", anim_name));
+	}
+	else {
+		Debug_Say((">>> Scripted animation '%s' preload success! Frames = %d\n", anim_name, preload_anim->Get_Num_Frames()));
+	}
 
-
-	Set_State( ANIMATION ); //animation state can be interupted try removing from IS_STATE_INTERUPTABLE and see if that introduces a lock - casey
+	Set_State(ANIMATION); // animation state can be interrupted; try removing from IS_STATE_INTERRUPTIBLE and see if that introduces a lock - casey
 	Debug_Say((">>> State set to ANIMATION\n"));
-	float blend_time = blend ? 0.2 : 0;
-	AnimControl->Set_Animation( anim_name, blend_time, 0.0f); // force frame 0
-	AnimControl->Set_Mode( looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE, -1 ); //avoid overwriting the frame
+	float blend_time = blend ? 0.2f : 0.0f;
+	AnimControl->Set_Animation(anim_name, blend_time, 0.0f); // force frame 0
+	AnimControl->Set_Anim_Speed_Scale(0.05f); // 5% speed
+	AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE, -1); // avoid overwriting the frame
+	Debug_Say((">>> Animation settings: SpeedScale = %.2f | Mode = %d\n",
+		AnimControl->Get_Anim_Speed_Scale(),
+		AnimControl->Get_Mode()));
 	AnimControl->Update(0.001f); // tiny tick to apply frame 0 immediately
-	StateLocked = true; // what happens if we set this to false? (rather then 1 frame then interupt you lock on frame one and stay there but only if the state is also not interuptable) - casey
+	StateLocked = true; // what happens if we set this to false? (rather than 1 frame then interrupt, you lock on frame one and stay there but only if the state is also not interruptible) - casey
+	// Log animation info after setting it
+// Safely verify what was loaded
+	HAnimClass* anim = AnimControl->Peek_Animation();
+	if (anim && anim->Get_Num_Frames() > 0) {
+		Debug_Say((">>> Start_Scripted_Animation: Loaded anim '%s' | FrameRate = %.2f | NumFrames = %d\n",
+			anim->Get_Name(),
+			anim->Get_Frame_Rate(),
+			anim->Get_Num_Frames()));
+	}
+	else {
+		Debug_Say((">>> Start_Scripted_Animation: WARNING — Peek_Animation() returned null or empty after setting '%s'\n", anim_name));
+	}
 }
 
 void	HumanStateClass::Stop_Scripted_Animation( void )
@@ -685,6 +707,19 @@ static const char * _dive_anims[ 4 * 2 ] = {
 void	HumanStateClass::Update_Animation( void )
 {
 	WWPROFILE( "Human Animation" );
+	//{
+	//	if (State == ANIMATION) {
+	//		Debug_Say((">>> Update_Animation skipped: currently in scripted animation state\n"));
+	//		return;
+	//	}
+
+	//	Debug_Say((">>> Update_Animation running: state = %d\n", State));
+	//}
+	
+	if (State == ANIMATION && StateLocked) {
+		AnimControl->Update(TimeManager::Get_Frame_Seconds());
+		return;
+	}
 
 
 	// no updates for visceroids
@@ -694,7 +729,7 @@ void	HumanStateClass::Update_Animation( void )
 	}
 
 	if ( StateLocked ) {
-//		Debug_Say(( "ERROR: updating animation when locked\n" ));
+		Debug_Say(( "ERROR: updating animation when locked\n" ));
 		return;
 		// if you change your animn when locked, death state may clear a scripted anim
 	}
@@ -813,7 +848,7 @@ void	HumanStateClass::Update_Animation( void )
 			}
 
 			// Saftey check anim
-//			Debug_Say(( "Anim name %s\n", (const char *)anim_name ));
+			Debug_Say(( "Anim name %s\n", (const char *)anim_name ));
 
 //			float frame = AnimControl->Get_Frame();			// Maintain the frame number for moving
 			AnimControl->Set_Animation( anim_name, blend_time );
@@ -988,10 +1023,8 @@ void	HumanStateClass::Update_State( void )
 		Reset_Loiter_Delay();
 	}
 
-	// Get out of locked states
-	if ( AnimControl->Is_Complete() ) {	// Time to unlock
-//		if ( StateLocked && State != LOCKED_ANIMATION ) {
-		if ( (StateLocked && State != LOCKED_ANIMATION) || (State == DEATH) ) {
+	if (AnimControl->Is_Complete()) {
+		if ((StateLocked && State != LOCKED_ANIMATION) || (State == DEATH)) {
 
 			StateLocked = false;
 
@@ -1000,34 +1033,46 @@ void	HumanStateClass::Update_State( void )
 				Set_State(UPRIGHT);
 			}
 			else if (State == ANIMATION) {
-				Debug_Say((">>> HumanState: Transitioning from ANIMATION to UPRIGHT\n"));
-				Set_State(UPRIGHT);
+				float current_frame = AnimControl->Get_Frame();
+				float total_frames = AnimControl->Peek_Animation() ? AnimControl->Peek_Animation()->Get_Num_Frames() : 0.0f;
+
+				Debug_Say((">>> Is_Complete(): Mode = %d | Frame = %.2f | Target = %.2f | NumFrames = %.2f\n",
+					AnimControl->Get_Mode(),
+					current_frame,
+					AnimControl->Get_Target_Frame(),
+					total_frames));
+
+				if (current_frame >= total_frames - 1.0f) {
+					Debug_Say((">>> Scripted animation frame complete — transitioning to UPRIGHT\n"));
+					Set_State(UPRIGHT);
+				}
+				return;
 			}
 			else if (State == DEATH) {
 				Debug_Say((">>> HumanState: Transitioning from DEATH to DESTROY\n"));
 				Set_State(DESTROY);
-			
-				TransitionEffectClass * effect = CombatMaterialEffectManager::Get_Death_Effect();
+
+				TransitionEffectClass* effect = CombatMaterialEffectManager::Get_Death_Effect();
 				this->HumanPhys->Add_Effect_To_Me(effect);
 				REF_PTR_RELEASE(effect);
-
-			} else if ( State == TRANSITION ) {
-				Set_State( TRANSITION_COMPLETE );
-			} else if ( State != LOCKED_ANIMATION ) {
-				Debug_Say(( "Unsupported locked state %s\n", Get_State_Name() ));
 			}
-		} else {
-
-//			Debug_Say(( "Anim Complete %s\n", Get_State_Name() ));
-
-			if ( State == LOITER ) {
-				Set_State( UPRIGHT );
-			} else if ( State == LAND ) {
-				Set_State( UPRIGHT, Get_Sub_State() );
-			} else if ( State == WOUNDED ) {
-				Set_State( UPRIGHT );
+			else if (State == TRANSITION) {
+				Set_State(TRANSITION_COMPLETE);
 			}
-
+			else if (State != LOCKED_ANIMATION) {
+				Debug_Say((">>> Unsupported locked state: %s\n", Get_State_Name()));
+			}
+		}
+		else {
+			if (State == LOITER) {
+				Set_State(UPRIGHT);
+			}
+			else if (State == LAND) {
+				Set_State(UPRIGHT, Get_Sub_State());
+			}
+			else if (State == WOUNDED) {
+				Set_State(UPRIGHT);
+			}
 		}
 	}
 

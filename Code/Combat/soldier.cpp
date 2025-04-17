@@ -2421,6 +2421,7 @@ void	SoldierGameObj::Think( void )
 //		HumanState.Update_Aiming( Get_Weapon_Tilt(), Get_Weapon_Turn() );
 		HumanState.Update_State(); 
 
+
 		// Remove C4 from hand if empty
 		if ( Get_Weapon() && WeaponRenderModel ) {
 			if ( Get_Weapon()->Get_Style() == WEAPON_HOLD_STYLE_C4 || Get_Weapon()->Get_Style() == WEAPON_HOLD_STYLE_BEACON ) {

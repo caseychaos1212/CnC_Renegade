@@ -101,7 +101,7 @@ public:
 	// Set Mode
 	void			Set_Mode( AnimMode mode, float frame = -1 );
 	AnimMode		Get_Mode( void )					{ return Mode; }
-	bool			Is_Complete( void )				{ return (Animation == NULL) || ((Mode == ANIM_MODE_ONCE) && (Frame == NumFrames-1)) || ((Mode == ANIM_MODE_TARGET) && (Frame == TargetFrame)); }
+	bool			Is_Complete( void )				{ return (Animation == NULL) || ((Mode == ANIM_MODE_ONCE) && (Frame >= NumFrames - 1.0f)) || ((Mode == ANIM_MODE_TARGET) && (Frame == TargetFrame)); }
 	const char *Get_Animation_Name( void )		{ return Animation ? Animation->Get_Name() : ""; }
 
 	// Frame
@@ -283,6 +283,7 @@ public:
 	virtual	float	Get_Current_Frame( void )			{ return Channel1.Get_Frame(); }
 
 	virtual	void	Set_Anim_Speed_Scale( float speed )		{ AnimSpeedScale = speed; }
+	float Get_Anim_Speed_Scale(void) const { return AnimSpeedScale; }
 
 	virtual	void	Update( float dtime );
 

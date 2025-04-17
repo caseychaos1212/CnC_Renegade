@@ -1215,7 +1215,7 @@ void	WeaponClass::Do_Firing_Effects( void )
 	if (owner != NULL && owner->As_SoldierGameObj()) {
 		//if ( !Definition->HumanFiringAnimation.Is_Empty() ) { hard coded for now - casey 
 		{
-			owner->As_SoldierGameObj()->Set_Animation("s_a_human.spin", 0, 0);
+			owner->As_SoldierGameObj()->Set_Animation("s_a_human.h_a_punchcombo", 0, 0);
 			;
 		}
 	}

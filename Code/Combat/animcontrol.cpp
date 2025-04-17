@@ -405,6 +405,7 @@ bool	BlendableAnimChannelClass::Load( ChunkLoadClass &cload )
 }
 
 void	BlendableAnimChannelClass::Set_Animation( const char *name, float blendtime, float start_frame ) 
+
 {
 	// if setting to our current anim, bail
 	if ( ( NewChannel.Peek_Animation() == NULL ) && ( name == NULL ) ) {
@@ -439,9 +440,21 @@ void	BlendableAnimChannelClass::Set_Animation( const char *name, float blendtime
 		BlendTimer = (BlendTimer / BlendTotal) * blendtime;
 		BlendTotal = blendtime;
 	}
+	Debug_Say((">>> BlendableAnimChannel::Set_Animation: %s | start = %.2f | blend = %.2f\n", name ? name : "(null)", start_frame, blendtime));
+	HAnimClass* anim = WW3DAssetManager::Get_Instance()->Get_HAnim("s_a_human.spin");
+	if (anim == NULL) {
+		Debug_Say((">>> FATAL: s_a_human.spin not found — animation load failed!\n"));
+	}
+	else {
+		Debug_Say((">>> Pre-check: s_a_human.spin loaded! Frames = %d\n", anim->Get_Num_Frames()));
+	}
 	NewChannel.Set_Animation( name );
+	if (Peek_Animation() == NULL) {
+		Debug_Say((">>> Peek_Animation returned NULL for %s\n", name));
+	}
 	if ( NewChannel.Peek_Animation() != NULL ) {
 		NewChannel.Set_Frame( start_frame );
+		NewChannel.Set_Target_Frame(start_frame);
 	}
 	if ( name == NULL ) {
 		OldChannel.Set_Animation( (const char *)NULL );
@@ -483,9 +496,12 @@ void	BlendableAnimChannelClass::Set_Animation( const HAnimClass * anim, float bl
 		BlendTimer = (BlendTimer / BlendTotal) * blendtime;
 		BlendTotal = blendtime;
 	}
+
+
 	NewChannel.Set_Animation( anim );
 	if ( NewChannel.Peek_Animation() != NULL ) {
 		NewChannel.Set_Frame( start_frame );
+		NewChannel.Set_Target_Frame(start_frame);
 	}
 	if ( anim == NULL ) {
 		OldChannel.Set_Animation( (const HAnimClass *)NULL );
@@ -782,6 +798,8 @@ void HumanAnimControlClass::Build_Skeleton_Anim_Name( StringClass& new_name, con
 		mod_name[2] = Skeleton;
 		mod_name[12] = Skeleton;
 
+		Debug_Say(("Resolved anim name: %s\n", (const char*)new_name));
+
 		// can we find the anim name?
 		HAnimClass * anim = WW3DAssetManager::Get_Instance()->Get_HAnim( mod_name );
 		if ( anim != NULL ) {
@@ -795,12 +813,12 @@ void	HumanAnimControlClass::Set_Animation( const char *name, float	blendtime, fl
 {
 	StringClass new_name(0,true);
 	Build_Skeleton_Anim_Name( new_name, name );
-
 	Channel1.Set_Animation( new_name, blendtime, start_frame );
 	Channel2.Set_Animation( (const char *)NULL );
 	Channel2Ratio = 0;
 	Debug_Say((">>> HumanAnimControl::Set_Animation: %s | blendtime = %.2f | start = %.2f\n", name, blendtime, start_frame));
 	Debug_Say((">>> Skeleton character used for anim name: %c\n", Skeleton));
+	Debug_Say((">>> Final resolved animation name: %s\n", (const char*)new_name));
 
 }
 
@@ -897,24 +915,24 @@ void	HumanAnimControlClass::Update( float dtime )
 
 		if ( total_animations == 0 ) {
 
-//			Debug_Say(( "No animations to display!\n" ));
+			Debug_Say(( "No animations to display!\n" ));
 			Model->Set_Animation();
 
 		} else if ( total_animations == 1 ) {
 
-//			Debug_Say(( "1 animation to display!\n" ));
+			Debug_Say(( "1 animation to display!\n" ));
 			Model->Set_Animation( DataList[0].Animation, DataList[0].Frame );
 
 		} else if ( total_animations == 2 ) {
 
-//			Debug_Say(( "2 animation to display!\n" ));
+			Debug_Say(( "2 animation to display!\n" ));
 			float percent = DataList[1].Weight / (DataList[0].Weight + DataList[1].Weight);
 			Model->Set_Animation(	DataList[0].Animation, DataList[0].Frame,
 											DataList[1].Animation, DataList[1].Frame, percent );
 
 		} else {
 
-//			Debug_Say(( ">2 animation to display!\n" ));
+			Debug_Say(( ">2 animation to display!\n" ));
 
 			// set up anim combo
 			AnimCombo.Reset();
