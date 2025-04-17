@@ -392,7 +392,7 @@ void HumanStateClass::Update_Recoil(WeaponClass * weapon)
 
 void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 {
-	Debug_Say((">>> Set_State: from %d to %d | sub = %d\n", State, state, sub_state));
+	//Debug_Say((">>> Set_State: from %d to %d | sub = %d\n", State, state, sub_state));
 
 	// Special case for death
 	if (( State == DEATH ) || ( State == DESTROY )) {
@@ -408,8 +408,8 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 	if ( StateLocked ) {
 		if ( state != DEATH ) {
   
-			Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
-			return;
+		//	Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
+		//	return;
 		}
 
 #pragma MESSAGE( "StateLocked Hack" )
@@ -549,7 +549,7 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 		return;
 	}
 #endif
-	Debug_Say((">>> Start_Scripted_Animation: anim = %s | blend = %d | looping = %d\n", anim_name, blend, looping));
+	//Debug_Say((">>> Start_Scripted_Animation: anim = %s | blend = %d | looping = %d\n", anim_name, blend, looping));
 
 	//Debug_Say(("Start_Scripted_Animation %s\n", anim_name));
 
@@ -569,7 +569,7 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	}
 
 	Set_State(ANIMATION); // animation state can be interrupted; try removing from IS_STATE_INTERRUPTIBLE and see if that introduces a lock - casey
-	Debug_Say((">>> State set to ANIMATION\n"));
+	//Debug_Say((">>> State set to ANIMATION\n"));
 	float blend_time = blend ? 0.2 : 0;
 	AnimControl->Set_Animation(anim_name, blend_time ); 
 	//AnimControl->Set_Anim_Speed_Scale(0.05f); // 5% speed
@@ -580,7 +580,7 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	AnimControl->Update(0); // tiny tick to apply frame 0 immediately
 	StateLocked = true; // what happens if we set this to false? (rather than 1 frame then interrupt, you lock on frame one and stay there but only if the state is also not interruptible) - casey
 	// Log animation info after setting it
-// Safely verify what was loaded
+ //Safely verify what was loaded
 	HAnimClass* anim = AnimControl->Peek_Animation();
 	if (anim && anim->Get_Num_Frames() > 0) {
 		Debug_Say((">>> Start_Scripted_Animation: Loaded anim '%s' | FrameRate = %.2f | NumFrames = %d\n",
@@ -725,7 +725,7 @@ void	HumanStateClass::Update_Animation( void )
 	}
 
 	if ( StateLocked ) {
-		Debug_Say(( "ERROR: updating animation when locked\n" ));
+	//	Debug_Say(( "ERROR: updating animation when locked\n" ));
 		return;
 		// if you change your animn when locked, death state may clear a scripted anim
 	}
@@ -844,7 +844,7 @@ void	HumanStateClass::Update_Animation( void )
 			}
 
 			// Saftey check anim
-			Debug_Say(( "Anim name %s\n", (const char *)anim_name ));
+			//Debug_Say(( "Anim name %s\n", (const char *)anim_name ));
 
 //			float frame = AnimControl->Get_Frame();			// Maintain the frame number for moving
 			AnimControl->Set_Animation( anim_name, blend_time );

@@ -432,18 +432,18 @@ void	BlendableAnimChannelClass::Set_Animation( const char *name, float blendtime
 		BlendTimer = (BlendTimer / BlendTotal) * blendtime;
 		BlendTotal = blendtime;
 	}
-	Debug_Say((">>> BlendableAnimChannel::Set_Animation: %s | start = %.2f | blend = %.2f\n", name ? name : "(null)", start_frame, blendtime));
-	HAnimClass* anim = WW3DAssetManager::Get_Instance()->Get_HAnim("s_a_human.spin");
-	if (anim == NULL) {
-		Debug_Say((">>> FATAL: s_a_human.spin not found — animation load failed!\n"));
-	}
-	else {
-		Debug_Say((">>> Pre-check: s_a_human.spin loaded! Frames = %d\n", anim->Get_Num_Frames()));
-	}
+	//Debug_Say((">>> BlendableAnimChannel::Set_Animation: %s | start = %.2f | blend = %.2f\n", name ? name : "(null)", start_frame, blendtime));
+	//HAnimClass* anim = WW3DAssetManager::Get_Instance()->Get_HAnim("s_a_human.spin");
+	//if (anim == NULL) {
+	//	Debug_Say((">>> FATAL: s_a_human.spin not found — animation load failed!\n"));
+	//}
+	//else {
+	//	Debug_Say((">>> Pre-check: s_a_human.spin loaded! Frames = %d\n", anim->Get_Num_Frames()));
+	//}
 	NewChannel.Set_Animation( name );
-	if (Peek_Animation() == NULL) {
-		Debug_Say((">>> Peek_Animation returned NULL for %s\n", name));
-	}
+	//if (Peek_Animation() == NULL) {
+	//	Debug_Say((">>> Peek_Animation returned NULL for %s\n", name));
+	//}
 	if ( NewChannel.Peek_Animation() != NULL ) {
 		NewChannel.Set_Frame( start_frame );
 		
@@ -789,7 +789,7 @@ void HumanAnimControlClass::Build_Skeleton_Anim_Name( StringClass& new_name, con
 		mod_name[2] = Skeleton;
 		mod_name[12] = Skeleton;
 
-		Debug_Say(("Resolved anim name: %s\n", (const char*)new_name));
+		//Debug_Say(("Resolved anim name: %s\n", (const char*)new_name));
 
 		// can we find the anim name?
 		HAnimClass * anim = WW3DAssetManager::Get_Instance()->Get_HAnim( mod_name );
@@ -807,9 +807,9 @@ void	HumanAnimControlClass::Set_Animation( const char *name, float	blendtime, fl
 	Channel1.Set_Animation( new_name, blendtime, start_frame );
 	Channel2.Set_Animation( (const char *)NULL );
 	Channel2Ratio = 0;
-	Debug_Say((">>> HumanAnimControl::Set_Animation: %s | blendtime = %.2f | start = %.2f\n", name, blendtime, start_frame));
-	Debug_Say((">>> Skeleton character used for anim name: %c\n", Skeleton));
-	Debug_Say((">>> Final resolved animation name: %s\n", (const char*)new_name));
+	//Debug_Say((">>> HumanAnimControl::Set_Animation: %s | blendtime = %.2f | start = %.2f\n", name, blendtime, start_frame));
+	//Debug_Say((">>> Skeleton character used for anim name: %c\n", Skeleton));
+	//Debug_Say((">>> Final resolved animation name: %s\n", (const char*)new_name));
 
 }
 
@@ -870,8 +870,8 @@ HumanAnimControlClass * _Monitor = NULL;
 
 void	HumanAnimControlClass::Update( float dtime )
 {
-	Debug_Say((">>> HumanAnimControlClass::Update: Channel1 Mode = %d | Frame = %.2f | dtime = %.4f\n",
-		Channel1.Get_Mode(), Channel1.Get_Frame(), dtime));
+	//Debug_Say((">>> HumanAnimControlClass::Update: Channel1 Mode = %d | Frame = %.2f | dtime = %.4f\n",
+		//Channel1.Get_Mode(), Channel1.Get_Frame(), dtime));
 
 	
 	
@@ -890,16 +890,16 @@ void	HumanAnimControlClass::Update( float dtime )
 		DataList.Reset_Active();
 		Channel1.Get_Animation_Data(DataList, (1 - Channel2Ratio));
 		Channel2.Get_Animation_Data(DataList, Channel2Ratio);
-		for (int i = 0; i < DataList.Count(); i++) {
-			AnimationDataRecord& data = DataList[i];
-			if (data.Animation != NULL) {
-				Debug_Say(("Anim[%d]: %s | Frame = %.2f | Weight = %.2f\n",
-					i,
-					data.Animation->Get_Name(),
-					data.Frame,
-					data.Weight));
-			}
-		}
+		//for (int i = 0; i < DataList.Count(); i++) {
+		//	AnimationDataRecord& data = DataList[i];
+		//	if (data.Animation != NULL) {
+		//		Debug_Say(("Anim[%d]: %s | Frame = %.2f | Weight = %.2f\n",
+		//			i,
+		//			data.Animation->Get_Name(),
+		//			data.Frame,
+		//			data.Weight));
+		//	}
+		//}
 		
 	
 
@@ -908,24 +908,24 @@ void	HumanAnimControlClass::Update( float dtime )
 
 		if ( total_animations == 0 ) {
 
-			Debug_Say(( "No animations to display!\n" ));
+		//	Debug_Say(( "No animations to display!\n" ));
 			Model->Set_Animation();
 
 		} else if ( total_animations == 1 ) {
 
-			Debug_Say(( "1 animation to display!\n" ));
+		//	Debug_Say(( "1 animation to display!\n" ));
 			Model->Set_Animation( DataList[0].Animation, DataList[0].Frame );
 
 		} else if ( total_animations == 2 ) {
 
-			Debug_Say(( "2 animation to display!\n" ));
+		//	Debug_Say(( "2 animation to display!\n" ));
 			float percent = DataList[1].Weight / (DataList[0].Weight + DataList[1].Weight);
 			Model->Set_Animation(	DataList[0].Animation, DataList[0].Frame,
 											DataList[1].Animation, DataList[1].Frame, percent );
 
 		} else {
 
-			Debug_Say(( ">2 animation to display!\n" ));
+		//	Debug_Say(( ">2 animation to display!\n" ));
 
 			// set up anim combo
 			AnimCombo.Reset();
