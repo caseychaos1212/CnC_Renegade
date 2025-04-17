@@ -409,7 +409,7 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 		if ( state != DEATH ) {
   
 		//	Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
-		//	return;
+			return; ///turns out letting this function run "fixes" the MP animation bug ( but locked in place)
 		}
 
 #pragma MESSAGE( "StateLocked Hack" )
@@ -560,13 +560,13 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	if (( Get_State() == DEATH ) || ( Get_State() == DESTROY ) ) {
 		return;
 	}
-	HAnimClass* preload_anim = WW3DAssetManager::Get_Instance()->Get_HAnim(anim_name);
-	if (preload_anim == NULL) {
-		Debug_Say((">>> FATAL: Scripted animation '%s' failed to load!\n", anim_name));
-	}
-	else {
-		Debug_Say((">>> Scripted animation '%s' preload success! Frames = %d\n", anim_name, preload_anim->Get_Num_Frames()));
-	}
+//	HAnimClass* preload_anim = WW3DAssetManager::Get_Instance()->Get_HAnim(anim_name);
+//	if (preload_anim == NULL) {
+//		Debug_Say((">>> FATAL: Scripted animation '%s' failed to load!\n", anim_name));
+//	}
+//	else {
+//		Debug_Say((">>> Scripted animation '%s' preload success! Frames = %d\n", anim_name, preload_anim->Get_Num_Frames()));
+//	}
 
 	Set_State(ANIMATION); // animation state can be interrupted; try removing from IS_STATE_INTERRUPTIBLE and see if that introduces a lock - casey
 	//Debug_Say((">>> State set to ANIMATION\n"));
@@ -581,16 +581,16 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	StateLocked = true; // what happens if we set this to false? (rather than 1 frame then interrupt, you lock on frame one and stay there but only if the state is also not interruptible) - casey
 	// Log animation info after setting it
  //Safely verify what was loaded
-	HAnimClass* anim = AnimControl->Peek_Animation();
-	if (anim && anim->Get_Num_Frames() > 0) {
-		Debug_Say((">>> Start_Scripted_Animation: Loaded anim '%s' | FrameRate = %.2f | NumFrames = %d\n",
-			anim->Get_Name(),
-			anim->Get_Frame_Rate(),
-			anim->Get_Num_Frames()));
-	}
-	else {
-		Debug_Say((">>> Start_Scripted_Animation: WARNING — Peek_Animation() returned null or empty after setting '%s'\n", anim_name));
-	}
+//	HAnimClass* anim = AnimControl->Peek_Animation();
+//	if (anim && anim->Get_Num_Frames() > 0) {
+//		Debug_Say((">>> Start_Scripted_Animation: Loaded anim '%s' | FrameRate = %.2f | NumFrames = %d\n",
+//			anim->Get_Name(),
+//			anim->Get_Frame_Rate(),
+//			anim->Get_Num_Frames()));
+//	}
+//	else {
+//		Debug_Say((">>> Start_Scripted_Animation: WARNING — Peek_Animation() returned null or empty after setting '%s'\n", anim_name));
+	//}
 }
 
 void	HumanStateClass::Stop_Scripted_Animation( void )
@@ -1029,20 +1029,20 @@ void	HumanStateClass::Update_State( void )
 				Set_State(UPRIGHT);
 			}
 			else if (State == ANIMATION) {
-				float current_frame = AnimControl->Get_Frame();
-				float total_frames = AnimControl->Peek_Animation() ? AnimControl->Peek_Animation()->Get_Num_Frames() : 0.0f;
-
-				Debug_Say((">>> Is_Complete(): Mode = %d | Frame = %.2f | Target = %.2f | NumFrames = %.2f\n",
-					AnimControl->Get_Mode(),
-					current_frame,
-					AnimControl->Get_Target_Frame(),
-					total_frames));
-
-				if (current_frame >= total_frames - 1.0f) {
-					Debug_Say((">>> Scripted animation frame complete — transitioning to UPRIGHT\n"));
+			//	float current_frame = AnimControl->Get_Frame();
+			//	float total_frames = AnimControl->Peek_Animation() ? AnimControl->Peek_Animation()->Get_Num_Frames() : 0.0f;
+            //
+			//	Debug_Say((">>> Is_Complete(): Mode = %d | Frame = %.2f | Target = %.2f | NumFrames = %.2f\n",
+			//		AnimControl->Get_Mode(),
+			//		current_frame,
+			//		AnimControl->Get_Target_Frame(),
+			//		total_frames));
+            //
+			//	if (current_frame >= total_frames - 1.0f) {
+			//		Debug_Say((">>> Scripted animation frame complete — transitioning to UPRIGHT\n"));
 					Set_State(UPRIGHT);
-				}
-				return;
+			//	}
+			//	return;
 			}
 			else if (State == DEATH) {
 				Debug_Say((">>> HumanState: Transitioning from DEATH to DESTROY\n"));
