@@ -282,7 +282,7 @@ public:
 	virtual	float	Get_Current_Frame( void )			{ return Channel1.Get_Frame(); }
 
 	virtual	void	Set_Anim_Speed_Scale( float speed )		{ AnimSpeedScale = speed; }
-	float Get_Anim_Speed_Scale(void) const { return AnimSpeedScale; }
+	//float Get_Anim_Speed_Scale(void) const { return AnimSpeedScale; }
 
 	virtual	void	Update( float dtime );
 

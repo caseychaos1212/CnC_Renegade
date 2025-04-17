@@ -572,12 +572,12 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	Debug_Say((">>> State set to ANIMATION\n"));
 	float blend_time = blend ? 0.2 : 0;
 	AnimControl->Set_Animation(anim_name, blend_time ); 
-	AnimControl->Set_Anim_Speed_Scale(0.05f); // 5% speed
+	//AnimControl->Set_Anim_Speed_Scale(0.05f); // 5% speed
 	AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE);
-	Debug_Say((">>> Animation settings: SpeedScale = %.2f | Mode = %d\n",
-		AnimControl->Get_Anim_Speed_Scale(),
-		AnimControl->Get_Mode()));
-	AnimControl->Update(0.001f); // tiny tick to apply frame 0 immediately
+	//Debug_Say((">>> Animation settings: SpeedScale = %.2f | Mode = %d\n",
+	//	AnimControl->Get_Anim_Speed_Scale(),
+	//	AnimControl->Get_Mode()));
+	AnimControl->Update(0); // tiny tick to apply frame 0 immediately
 	StateLocked = true; // what happens if we set this to false? (rather than 1 frame then interrupt, you lock on frame one and stay there but only if the state is also not interruptible) - casey
 	// Log animation info after setting it
 // Safely verify what was loaded
