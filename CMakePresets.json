@@ -40,6 +40,15 @@
                 "WARNING_FLAGS": "/W3"
             }
         },
+		{
+            "name": "win-debug",
+            "inherits": "win",
+            "hidden": false,
+            "displayName": "Windows Debug Build",
+            "cacheVariables": {
+            "CMAKE_BUILD_TYPE": "Debug"
+        }
+		},
         {
             "name": "unix",
             "inherits": "default",
@@ -58,6 +67,13 @@
             "displayName": "Build Windows build",
             "description": "Build Windows build",
             "configuration": "Release"
+        },
+        {
+            "name": "win-debug",
+            "configurePreset": "win-debug",
+            "displayName": "Build Windows Debug",
+            "description": "Build Windows Debug version",
+            "configuration": "Debug"
         },
         {
             "name": "unix",

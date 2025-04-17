@@ -94,14 +94,13 @@ public:
 
 	// Set Animation
 	void			Set_Animation( const char *name );
-	void            Set_Animation(const char* name, float blend_time, float start_frame); //added overload -casey
 	void			Set_Animation( const HAnimClass *anim );
 	HAnimClass	*Peek_Animation( void )		{ return Animation; }
 
 	// Set Mode
 	void			Set_Mode( AnimMode mode, float frame = -1 );
 	AnimMode		Get_Mode( void )					{ return Mode; }
-	bool			Is_Complete( void )				{ return (Animation == NULL) || ((Mode == ANIM_MODE_ONCE) && (Frame >= NumFrames - 1.0f)) || ((Mode == ANIM_MODE_TARGET) && (Frame == TargetFrame)); }
+	bool			Is_Complete(void) { return (Animation == NULL) || ((Mode == ANIM_MODE_ONCE) && (Frame == NumFrames - 1)) || ((Mode == ANIM_MODE_TARGET) && (Frame == TargetFrame)); }
 	const char *Get_Animation_Name( void )		{ return Animation ? Animation->Get_Name() : ""; }
 
 	// Frame

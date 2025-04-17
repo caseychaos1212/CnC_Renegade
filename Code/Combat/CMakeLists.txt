@@ -270,6 +270,11 @@ set(COMBAT_SRC
 # Targets to build.
 add_library(combat STATIC)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(combat PRIVATE DEBUG_ENABLED _DEBUG)
+    message(STATUS "Combat target: Debug build flags set.")
+endif()
+
 target_link_libraries(combat PRIVATE
     wwcommon
 )

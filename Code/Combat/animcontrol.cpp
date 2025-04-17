@@ -195,14 +195,6 @@ void AnimChannelClass::Set_Animation( const char *name )
 	}
 }
 
-// New overload -casey
-void AnimChannelClass::Set_Animation(const char* name, float blend_time, float start_frame)
-{
-	Debug_Say((">>> AnimChannelClass::Set_Animation (overload): %s | start_frame = %.2f\n", name, start_frame));
-	Set_Animation(name);       // Call existing version
-	Frame = start_frame;       // Now override the frame
-	TargetFrame = start_frame;
-}
 
 void AnimChannelClass::Set_Animation( const HAnimClass *anim )
 {
@@ -454,7 +446,7 @@ void	BlendableAnimChannelClass::Set_Animation( const char *name, float blendtime
 	}
 	if ( NewChannel.Peek_Animation() != NULL ) {
 		NewChannel.Set_Frame( start_frame );
-		NewChannel.Set_Target_Frame(start_frame);
+		
 	}
 	if ( name == NULL ) {
 		OldChannel.Set_Animation( (const char *)NULL );
@@ -501,7 +493,6 @@ void	BlendableAnimChannelClass::Set_Animation( const HAnimClass * anim, float bl
 	NewChannel.Set_Animation( anim );
 	if ( NewChannel.Peek_Animation() != NULL ) {
 		NewChannel.Set_Frame( start_frame );
-		NewChannel.Set_Target_Frame(start_frame);
 	}
 	if ( anim == NULL ) {
 		OldChannel.Set_Animation( (const HAnimClass *)NULL );
@@ -888,15 +879,17 @@ void	HumanAnimControlClass::Update( float dtime )
 
 	// Update channels
 	
+
     Channel1.Update( dtime * AnimSpeedScale );
 	Channel2.Update( dtime * AnimSpeedScale );
 
 
 	if ( Model != NULL ) {
 
-		AnimationDataList DataList;
-		Channel1.Get_Animation_Data( DataList, (1 - Channel2Ratio) );
-		Channel2.Get_Animation_Data( DataList, Channel2Ratio );
+		// Get Animation data
+		DataList.Reset_Active();
+		Channel1.Get_Animation_Data(DataList, (1 - Channel2Ratio));
+		Channel2.Get_Animation_Data(DataList, Channel2Ratio);
 		for (int i = 0; i < DataList.Count(); i++) {
 			AnimationDataRecord& data = DataList[i];
 			if (data.Animation != NULL) {

@@ -465,7 +465,7 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 
 bool	HumanStateClass::Is_State_Interruptable( void )
 {
-	return (State == UPRIGHT) || (State == WOUNDED) || (State == LAND) || (State == LOITER);  //try removing no diffrence (State == ANIMATION);   -casey
+	return (State == UPRIGHT) || (State == WOUNDED) || (State == LAND) || (State == LOITER) || (State == ANIMATION);
 }
 
 
@@ -543,7 +543,7 @@ void	HumanStateClass::Start_Transition_Animation( const char * anim_name, bool b
 
 void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool blend, bool looping )
 {
-#if 1
+#if 0
 	if ( StateLocked ) {
 		Debug_Say(( "State is Locked.  Can't Start Transition Anim %s\n", anim_name ));
 		return;
@@ -570,10 +570,10 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 
 	Set_State(ANIMATION); // animation state can be interrupted; try removing from IS_STATE_INTERRUPTIBLE and see if that introduces a lock - casey
 	Debug_Say((">>> State set to ANIMATION\n"));
-	float blend_time = blend ? 0.2f : 0.0f;
-	AnimControl->Set_Animation(anim_name, blend_time, 0.0f); // force frame 0
+	float blend_time = blend ? 0.2 : 0;
+	AnimControl->Set_Animation(anim_name, blend_time ); 
 	AnimControl->Set_Anim_Speed_Scale(0.05f); // 5% speed
-	AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE, -1); // avoid overwriting the frame
+	AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE);
 	Debug_Say((">>> Animation settings: SpeedScale = %.2f | Mode = %d\n",
 		AnimControl->Get_Anim_Speed_Scale(),
 		AnimControl->Get_Mode()));
@@ -716,10 +716,6 @@ void	HumanStateClass::Update_Animation( void )
 	//	Debug_Say((">>> Update_Animation running: state = %d\n", State));
 	//}
 	
-	if (State == ANIMATION && StateLocked) {
-		AnimControl->Update(TimeManager::Get_Frame_Seconds());
-		return;
-	}
 
 
 	// no updates for visceroids
