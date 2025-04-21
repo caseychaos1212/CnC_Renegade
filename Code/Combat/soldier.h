@@ -177,6 +177,7 @@ public:
 	virtual void Set_Weapon_Animation( const char *anim_name );
 	virtual void	Start_Transition_Animation( const char * anim_name, TransitionCompletionDataStruct * completion_data );
 	virtual	void	Set_Animation( const char *animation_name, bool looping = true, float frame_offset = 0.0f );
+	virtual	void	Set_Innate_Animation(const char* animation_name, bool looping = true, float frame_offset = 0.0f);
 	virtual	void	Set_Blended_Animation( const char *animation_name, bool looping = true, float frame_offset = 0.0f, bool play_backwards = false );
 
 	void	Handle_Legs( void );

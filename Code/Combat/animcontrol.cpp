@@ -872,7 +872,24 @@ void	HumanAnimControlClass::Update( float dtime )
 {
 	//Debug_Say((">>> HumanAnimControlClass::Update: Channel1 Mode = %d | Frame = %.2f | dtime = %.4f\n",
 		//Channel1.Get_Mode(), Channel1.Get_Frame(), dtime));
+	//Debug_Say((">>> HumanAnimControlClass::Update: Channel1 Mode = %d | Frame = %.2f | dtime = %.4f\n",
+	//	Channel1.Get_Mode(), Channel1.Get_Frame(), dtime));
 
+	// Build animation data from both channels
+	AnimationDataList dataList;
+	Channel1.Get_Animation_Data(dataList, 1.0f - Channel2Ratio);
+	Channel2.Get_Animation_Data(dataList, Channel2Ratio);
+
+	// Log each animation that will be applied
+	for (int i = 0; i < dataList.Count(); ++i) {
+		if (dataList[i].Animation != nullptr) {
+			//Debug_Say(("Anim[%d]: %s | Frame = %.2f | Weight = %.2f\n",
+			//	i,
+			//	dataList[i].Animation->Get_Name(),
+			//	dataList[i].Frame,
+			//	dataList[i].Weight));
+		}
+	}
 	
 	
 

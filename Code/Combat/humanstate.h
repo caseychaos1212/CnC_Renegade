@@ -168,6 +168,7 @@ public:
 
 	void				Start_Transition_Animation( const char * anim_name, bool blend = true );
 	void				Start_Scripted_Animation( const char * anim_name, bool blend = true, bool looping = true );
+	void                Start_Innate_Animation(const char* anim_name, bool blend = true, bool looping = true);
 	void				Stop_Scripted_Animation( void );
 	void				Force_Animation( const char * anim_name, bool blend = true );
 

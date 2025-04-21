@@ -321,7 +321,7 @@ void SoldierObserverClass::Created( GameObject* obj )
 
 	WWASSERT( smart != NULL );
 
-//	Debug_Say(("Innate soldier [%d] created\n", obj->Get_ID()));
+Debug_Say(("Innate soldier [%d] created\n", obj->Get_ID()));
 
 	smart->Get_Position( &HomeLocation );
 
@@ -358,7 +358,7 @@ void SoldierObserverClass::Created( GameObject* obj )
 
 void SoldierObserverClass::Destroyed(GameObject* obj)
 {
-//	Debug_Say(("Innate soldier [%d] destroyed\n", obj->Get_ID()));
+	Debug_Say(("Innate soldier [%d] destroyed\n", obj->Get_ID()));
 
 	Release_Cover_Position();
 }
@@ -380,13 +380,13 @@ void SoldierObserverClass::Timer_Expired(GameObject* obj, int timer_id)
 
 void SoldierObserverClass::Killed(GameObject* obj, GameObject* killer)
 {
-//	Debug_Say(("Innate soldier [%d] killed by [%d]\n", obj->Get_ID(), killer ? killer->Get_ID() : -1));
+	Debug_Say(("Innate soldier [%d] killed by [%d]\n", obj->Get_ID(), killer ? killer->Get_ID() : -1));
 }
 
 
 void SoldierObserverClass::Damaged(GameObject* obj, GameObject* damager, float amount)
 {
-//	Debug_Say(("Innate soldier [%d] damaged by [%d]\n", obj->Get_ID(), damager ? damager->Get_ID() : -1));
+	Debug_Say(("Innate soldier [%d] damaged by [%d]\n", obj->Get_ID(), damager ? damager->Get_ID() : -1));
 	if ( obj->Is_Hibernating() ) {
 		return;
 	}
@@ -397,7 +397,7 @@ void SoldierObserverClass::Damaged(GameObject* obj, GameObject* damager, float a
 	WWASSERT(soldier != NULL);
 
 	if (soldier->Is_Innate_Enabled(SOLDIER_INNATE_EVENT_BULLET_HEARD)) {
-//Debug_Say(( "Damaged\n" ));
+Debug_Say(( "Damaged\n" ));
 		Vector3 pos;
 		soldier->Get_Position( &pos );
 
@@ -516,7 +516,7 @@ void SoldierObserverClass::Enemy_Seen(GameObject* obj, GameObject* enemy)
 	WWASSERT( enemy );
 	PhysicalGameObj * p_enemy = enemy->As_PhysicalGameObj();
 	if ( p_enemy == NULL || p_enemy->Get_Defense_Object()->Get_Health() <= 0 ) {
-//		Debug_Say(( "I see dead people\n" ));
+		Debug_Say(( "I see dead people\n" ));
 		return;
 	}
 
@@ -532,11 +532,11 @@ void SoldierObserverClass::Enemy_Seen(GameObject* obj, GameObject* enemy)
 		old_pos -= my_pos;
 		new_pos -= my_pos;
 		if ( new_pos.Length2() > old_pos.Length2() ) {
-//			Debug_Say(( "New guy is too far away!\n" ));
+			Debug_Say(( "New guy is too far away!\n" ));
 			return;
 		}
 
-//		Debug_Say(( "Found New guy!!\n" ));
+		Debug_Say(( "Found New guy!!\n" ));
 	}
 
 	SmartGameObj* smart = obj->As_SmartGameObj();
@@ -544,12 +544,12 @@ void SoldierObserverClass::Enemy_Seen(GameObject* obj, GameObject* enemy)
 	SoldierGameObj* soldier = smart->As_SoldierGameObj();
 	WWASSERT(soldier != NULL);
 
-//	Debug_Say(("Innate soldier [%d] seen enemy [%d]\n", obj->Get_ID(), enemy->Get_ID()));
+	Debug_Say(("Innate soldier [%d] seen enemy [%d]\n", obj->Get_ID(), enemy->Get_ID()));
 
 	bool	state_changed = false;
 
 	if (soldier->Is_Innate_Enabled(SOLDIER_INNATE_EVENT_ENEMY_SEEN)) {
-//Debug_Say(( "Seen Enemy\n" ));
+Debug_Say(( "Seen Enemy\n" ));
 		state_changed = Set_State(soldier, SOLDIER_AI_ENEMY_SEEN, Vector3(0,0,0), enemy);
 	}
 
@@ -562,7 +562,7 @@ void SoldierObserverClass::Enemy_Seen(GameObject* obj, GameObject* enemy)
 void	SoldierObserverClass::Custom( GameObject * obj, int type, int param, GameObject * sender )
 {
 	if ( type == CUSTOM_EVENT_ATTACK_ARRIVED ) {
-//		Debug_Say(( "Attack Arrvied event %d\n", param ));
+		Debug_Say(( "Attack Arrvied event %d\n", param ));
 	}
 }
 
@@ -570,13 +570,13 @@ void SoldierObserverClass::Action_Complete( GameObject * obj, int action_id, Act
 {
 	if ( action_id == INNATE_ACTION_ID ) {
 		SubStateString += "\nComplete";
-	//	ActionTimer = MIN( ActionTimer, 10 );		// When he completes, only stay in the action state for 5 more seconds
+		ActionTimer = MIN( ActionTimer, 10 );		// When he completes, only stay in the action state for 5 more seconds
 
 		// if I had an enemy target, who was just killed...
 		PhysicalGameObj* enemy = (PhysicalGameObj*)EnemyObject.Get_Ptr();
 		if ( enemy && State == SOLDIER_AI_ENEMY_SEEN ) {
 			if ( enemy->Get_Defense_Object()->Get_Health() <= 0 ) {
-	//			Debug_Say(( "Target dead, moving on\n" ));
+				Debug_Say(( "Target dead, moving on\n" ));
 				StateTimer = 100000;	// Leave current state
 				EnemyObject = NULL;
 			}
@@ -663,14 +663,14 @@ bool SoldierObserverClass::Set_State( SoldierGameObj * soldier, int state, const
 //			Speak(obj, "Q_Huh02");
 		}
 
-//		Debug_Say(("Switching to State %d from %d\n", state, State));
+		Debug_Say(("Switching to State %d from %d\n", state, State));
 		AlertPosition = location;
 		if ( State != state ) {
 			State = state;
 			State_Changed( soldier );
 		}
 
-//		Debug_Say(( "New Innate State!\n" ));
+		Debug_Say(( "New Innate State!\n" ));
 	}
 
 	// If this is not a less extreme state, reset state timer
@@ -896,15 +896,20 @@ void SoldierObserverClass::Think( SoldierGameObj * soldier, bool is_new_state )
 	//	We can't switch states if the soldier is "busy".  Busy usually
 	// means he's going up an elevator, climbing a ladder, or opening a door.
 	//
-	if ( soldier->Get_Action()->Is_Busy() ) {
-		return ;
+	if (soldier->Get_Action()->Is_Busy()) {
+		if (soldier->Get_Human_State()->Get_State() == HumanStateClass::ANIMATION && !soldier->Is_Human_Controlled()) {
+			Debug_Say((">>> Soldier is busy, but ignoring for bot ANIMATION state\n"));
+		}
+		else {
+			return;
+		}
 	}
 
 
 	// Check how long we have been in this state, and if we should switch
 	StateTimer += 1;
 	if (StateTimer >= StateData[State].StateDuration) {
-//		Debug_Say(("Soldier relaxing from state %d to %d\n", State, StateData[State].NextState));
+		Debug_Say(("Soldier relaxing from state %d to %d\n", State, StateData[State].NextState));
 		
 		Action_Reset( soldier );		// reset the old state
 		State = StateData[State].NextState;
@@ -921,9 +926,11 @@ void SoldierObserverClass::Think( SoldierGameObj * soldier, bool is_new_state )
 	if ( ( State != SOLDIER_AI_RELAXED_IDLE ) && ( State != SOLDIER_AI_ALERT_IDLE ) ) {
 		soldier->Reset_Loiter_Delay();
 	}
+	Debug_Say((">>> AI Think: State = %d | ActionTimer = %d | StateTimer = %d\n", State, ActionTimer, StateTimer));
 
 	// Check if time for another state action
 	if (soldier->Is_Innate_Enabled(SOLDIER_INNATE_ACTIONS)) {
+		Debug_Say((">>> AI Think: State = %d | ActionTimer = %d | StateTimer = %d\n", State, ActionTimer, StateTimer));
 		ActionTimer -= 1;
 		if (ActionTimer <= 0) {
 			State_Act(soldier, is_new_state);
@@ -1018,6 +1025,7 @@ void SoldierObserverClass::State_Act( SoldierGameObj * soldier, bool is_new_stat
 			State_Act_Attack( soldier );
 			break;
 	}
+	Debug_Say((">>> State_Act: setting ActionTimer = %d for state %d\n", ActionTimer, State));
 }
 
 #define	IDLE_WALK_DISTANCE		6
@@ -1232,7 +1240,9 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 	soldier->Get_Position(&current_position);
 
 	if ( CoverPosition != NULL ) {
+		Debug_Say((">>> [Attack] CoverPosition present\n"));
 		if ( CoveredAttack == true ) {
+			Debug_Say((">>> [Attack] Returning to Cover\n"));
 			SubStateString = "Return to Cover";
 			Vector3 cover_position = CoverPosition->Get_Transform().Get_Translation();
 			Action_Attack_Object( soldier, enemy, weapon_range, CoverPosition->Get_Crouch(), cover_position, 0.5f );
@@ -1240,12 +1250,13 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 			ActionTimer = 5;	// for 3 seconds
 			done = true;
 		} else if ( FreeRandom.Get_Float() < Aggressiveness ) {
-
+			
 			if ( soldier->Get_Weapon() != NULL ) {
 				/*
 				** Start a covered attack.
 				** Pick an attack point, and go there, attacking at the target
 				*/
+				Debug_Say((">>> [Attack] Starting Covered Attack\n"));
 				SubStateString = "Covered Attack";
 				Vector3 attack_point = CoverPosition->Get_Attack_Position( enemy_pos );
 				Action_Attack_Object( soldier, enemy, weapon_range, false, attack_point, 0.5f  );
@@ -1258,6 +1269,7 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 
 	if ( CoverPosition != NULL ) {
 		if ( !CoverManager::Is_Cover_Safe( CoverPosition, enemy_pos ) ) {
+			Debug_Say((">>> [Attack] Cover is not safe. Releasing it.\n"));
 			Release_Cover_Position();
 			CoveredAttack = false;
 			done = false;
@@ -1266,13 +1278,15 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 
 	float effective_range = 20;
 	if ( soldier->Get_Weapon() ) {
-		effective_range = soldier->Get_Weapon()->Get_Effective_Range();
+		Debug_Say((">>> [Attack] Weapon effective range = %.2f\n", effective_range));
 	}
 
 	if ( !done && ( FreeRandom.Get_Float() < TakeCoverProbability ) && !IsStationary ) {		// 25% chance of not finding cover
+		Debug_Say((">>> [Attack] Attempting to take cover\n"));
 		Release_Cover_Position();		// Give us the option of selecting our current spot
 		CoverEntryClass * cover = CoverManager::Request_Cover(current_position, enemy_pos, effective_range);
 		if (cover != NULL) {					// Yes, take it
+			Debug_Say((">>> [Attack] Found cover, taking position\n"));
 			SubStateString = "Take Cover";
 			CoverPosition = cover;
 			Vector3 cover_position = cover->Get_Transform().Get_Translation();
@@ -1280,9 +1294,14 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 			ActionTimer = 15;
 			done = true;
 		}
+		else {
+			Debug_Say((">>> [Attack] No valid cover found\n"));
+		
+		}
 	}
 
 	if ( FreeRandom.Get_Float() < Aggressiveness && !IsStationary ) {	// Charge Attack
+		Debug_Say((">>> [Attack] Performing Charge Attack\n"));
 		Vector3	pos;
 		enemy->Get_Position( &pos );
 		SubStateString = "Charge Attack";
@@ -1293,6 +1312,7 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 	}
 
 	if ( !done ) {
+		Debug_Say((">>> [Attack] Doing Random Run Attack\n"));
 		Vector3	best_pos = current_position;
 		float best_distance = 100000;
 
@@ -1312,6 +1332,7 @@ void	SoldierObserverClass::State_Act_Attack( SoldierGameObj * soldier )
 		}
 
 		if ( IsStationary ) {
+			Debug_Say((">>> [Attack] Unit is stationary — not moving\n"));
 			best_pos = current_position;
 		}
 

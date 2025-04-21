@@ -671,30 +671,31 @@ void SmartGameObj::Apply_Control( void )
 	Controller.Set_Move_Forward(Control.Get_Analog( ControlClass::ANALOG_MOVE_FORWARD )	);
 	Controller.Set_Move_Left(	Control.Get_Analog( ControlClass::ANALOG_MOVE_LEFT )		);
 
-   if ( ControlEnabled ) {
-		if ( ( Get_Weapon() != NULL ) && ( !Is_Delete_Pending() ) ) {
+	bool should_fire = Is_Human_Controlled() ? ControlEnabled : true;
+	WeaponClass* weapon = Get_Weapon();
+	if (weapon != nullptr && !Is_Delete_Pending()) {
+		if (should_fire) {
+			weapon->Set_Primary_Triggered(Control.Get_Boolean(ControlClass::BOOLEAN_WEAPON_FIRE_PRIMARY));
+			weapon->Set_Secondary_Triggered(Control.Get_Boolean(ControlClass::BOOLEAN_WEAPON_FIRE_SECONDARY));
 
-			Get_Weapon()->Set_Primary_Triggered( Control.Get_Boolean( ControlClass::BOOLEAN_WEAPON_FIRE_PRIMARY ) );
-			Get_Weapon()->Set_Secondary_Triggered( Control.Get_Boolean( ControlClass::BOOLEAN_WEAPON_FIRE_SECONDARY ) );
-
-			if ( Control.Get_Boolean( ControlClass::BOOLEAN_WEAPON_USE ) ) {
-				Get_Weapon()->Next_C4_Detonation_Mode();
+			if (Control.Get_Boolean(ControlClass::BOOLEAN_WEAPON_USE)) {
+				weapon->Next_C4_Detonation_Mode();
 			}
-			if ( Control.Get_Boolean( ControlClass::BOOLEAN_WEAPON_RELOAD ) ) {
-				Get_Weapon()->Force_Reload();
+			if (Control.Get_Boolean(ControlClass::BOOLEAN_WEAPON_RELOAD)) {
+				weapon->Force_Reload();
 			}
 
-			// If we fire a weapon, we de-cloak for a certain amount of time
-			if (	Control.Get_Boolean( ControlClass::BOOLEAN_WEAPON_FIRE_PRIMARY ) ||
-					Control.Get_Boolean( ControlClass::BOOLEAN_WEAPON_FIRE_SECONDARY )) 
-			{
+			if (Control.Get_Boolean(ControlClass::BOOLEAN_WEAPON_FIRE_PRIMARY) ||
+				Control.Get_Boolean(ControlClass::BOOLEAN_WEAPON_FIRE_SECONDARY)) {
 				StealthFiringTimer = STEALTH_FIRING_TIME;
 			}
 		}
-	} else {
-		Get_Weapon()->Set_Primary_Triggered( false );
-		Get_Weapon()->Set_Secondary_Triggered( false );
 	}
+	else if (weapon != nullptr) {
+		weapon->Set_Primary_Triggered(false);
+		weapon->Set_Secondary_Triggered(false);
+	}
+
 }
 
 void SmartGameObj::Think()
@@ -706,6 +707,14 @@ void SmartGameObj::Think()
 		{
 			WWPROFILE("Controls");
 			if ( ControlEnabled ) {
+				SoldierGameObj* soldier = As_SoldierGameObj();
+				int state = soldier ? soldier->Get_Human_State()->Get_State() : -1;
+				int substate = soldier ? soldier->Get_Human_State()->Get_Sub_State() : -1;
+
+				Debug_Say((">>> BOT DEBUG: ControlEnabled = TRUE | State = %d | SubState = %d | IsHuman = %d\n",
+					state, substate, Is_Human_Controlled()));
+				WeaponClass* weapon = Get_Weapon();
+				Debug_Say((">>> Weapon = %p | Time = %.2f | DeletePending = %d\n", weapon, TimeManager::Get_Seconds(), Is_Delete_Pending()));
 				Apply_Control();
 			} else {
 				Controller.Reset();
@@ -780,8 +789,10 @@ void SmartGameObj::Think()
 				StealthEffect->Enable_Stealth(false);
 			}
 		}
+
 	}
 	{
+
 	WWPROFILE("Embedded Armed think in smart think");
 	ArmedGameObj::Think();
 	}
@@ -810,6 +821,7 @@ void	SmartGameObj::Apply_Damage(const OffenseObjectClass & damager, float scale,
 	}
 
 	PhysicalGameObj::Apply_Damage(damager,scale,alternate_skin);
+//	__debugbreak();
 }
 
 bool	SmartGameObj::Is_Obj_Visible( PhysicalGameObj *obj ) 

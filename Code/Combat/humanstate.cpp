@@ -65,6 +65,24 @@
 #include "transitioneffect.h"
 #include "combatmaterialeffectmanager.h"
 
+static void Debug_Log_Anim_State(const char* label, HumanAnimControlClass* control, const char* requested_name = nullptr)
+{
+	HAnimClass* anim = control ? control->Peek_Animation() : nullptr;
+	if (requested_name) {
+		HAnimClass* resolved = WW3DAssetManager::Get_Instance()->Get_HAnim(requested_name);
+		Debug_Say((">>> %s: Requested = %s | Resolved = %p\n", label, requested_name, resolved));
+	}
+	if (anim && anim->Get_Num_Frames() > 0) {
+		Debug_Say((">>> %s: Loaded = %s | NumFrames = %d | FrameRate = %.2f\n",
+			label, anim->Get_Name(), anim->Get_Num_Frames(), anim->Get_Frame_Rate()));
+	}
+	else {
+		Debug_Say((">>> %s: WARNING — Peek_Animation() returned null or empty\n", label));
+	}
+}
+
+
+
 /*
 ** Static instance of HumanRecoilClass for recoil calculations
 */
@@ -393,6 +411,7 @@ void HumanStateClass::Update_Recoil(WeaponClass * weapon)
 void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 {
 	//Debug_Say((">>> Set_State: from %d to %d | sub = %d\n", State, state, sub_state));
+	//Debug_Say((">>> Set_State: from %d to %d | sub = %d\n", State, state, sub_state));
 
 	// Special case for death
 	if (( State == DEATH ) || ( State == DESTROY )) {
@@ -409,13 +428,13 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 		if ( state != DEATH ) {
   
 		//	Debug_Say(( "State is Locked.  Can't change from %d to %d\n", State, state ));
-			return; ///turns out letting this function run "fixes" the MP animation bug ( but locked in place)
+		//	return; ///turns out letting this function run "fixes" the MP animation bug ( but locked in place)
 		}
 
-#pragma MESSAGE( "StateLocked Hack" )
-		if ( !IS_SOLOPLAY ) {		// E3 HACK
-			StateLocked = false;
-		}
+//#pragma MESSAGE( "StateLocked Hack" )
+	//	if ( !IS_SOLOPLAY ) {		// E3 HACK
+	//		StateLocked = false;
+	//	}
 	}
 
 	if ( State == state && SubState == sub_state ) {
@@ -425,14 +444,14 @@ void	HumanStateClass::Set_State( HumanStateType state, int sub_state )
 		return;
 	}
 
-//	Debug_Say(( "%p Set State %d, %x from %d\n", this, state, sub_state, State ));
+	Debug_Say(( "%p Set State %d, %x from %d\n", this, state, sub_state, State ));
 	State = state;
 	SubState = sub_state;
 	StateTimer = 0;
 
 	if (( State == LADDER ) || ( State == IN_VEHICLE ) || 
 		 ( State == TRANSITION ) || ( State == TRANSITION_COMPLETE ) ||
-		 ( State == DEBUG_FLY )						 ) {
+		 ( State == DEBUG_FLY )  ||	(State == ANIMATION)) {
 		HumanPhys->Enable_User_Control( true );
 	} else {
 		HumanPhys->Enable_User_Control( false );
@@ -542,7 +561,9 @@ void	HumanStateClass::Start_Transition_Animation( const char * anim_name, bool b
 }
 
 void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool blend, bool looping )
-{
+{ 
+
+
 #if 0
 	if ( StateLocked ) {
 		Debug_Say(( "State is Locked.  Can't Start Transition Anim %s\n", anim_name ));
@@ -579,6 +600,16 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 	//	AnimControl->Get_Mode()));
 	AnimControl->Update(0); // tiny tick to apply frame 0 immediately
 	StateLocked = true; // what happens if we set this to false? (rather than 1 frame then interrupt, you lock on frame one and stay there but only if the state is also not interruptible) - casey
+	
+	//AnimControl->Set_Animation(anim_name, blend_time);
+	//AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE);
+	//AnimControl->Update(0);
+	//StateLocked = true;
+
+	//Debug_Log_Anim_State("ANIM DEBUG (MP)", AnimControl, anim_name);
+	
+	
+	
 	// Log animation info after setting it
  //Safely verify what was loaded
 //	HAnimClass* anim = AnimControl->Peek_Animation();
@@ -591,6 +622,32 @@ void	HumanStateClass::Start_Scripted_Animation( const char * anim_name, bool ble
 //	else {
 //		Debug_Say((">>> Start_Scripted_Animation: WARNING — Peek_Animation() returned null or empty after setting '%s'\n", anim_name));
 	//}
+
+}
+void	HumanStateClass::Start_Innate_Animation(const char* anim_name, bool blend, bool looping)
+{
+
+
+#if 0
+	if (StateLocked) {
+		Debug_Say(("State is Locked.  Can't Start Transition Anim %s\n", anim_name));
+		return;
+	}
+#endif
+	
+	if ((Get_State() == DEATH) || (Get_State() == DESTROY)) {
+		return;
+	}
+
+	Set_State(ANIMATION);
+	float blend_time = blend ? 0.2 : 0;
+	AnimControl->Set_Animation(anim_name, blend_time);
+	AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE);
+	AnimControl->Update(0); // tiny tick to apply frame 0 immediately
+	StateLocked = true; 
+	// Breakpoint here
+	//Debug_Say((">>> SCRIPTED ANIMATION TRIGGERED: %s\n", anim_name));
+	//__debugbreak();
 }
 
 void	HumanStateClass::Stop_Scripted_Animation( void )
@@ -706,6 +763,22 @@ static const char * _dive_anims[ 4 * 2 ] = {
 // Weapons style, weapon action, recoil, blend, vehicle, mix/math, aiming tilt
 void	HumanStateClass::Update_Animation( void )
 {
+	//if (State == ANIMATION) {
+	//	Debug_Say((">>> Update_Animation: State == ANIMATION — skipping idle logic\n"));
+	//
+	//	bool complete = AnimControl->Is_Complete();
+	//	const char* anim_name = AnimControl->Peek_Animation() ? AnimControl->Peek_Animation()->Get_Name() : "NULL";
+	//	float current_frame = AnimControl->Get_Frame();
+
+	//	Debug_Say((">>> ANIM DEBUG: Is_Complete() = %d | Anim = %s | Frame = %.2f\n",
+	//		complete,
+	//		anim_name,
+	//		current_frame
+	//		));
+//	}
+
+
+
 	WWPROFILE( "Human Animation" );
 	//{
 	//	if (State == ANIMATION) {
@@ -1020,6 +1093,13 @@ void	HumanStateClass::Update_State( void )
 	}
 
 	if (AnimControl->Is_Complete()) {
+
+		if (AnimControl->Is_Complete()) {
+			Debug_Say((">>> Animation marked complete — checking for state unlock\n"));
+			if ((StateLocked && State != LOCKED_ANIMATION) || (State == DEATH)) {
+				Debug_Say((">>> Unlocking state due to animation completion\n"));
+			}
+		}
 		if ((StateLocked && State != LOCKED_ANIMATION) || (State == DEATH)) {
 
 			StateLocked = false;
@@ -1029,20 +1109,15 @@ void	HumanStateClass::Update_State( void )
 				Set_State(UPRIGHT);
 			}
 			else if (State == ANIMATION) {
-			//	float current_frame = AnimControl->Get_Frame();
-			//	float total_frames = AnimControl->Peek_Animation() ? AnimControl->Peek_Animation()->Get_Num_Frames() : 0.0f;
-            //
-			//	Debug_Say((">>> Is_Complete(): Mode = %d | Frame = %.2f | Target = %.2f | NumFrames = %.2f\n",
-			//		AnimControl->Get_Mode(),
-			//		current_frame,
-			//		AnimControl->Get_Target_Frame(),
-			//		total_frames));
-            //
-			//	if (current_frame >= total_frames - 1.0f) {
-			//		Debug_Say((">>> Scripted animation frame complete — transitioning to UPRIGHT\n"));
-					Set_State(UPRIGHT);
-			//	}
-			//	return;
+				float frame = AnimControl->Get_Frame();
+				const char* anim = AnimControl->Peek_Animation() ? AnimControl->Peek_Animation()->Get_Name() : "NULL";
+
+				Debug_Say((">>> ANIM DEBUG: Transitioning from ANIMATION to UPRIGHT\n"));
+				Debug_Say((">>> Frame = %.2f | Anim = %s\n", frame, anim));
+
+				Set_State(UPRIGHT);
+			
+
 			}
 			else if (State == DEATH) {
 				Debug_Say((">>> HumanState: Transitioning from DEATH to DESTROY\n"));

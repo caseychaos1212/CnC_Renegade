@@ -435,6 +435,7 @@ void	WeaponClass::Set_Primary_Triggered( bool triggered )
 {
 	if ( !LockTriggers ) {
 		IsPrimaryTriggered = triggered;
+		
 	}
 }
 
@@ -1007,46 +1008,48 @@ void WeaponClass::Compute_Bullet_Start_Point(const Matrix3D & muzzle,Vector3 * s
 	}
 }
 
-void	WeaponClass::Do_Firing_Effects( void )
+void	WeaponClass::Do_Firing_Effects(void)
 {
-	if ( TimeManager::Get_Frame_Seconds() == 0 ) {
+	if (TimeManager::Get_Frame_Seconds() == 0) {
 		return;	// No sounds when time stops
 	}
 
-	WWPROFILE( "Firing Effects" );
+	WWPROFILE("Firing Effects");
 
 	Matrix3D	muzzle = Get_Muzzle();
 
 	// Don't do these two if fired by the star in First Person Mode
-	if ( (Get_Owner() != COMBAT_STAR) || !CombatManager::Is_First_Person() ) {
+	if ((Get_Owner() != COMBAT_STAR) || !CombatManager::Is_First_Person()) {
 
 #if 01
 		// create muzzle flash
-		if ( Definition->MuzzleFlashPhysDefID != 0 ) {
+		if (Definition->MuzzleFlashPhysDefID != 0) {
 
-			DefinitionClass * def = DefinitionMgrClass::Find_Definition( Definition->MuzzleFlashPhysDefID );
-			if ( def != NULL ) {
-				WWASSERT( ((PhysDefClass *)def)->Is_Type( "TimedDecorationPhysDef" ) );
-				TimedDecorationPhysClass * muzzle_flash = (TimedDecorationPhysClass *)def->Create();
-				if ( muzzle_flash ) {
-					RenderObjClass * model = muzzle_flash->Peek_Model();
-					if ( model != NULL ) {
-//						muzzle.Rotate_X( FreeRandom.Get_Float( DEG_TO_RAD( 360 ) ) );
-						muzzle_flash->Set_Transform( muzzle );
-						COMBAT_SCENE->Add_Dynamic_Object( muzzle_flash );
+			DefinitionClass* def = DefinitionMgrClass::Find_Definition(Definition->MuzzleFlashPhysDefID);
+			if (def != NULL) {
+				WWASSERT(((PhysDefClass*)def)->Is_Type("TimedDecorationPhysDef"));
+				TimedDecorationPhysClass* muzzle_flash = (TimedDecorationPhysClass*)def->Create();
+				if (muzzle_flash) {
+					RenderObjClass* model = muzzle_flash->Peek_Model();
+					if (model != NULL) {
+						//						muzzle.Rotate_X( FreeRandom.Get_Float( DEG_TO_RAD( 360 ) ) );
+						muzzle_flash->Set_Transform(muzzle);
+						COMBAT_SCENE->Add_Dynamic_Object(muzzle_flash);
 
-					// If this is an emitter, start it
-						if ( model->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER ) {
-							ParticleEmitterClass * pe = (ParticleEmitterClass *)model;
+						// If this is an emitter, start it
+						if (model->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
+							ParticleEmitterClass* pe = (ParticleEmitterClass*)model;
 							pe->Start();
 						}
-					} else {
-						Debug_Say(( "Missing muzzle flash for %s\n", Definition->Get_Name() ));
+					}
+					else {
+						Debug_Say(("Missing muzzle flash for %s\n", Definition->Get_Name()));
 					}
 
 					muzzle_flash->Release_Ref();
 				}
-			} else {
+			}
+			else {
 				//Debug_Say(( "Couldn't find muzzle flash def for %s\n", Definition->Get_Name() ));
 			}
 		}
@@ -1054,10 +1057,10 @@ void	WeaponClass::Do_Firing_Effects( void )
 
 		// if this gun is fired by the STAR and they have an eject bone, eject a shell.
 		if ((Get_Owner() == COMBAT_STAR) && (Model != NULL)) {
-			WWPROFILE( "Eject" );
-			int eject_index = Model->Get_Bone_Index( "eject" );
-			if ( eject_index > 0 ) {
-				Make_Shell_Eject( Model->Get_Bone_Transform( eject_index ) );
+			WWPROFILE("Eject");
+			int eject_index = Model->Get_Bone_Index("eject");
+			if (eject_index > 0) {
+				Make_Shell_Eject(Model->Get_Bone_Transform(eject_index));
 			}
 		}
 	}
@@ -1068,9 +1071,10 @@ void	WeaponClass::Do_Firing_Effects( void )
 	//	Determine which sound to play, the primary or secondary firing sound?
 	//
 	int sound_id = 0;
-	if ( IsPrimaryTriggered && PrimaryAmmoDefinition != NULL ) {
+	if (IsPrimaryTriggered && PrimaryAmmoDefinition != NULL) {
 		sound_id = PrimaryAmmoDefinition->FireSoundDefID;
-	} else if ( IsSecondaryTriggered && SecondaryAmmoDefinition != NULL ) {
+	}
+	else if (IsSecondaryTriggered && SecondaryAmmoDefinition != NULL) {
 		sound_id = SecondaryAmmoDefinition->FireSoundDefID;
 	}
 
@@ -1078,7 +1082,7 @@ void	WeaponClass::Do_Firing_Effects( void )
 	//	Release the old firing sound (if necessary)
 	//
 	bool release_curr_sound = false;
-	if ( sound_id != FiringSoundDefID && FiringSound != NULL ) {
+	if (sound_id != FiringSoundDefID && FiringSound != NULL) {
 		release_curr_sound = true;
 	}
 
@@ -1086,21 +1090,22 @@ void	WeaponClass::Do_Firing_Effects( void )
 	//	For first-person we make the weapon sounds "2D", so check to see
 	// if we need to re-create the sound...
 	//
-	if ( FiringSound != NULL ) {
-		if ( Get_Owner() == COMBAT_STAR && CombatManager::Is_First_Person() ) {
-			
+	if (FiringSound != NULL) {
+		if (Get_Owner() == COMBAT_STAR && CombatManager::Is_First_Person()) {
+
 			//
 			//	In first person, we need the sound to be "2D"
 			//
-			if ( FiringSound->Get_Class_ID () != CLASSID_2D ) {
+			if (FiringSound->Get_Class_ID() != CLASSID_2D) {
 				release_curr_sound = true;
 			}
-		} else {
+		}
+		else {
 
 			//
 			//	In third person, we need the sound to be "3D"
 			//
-			if ( FiringSound->Get_Class_ID () == CLASSID_2D ) {
+			if (FiringSound->Get_Class_ID() == CLASSID_2D) {
 				release_curr_sound = true;
 			}
 		}
@@ -1109,9 +1114,9 @@ void	WeaponClass::Do_Firing_Effects( void )
 	//
 	//	Release the currently playing sound as necessary
 	//	
-	if ( release_curr_sound ) {		
-		FiringSound->Remove_From_Scene ();
-		REF_PTR_RELEASE (FiringSound);
+	if (release_curr_sound) {
+		FiringSound->Remove_From_Scene();
+		REF_PTR_RELEASE(FiringSound);
 		FiringSoundDefID = 0;
 	}
 
@@ -1119,30 +1124,32 @@ void	WeaponClass::Do_Firing_Effects( void )
 	//	Do we need to recreate the firing sound object, or can we just
 	// reuse the one we already have?
 	//
-	if ( FiringSound != NULL ) {
+	if (FiringSound != NULL) {
 
 		//
 		// Stop the current sound
 		//
-   	//FiringSound->Set_Transform( muzzle );
+	//FiringSound->Set_Transform( muzzle );
 		//FiringSound->Stop();		
 
-		if ( FiringSound->Get_Class_ID () == CLASSID_3D ) {
+		if (FiringSound->Get_Class_ID() == CLASSID_3D) {
 			FiringSound->Stop();
-		} else {
-			FiringSound->Seek( 0 );
-		} 
-		
-		
+		}
+		else {
+			FiringSound->Seek(0);
+		}
+
+
 		//
 		//	Force the sound to play
 		//
-		if ( Get_Owner() != COMBAT_STAR || CombatManager::Is_First_Person() == false ) {
-			FiringSound->Add_To_Scene( true );
+		if (Get_Owner() != COMBAT_STAR || CombatManager::Is_First_Person() == false) {
+			FiringSound->Add_To_Scene(true);
 			FiringSound->Play();
-		} else {			
+		}
+		else {
 			FiringSound->Play();
-		}		
+		}
 
 		//
 		//	Play the sound (or add it to the scene)
@@ -1154,38 +1161,39 @@ void	WeaponClass::Do_Firing_Effects( void )
 			FiringSound->Add_To_Scene( true );
 		}*/
 
-	} else {
+	}
+	else {
 
 		//
 		//	Create a pseudo-3d sound effect for this firing sound and
 		// add it to the sound scene.
 		//
 
-		if ( sound_id != 0 ) {
-			
+		if (sound_id != 0) {
+
 			//
 			//	Determine whether to play the sound as 2D or 3D
 			//
 			int classid_hint = CLASSID_3D;
-			if ( Get_Owner() == COMBAT_STAR && CombatManager::Is_First_Person() ) {
+			if (Get_Owner() == COMBAT_STAR && CombatManager::Is_First_Person()) {
 				classid_hint = CLASSID_2D;
 			}
 
 			//
 			//	Create the sound
 			//
-			RefCountedGameObjReference *owner_ref = new RefCountedGameObjReference;
-			owner_ref->Set_Ptr( Get_Owner() );
-			FiringSound = WWAudioClass::Get_Instance()->Create_Sound( sound_id, owner_ref, 0, classid_hint );
-			REF_PTR_RELEASE( owner_ref );
+			RefCountedGameObjReference* owner_ref = new RefCountedGameObjReference;
+			owner_ref->Set_Ptr(Get_Owner());
+			FiringSound = WWAudioClass::Get_Instance()->Create_Sound(sound_id, owner_ref, 0, classid_hint);
+			REF_PTR_RELEASE(owner_ref);
 		}
 
-		if ( FiringSound != NULL ) {
+		if (FiringSound != NULL) {
 
 			FiringSoundDefID = sound_id;
-			FiringSound->Set_Transform( muzzle );
-			FiringSound->Attach_To_Object( Model );
-			FiringSound->Add_To_Scene( true );
+			FiringSound->Set_Transform(muzzle);
+			FiringSound->Attach_To_Object(Model);
+			FiringSound->Add_To_Scene(true);
 		}
 	}
 
@@ -1193,13 +1201,13 @@ void	WeaponClass::Do_Firing_Effects( void )
 	// Byon, this can be done with any RigidBody derived physics object (all vehicles)
 	// I suggest making it a parameter of the weapon and having the strength be a
 	// multiple of the mass of the vehicle.
-	ArmedGameObj * owner = Get_Owner();
-	VehicleGameObj * vehicle_game_obj = owner->As_VehicleGameObj();
+	ArmedGameObj* owner = Get_Owner();
+	VehicleGameObj* vehicle_game_obj = owner->As_VehicleGameObj();
 	if (vehicle_game_obj != NULL) {
-		PhysClass * vehicle = vehicle_game_obj->Peek_Physical_Object();
+		PhysClass* vehicle = vehicle_game_obj->Peek_Physical_Object();
 		if (vehicle->As_TrackedVehicleClass() != NULL) {
 
-			RigidBodyClass * rbody = (RigidBodyClass *)vehicle;
+			RigidBodyClass* rbody = (RigidBodyClass*)vehicle;
 
 			Vector3 impulse_pos;
 			muzzle.Get_Translation(&impulse_pos);
@@ -1207,19 +1215,23 @@ void	WeaponClass::Do_Firing_Effects( void )
 			muzzle.Get_X_Vector(&impulse);
 			impulse *= -Definition->RecoilImpulse * rbody->Get_Mass();
 
-			rbody->Apply_Impulse(impulse,impulse_pos);
+			rbody->Apply_Impulse(impulse, impulse_pos);
 		}
 	}
 
-	// Play an anim on the human owner
-	if (owner != NULL && owner->As_SoldierGameObj()) {
-		//if ( !Definition->HumanFiringAnimation.Is_Empty() ) { hard coded for now - casey 
-		{
-			owner->As_SoldierGameObj()->Set_Animation("s_a_human.h_a_punchcombo", 0, 0);
-			;
+	SoldierGameObj* soldier = owner != NULL ? owner->As_SoldierGameObj() : NULL;
+
+	if (soldier != NULL) {
+		if (soldier->Is_Human_Controlled()) {
+			// Human player: 
+			soldier->Set_Animation("s_a_human.h_a_punchcombo", 0, 0);
+		}
+		else {
+			// Bot: play animation without locking state
+			soldier->Set_Innate_Animation("s_a_human.h_a_punchcombo", 0, 0);
 		}
 	}
-}
+	}
 
 void	WeaponClass::Make_Shell_Eject( const Matrix3D & tm )
 {

@@ -66,7 +66,7 @@
 #include "crandom.h"
 #include "playertype.h"
 #include "wwprofile.h"
-
+#include <typeinfo>
 #include "combat.h"
 #include "waypath.h"
 #include "waypoint.h"
@@ -424,21 +424,23 @@ public:
 		ActionCodeClass::Shutdown();
 	}
 
-	virtual	ActResult	Act( void )
+	virtual ActResult Act(void)
 	{
-		SmartGameObj *	obj = Action->Get_Action_Obj();
-		WWASSERT( obj->Get_Anim_Control() != NULL );
+		SmartGameObj* obj = Action->Get_Action_Obj();
+		WWASSERT(obj->Get_Anim_Control() != NULL);
 
-		if ( obj->Get_Anim_Control()->Get_Animation_Name()[0] == 0 ) {
-			Debug_Say(( "Not playing an anim when we should be playing %s\n", Action->Get_Parameters().SafeAnimationName ));
-			Action->Done( ACTION_COMPLETE_NORMAL );
+		Debug_Say((">>> ANIM ACT: %s | Complete = %d\n",
+			Action->Get_Parameters().SafeAnimationName,
+			obj->Get_Anim_Control()->Is_Complete()));
+
+		if (obj->Get_Anim_Control()->Get_Animation_Name()[0] == 0) {
+			Debug_Say(("Not playing an anim when we should be playing %s\n", Action->Get_Parameters().SafeAnimationName));
+			Action->Done(ACTION_COMPLETE_NORMAL);
 			return ACTION_DONE;
 		}
 
-//		WWASSERT( obj->Get_Anim_Control()->Get_Animation_Name()[0] != 0 );
-
-		if ( obj->Get_Anim_Control()->Is_Complete() ) {
-			Action->Done( ACTION_COMPLETE_NORMAL );
+		if (obj->Get_Anim_Control()->Is_Complete()) {
+			Action->Done(ACTION_COMPLETE_NORMAL);
 			return ACTION_DONE;
 		}
 
@@ -1800,7 +1802,7 @@ public:
 	virtual	ActResult	Arrived()
 	{
 		if ( !HasArrived ) {
-//			Debug_Say(( "Attack Arrived %d\n", HasArrived ));
+			Debug_Say(( "Attack Arrived %d\n", HasArrived ));
 			HasArrived = true;
 			SoldierGameObj	* obj = Action->Get_Action_Obj()->As_SoldierGameObj();
 			if ( obj != NULL ) {
@@ -2009,13 +2011,15 @@ public:
 	ActResult Process_Attack( Vector3 * set_target )
 	{
 		SmartGameObj *	obj = Action->Get_Action_Obj();
-
+		Vector3	target_pos = Action->Get_Parameters().AttackLocation;
 		if ( HoldPrimaryTriggerTimer > 0 ) {
 			HoldPrimaryTriggerTimer -= TimeManager::Get_Frame_Seconds();
 			obj->Set_Boolean_Control( ControlClass::BOOLEAN_WEAPON_FIRE_PRIMARY );
+			Debug_Say((">>> Bot firing at %.2f %.2f %.2f | Timer = %.2f\n",
+				target_pos.X, target_pos.Y, target_pos.Z, HoldPrimaryTriggerTimer));
 		}
 
-		Vector3	target_pos = Action->Get_Parameters().AttackLocation;
+		
 
 		WeaponClass * weapon = obj->Get_Weapon();
 		if ( weapon == NULL ) {
@@ -3292,15 +3296,19 @@ bool	ActionClass::Is_Active( void )
 	return ( ActionCode != NULL );
 }
 
-bool	ActionClass::Is_Busy( void )
+bool ActionClass::Is_Busy(void)
 {
 	bool retval = false;
-	if ( ActionCode != NULL ) {
+	if (ActionCode != NULL) {
 		retval = ActionCode->Is_Busy();
+		if (retval) {
+			Debug_Say((">>> ActionClass::Is_Busy() = TRUE | ActionCode type: %s\n", typeid(*ActionCode).name()));
+			__debugbreak();  // Will break into the debugger here
+		}
 	}
-
 	return retval;
 }
+
 
 
 /*

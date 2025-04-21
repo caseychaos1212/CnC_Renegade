@@ -3006,6 +3006,21 @@ void	SoldierGameObj::Set_Animation( const char *animation_name, bool looping, fl
 	HumanState.Start_Scripted_Animation( animation_name, false, looping );
 }
 
+
+//------------------------------------------------------------------------------------
+void	SoldierGameObj::Set_Innate_Animation(const char* animation_name, bool looping, float start_frame)
+{
+	if (animation_name == NULL) {
+	
+		HumanState.Stop_Scripted_Animation();
+		
+		return;
+	}
+
+	AnimationName = animation_name;
+	HumanState.Start_Innate_Animation(animation_name, false, looping);
+}
+
 //------------------------------------------------------------------------------------
 void	SoldierGameObj::Start_Transition_Animation( const char * anim_name, TransitionCompletionDataStruct *data )
 {

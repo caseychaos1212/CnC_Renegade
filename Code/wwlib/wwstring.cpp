@@ -287,7 +287,7 @@ StringClass::Format (const TCHAR *format, ...)
 	#ifdef _UNICODE
 		retval = _vsnwprintf (temp_buffer, 512, format, arg_list);
 	#else
-		retval = _vsnprintf (temp_buffer, 512, format, arg_list);
+	    retval = vsnprintf_s(temp_buffer, sizeof(temp_buffer), _TRUNCATE, format, arg_list);
 	#endif
 	
 	//
