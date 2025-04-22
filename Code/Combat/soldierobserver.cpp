@@ -486,14 +486,14 @@ void SoldierObserverClass::Sound_Heard(GameObject* obj, const CombatSound& sound
 		case SOUND_TYPE_FOOTSTEPS:
 			if ( (creator == NULL) || !soldier->Is_Teammate( creator ) ) {
 				if (soldier->Is_Innate_Enabled(SOLDIER_INNATE_EVENT_FOOTSTEP_HEARD)) {
-//Debug_Say(( "Heard Footsteps\n" ));
+Debug_Say(( "Heard Footsteps\n" ));
 					state_changed = Set_State(soldier, SOLDIER_AI_FOOTSTEPS_HEARD, sound.Position);
 				}
 			}
 		break;
 
 		default:
-//			Debug_Say(("Innate soldier [%d] unrecognized sound!\n", obj->Get_ID()));
+			Debug_Say(("Innate soldier [%d] unrecognized sound!\n", obj->Get_ID()));
 
 		break;
 	}

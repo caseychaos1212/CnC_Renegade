@@ -3303,7 +3303,6 @@ bool ActionClass::Is_Busy(void)
 		retval = ActionCode->Is_Busy();
 		if (retval) {
 			Debug_Say((">>> ActionClass::Is_Busy() = TRUE | ActionCode type: %s\n", typeid(*ActionCode).name()));
-			__debugbreak();  // Will break into the debugger here
 		}
 	}
 	return retval;

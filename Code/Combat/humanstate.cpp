@@ -639,7 +639,7 @@ void	HumanStateClass::Start_Innate_Animation(const char* anim_name, bool blend, 
 		return;
 	}
 
-	Set_State(ANIMATION);
+	Set_State(LOCKED_ANIMATION);
 	float blend_time = blend ? 0.2 : 0;
 	AnimControl->Set_Animation(anim_name, blend_time);
 	AnimControl->Set_Mode(looping ? ANIM_MODE_LOOP : ANIM_MODE_ONCE);
@@ -1096,11 +1096,10 @@ void	HumanStateClass::Update_State( void )
 
 		if (AnimControl->Is_Complete()) {
 			Debug_Say((">>> Animation marked complete — checking for state unlock\n"));
-			if ((StateLocked && State != LOCKED_ANIMATION) || (State == DEATH)) {
-				Debug_Say((">>> Unlocking state due to animation completion\n"));
-			}
+
 		}
-		if ((StateLocked && State != LOCKED_ANIMATION) || (State == DEATH)) {
+		if ((StateLocked && State != LOCKED_ANIMATION) || (State == DEATH) || (State == LOCKED_ANIMATION)) {
+
 
 			StateLocked = false;
 
@@ -1119,6 +1118,11 @@ void	HumanStateClass::Update_State( void )
 			
 
 			}
+			else if (State == LOCKED_ANIMATION) {
+				Debug_Say((">>> BOT DEBUG: Ending FORCED_ANIMATION, returning to UPRIGHT\n"));
+				StateLocked = false;
+				Set_State(UPRIGHT);
+			}
 			else if (State == DEATH) {
 				Debug_Say((">>> HumanState: Transitioning from DEATH to DESTROY\n"));
 				Set_State(DESTROY);
@@ -1133,6 +1137,7 @@ void	HumanStateClass::Update_State( void )
 			else if (State != LOCKED_ANIMATION) {
 				Debug_Say((">>> Unsupported locked state: %s\n", Get_State_Name()));
 			}
+
 		}
 		else {
 			if (State == LOITER) {

@@ -711,10 +711,10 @@ void SmartGameObj::Think()
 				int state = soldier ? soldier->Get_Human_State()->Get_State() : -1;
 				int substate = soldier ? soldier->Get_Human_State()->Get_Sub_State() : -1;
 
-				Debug_Say((">>> BOT DEBUG: ControlEnabled = TRUE | State = %d | SubState = %d | IsHuman = %d\n",
-					state, substate, Is_Human_Controlled()));
-				WeaponClass* weapon = Get_Weapon();
-				Debug_Say((">>> Weapon = %p | Time = %.2f | DeletePending = %d\n", weapon, TimeManager::Get_Seconds(), Is_Delete_Pending()));
+				//Debug_Say((">>> BOT DEBUG: ControlEnabled = TRUE | State = %d | SubState = %d | IsHuman = %d\n",
+				//	state, substate, Is_Human_Controlled()));
+				//WeaponClass* weapon = Get_Weapon();
+				//Debug_Say((">>> Weapon = %p | Time = %.2f | DeletePending = %d\n", weapon, TimeManager::Get_Seconds(), Is_Delete_Pending()));
 				Apply_Control();
 			} else {
 				Controller.Reset();
