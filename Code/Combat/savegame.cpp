@@ -96,7 +96,7 @@ enum	{
 /*
 **
 */
-void _cdecl SaveGameManager::Save_Game( const char * filename, ... )
+void __cdecl SaveGameManager::Save_Game( const char * filename, ... )
 {
 	Debug_Say(( "Save Game %s\n", filename ));
 	CurrentGameFilename = filename;
@@ -411,7 +411,7 @@ bool SaveGameManager::Peek_Description
 	//
 	if (mission_name_id == 0) {
 		mission_name.Convert_From ( map_filename );
-		WCHAR *extension = ::wcsrchr (mission_name, L'.');
+		WCHAR *extension = (WCHAR *)::wcsrchr (mission_name, L'.');
 		if (extension != NULL) {
 			extension[0] = 0;
 		}
@@ -515,7 +515,7 @@ void	SaveGameManager::Load_Definitions( const char * filename )
 /*
 **
 */
-void _cdecl SaveGameManager::Save_Save_Load_System( const char * filename, ... )
+void __cdecl SaveGameManager::Save_Save_Load_System( const char * filename, ... )
 {
 	FileClass * file = _TheWritingFileFactory->Get_File( filename );
 	WWASSERT(file);

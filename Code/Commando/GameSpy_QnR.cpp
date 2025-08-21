@@ -34,8 +34,6 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <Gamespy\gs_patch_usage.h>
-#include <Gamespy\gcdkeyserver.h>
 #include "specialbuilds.h"
 #include "dlgcncteaminfo.h"
 #include "resource.h"
@@ -59,7 +57,7 @@
 #include "assets.h"
 #include "translatedb.h"
 #include "WOLGMode.h"
-#include <WWOnline\WOLUser.h>
+#include <WWOnline/WOLUser.h>
 #include "string_ids.h"
 #include "mousemgr.h"
 #include "directinput.h"
@@ -74,6 +72,8 @@
 #include "shellapi.h"
 #include "netutil.h"
 #include "gamespybanlist.h"
+#include <Gamespy/pt/pt.h>
+#include <Gamespy/gcdkey/gcdkeys.h>
 
 CGameSpyQnR GameSpyQnR;
 
@@ -81,7 +81,7 @@ CGameSpyQnR GameSpyQnR;
 	const char *CGameSpyQnR::gamename = "ccrenegadedemo";
 	const char *CGameSpyQnR::bname = "Demo";
 	const int CGameSpyQnR::prodid = 10063;
-	const int CGameSpyQnR::cdkey_id = 0;
+	const int CGameSpyQnR::cdkey_id = 590; // https://aluigi.altervista.org/papers/gspids.txt
 #elif defined(FREEDEDICATEDSERVER)
 	const char *CGameSpyQnR::bname = "FDS";
 	const char *CGameSpyQnR::gamename = "ccrenegade";
@@ -170,7 +170,7 @@ CGameSpyQnR::~CGameSpyQnR()
 }
 
 void CGameSpyQnR::LaunchArcade(void) {
-	char *akey = "Software\\GameSpy\\GameSpy Arcade";
+	const char *akey = "Software\\GameSpy\\GameSpy Arcade";
 	BOOL launched = FALSE;
 	HKEY key = NULL;
 	int result = 0;
@@ -236,24 +236,6 @@ void CGameSpyQnR::Shutdown(void) {
 		m_GSEnabled = m_GSInit = false;
 	}
 #endif
-}
-
-void CGameSpyQnR::TrackUsage(void) {
-
-#ifndef WWDEBUG
-	char filename[MAX_PATH];
-	GetModuleFileName(NULL, filename, sizeof(filename));
-	VS_FIXEDFILEINFO version;
-	GetVersionInfo(filename, &version);
-	int ver = version.dwFileVersionMS;
-
-	StringClass b(true);
-	b.Format("%s %s V%d.%3.3d(%s-%d)", "Win-X86", bname, (ver&0xffff0000)>>16, ver&0xffff, 
-		BuildInfoClass::Get_Builder_Initials(), BuildInfoClass::Get_Build_Number());
-
-	// Send off usage Tracking info to GameSpy
-	ptTrackUsage(0, prodid, b.Peek_Buffer(), (cUserOptions::Sku.Get()&0xff)+438, false); 
-#endif // WWDEBUG
 }
 
 void CGameSpyQnR::Init(void) {

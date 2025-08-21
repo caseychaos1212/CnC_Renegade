@@ -39,8 +39,6 @@
 #include "debug.h"
 #include "timemgr.h"
 
-
-#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 /*
@@ -52,6 +50,9 @@ LPDIRECTINPUTDEVICE	DIMouseDevice			= NULL;
 LPDIRECTINPUTDEVICE2	DIJoystickDevice		= NULL;
 
 DIJOYSTATE				DIJoystickState;
+
+// This warning is a result of the old dinput header we use so just disable it.
+#pragma warning(disable: 4644)
 
 int PASCAL	InitJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);
 
@@ -161,9 +162,11 @@ void DirectInput::Init( void )
 		hr = DIKeyboardDevice->Acquire();
 		if ( FAILED(hr) ) {
 			Debug_Say(( "DirectInput Keyboard Failed to Aquire\n" ));
+#ifdef WWDEBUG
 			if (hr == DIERR_INVALIDPARAM) WWDEBUG_SAY(("DIERR_INVALIDPARAM\n"));
 			if (hr == DIERR_NOTINITIALIZED) WWDEBUG_SAY(("DIERR_NOTINITIALIZED\n"));
 			if (hr == DIERR_OTHERAPPHASPRIO) WWDEBUG_SAY(("DIERR_OTHERAPPHASPRIO\n"));
+#endif
 		}
 
 //		Debug_Say(( "DirectInput Keyboard Ready\n" ));
@@ -200,9 +203,15 @@ void DirectInput::Init( void )
 		hr = DIMouseDevice->Acquire();
 		if ( FAILED(hr) ) {
 			Debug_Say(( "DirectInput Mouse Failed to Aquire\n" ));
-			if (hr == DIERR_INVALIDPARAM) WWDEBUG_SAY(("DIERR_INVALIDPARAM\n"));
-			if (hr == DIERR_NOTINITIALIZED) WWDEBUG_SAY(("DIERR_NOTINITIALIZED\n"));
-			if (hr == DIERR_OTHERAPPHASPRIO) WWDEBUG_SAY(("DIERR_OTHERAPPHASPRIO\n"));
+			if (hr == DIERR_INVALIDPARAM) {
+				WWDEBUG_SAY(("DIERR_INVALIDPARAM\n"));
+			}
+			if (hr == DIERR_NOTINITIALIZED) {
+				WWDEBUG_SAY(("DIERR_NOTINITIALIZED\n"));
+			}
+			if (hr == DIERR_OTHERAPPHASPRIO) {
+				WWDEBUG_SAY(("DIERR_OTHERAPPHASPRIO\n"));
+			}
 		}
 
 //		Debug_Say(( "DirectInput Mouse Ready\n" ));
@@ -518,7 +527,8 @@ void DirectInput::ReadMouse( void )
 {
 	if ( DIMouseDevice == NULL ) return;
 
-	for (int i = 0; i < sizeof( DIMouseButtons ); i++ ) {
+	int i;
+	for (i = 0; i < sizeof( DIMouseButtons ); i++ ) {
 		DIMouseButtons[i] &= DI_BUTTON_HELD;	// make off all but the STATE
 	}
 

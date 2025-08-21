@@ -35,10 +35,10 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "mainfrm.h"
-#include "leveleditview.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "MainFrm.h"
+#include "LevelEditView.h"
 #include "deviceselectiondialog.h"
 #include "utils.h"
 #include "outputform.h"
@@ -112,7 +112,7 @@
 #include "generictextdialog.h"
 #include "musicproppage.h"
 #include "skyproppage.h"
-#include "weatherproppage.h"
+#include "WeatherPropPage.h"
 #include "memlogdialog.h"
 #include "translatedb.h"
 #include "gotoobjectbyiddialog.h"
@@ -2983,7 +2983,8 @@ CMainFrame::OnTestPathfind (void)
 		//
 		//	Register all the waypaths with the pathfinding system
 		//
-		for (	NodeClass *node = NodeMgrClass::Get_First (NODE_TYPE_WAYPATH);
+		NodeClass *node;
+		for (	node = NodeMgrClass::Get_First (NODE_TYPE_WAYPATH);
 				node != NULL;
 				node = NodeMgrClass::Get_Next (node, NODE_TYPE_WAYPATH))
 		{
@@ -5225,7 +5226,7 @@ CMainFrame::OnUpdateEnableVisSectorFallback(CCmdUI* pCmdUI)
 void
 CMainFrame::OnRunManualVisPoints (void)
 {
-	CWaitCursor wait_cursor ();
+	CWaitCursor wait_cursor;
 
 	VisMgrClass::Render_Manual_Vis_Points ();
 	return ;
@@ -5698,7 +5699,7 @@ CMainFrame::OnExportTileList (void)
 		//
 		//	Open the file
 		//
-		StringClass filename = dialog.GetPathName ();
+		StringClass filename = static_cast<const char *>(dialog.GetPathName ());
 		TextFileClass text_file (filename);
 		if (text_file.Open (FileClass::WRITE)) {
 

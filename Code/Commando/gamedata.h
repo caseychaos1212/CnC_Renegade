@@ -49,7 +49,7 @@
 #include "widestring.h"
 #include "radar.h"
 #include "DlgMPTeamSelect.h"
-#include <WWLib\Signaler.h>
+#include <wwlib/Signaler.h>
 
 const int		MAX_PASSWORD_SIZE			= 16;				//including NULL
 const int		MAX_MAPNAME_SIZE			= 28;				//including NULL
@@ -123,7 +123,7 @@ class	cGameData :
 		void				Set_Map_Name(const StringClass & map_name);
 		void				Set_Mod_Name(const StringClass & mod_name);
 		void				Set_Map_Cycle(int map, const StringClass & map_name);
-		void				Set_Owner(WideStringClass & owner);
+		void				Set_Owner(const WideStringClass & owner);
 		bool				Set_Max_Players(int max_players);
 		bool				Set_Time_Limit_Minutes(int time_limit_minutes);
 		void				Set_Radar_Mode(RadarModeEnum mode);
@@ -289,7 +289,7 @@ class	cGameData :
 		virtual	void	Get_Description(WideStringClass & description);
 
 
-		WideStringClass	Get_Settings_Description(void)						{return(SettingsDescription);}
+		WideStringClass	Get_Settings_Description(void)						{return(SettingsDescription.Peek_Buffer());}
 		void					Set_Settings_Description(WideStringClass desc)	{SettingsDescription = desc;}
 
 		cBoolean			IsIntermission;

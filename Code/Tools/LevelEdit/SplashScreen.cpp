@@ -19,8 +19,8 @@
 // SplashScreen.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "SplashScreen.h"
 
 #ifdef _DEBUG

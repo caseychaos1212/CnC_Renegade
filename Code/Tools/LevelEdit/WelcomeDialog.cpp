@@ -19,8 +19,8 @@
 // WelcomeDialog.cpp : implementation file
 //
 
-#include "StdAfx.H"
-#include "LevelEdit.H"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "WelcomeDialog.H"
 #include "Utils.H"
 #include "FileMgr.H"

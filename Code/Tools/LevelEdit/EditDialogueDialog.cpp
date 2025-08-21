@@ -19,8 +19,8 @@
 // EditDialogueDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "editdialoguedialog.h"
 #include "dialogue.h"
 #include "translatedb.h"

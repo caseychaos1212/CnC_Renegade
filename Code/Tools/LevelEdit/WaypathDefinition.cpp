@@ -34,14 +34,14 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "waypathdefinition.h"
 #include "simpledefinitionfactory.h"
 #include "definitionclassids.h"
 #include "definitionmgr.h"
 #include "persistfactory.h"
 #include "editorchunkids.h"
-#include "waypathnode.h"
+#include "WaypathNode.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
 // MixViewer.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "MixViewer.h"
 
 #include "MainFrm.h"
@@ -71,12 +71,6 @@ BOOL CMixViewerApp::InitInstance()
 	// If you are not using these features and wish to reduce the size
 	//  of your final executable, you should remove from the following
 	//  the specific initialization routines you do not need.
-
-#ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
-#else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
-#endif
 
 	// Change the registry key under which our settings are stored.
 	// TODO: You should modify this string to be something appropriate

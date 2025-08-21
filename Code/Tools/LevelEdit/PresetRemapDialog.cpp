@@ -19,8 +19,8 @@
 // PresetRemapDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "leveleditdoc.h"
 #include "presetremapdialog.h"
 #include "selectpresetdialog.h"
@@ -155,7 +155,7 @@ PresetRemapDialogClass::OnInitDialog (void)
 					//
 					//	Take a best guess at a preset name for the object
 					//
-					char *separator = ::strchr (name, '.');
+					char *separator = const_cast<char *>(::strchr (name, '.'));
 					if (separator != NULL) {
 						separator[0] = 0;
 						const char *candidate_preset_name = name;

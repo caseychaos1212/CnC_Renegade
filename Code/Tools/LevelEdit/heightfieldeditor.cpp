@@ -34,9 +34,9 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "heightfieldeditor.h"
-#include "sceneeditor.h"
+#include "SceneEditor.h"
 #include "mover.h"
 #include "rendobj.h"
 #include "phys.h"

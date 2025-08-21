@@ -33,14 +33,14 @@
 ******************************************************************************/
 
 #include "WOLQuickMatch.h"
-#include <WWOnline\PingProfile.h>
-#include <WWOnline\WaitCondition.h>
-#include <WWOnline\WOLProduct.h>
-#include <WWOnline\WOLConnect.h>
-#include <WWOnline\WOLServer.h>
-#include <WWOnline\WOLLadder.h>
-#include <WWLib\CPUDetect.h>
-#include <WWDebug\WWDebug.h>
+#include <WWOnline/PingProfile.h>
+#include <WWOnline/WaitCondition.h>
+#include <WWOnline/WOLProduct.h>
+#include <WWOnline/WOLConnect.h>
+#include <WWOnline/WOLServer.h>
+#include <WWOnline/WOLLadder.h>
+#include <wwlib/CPUDetect.h>
+#include <wwdebug/WWDebug.h>
 #include "cnetwork.h"
 #include "translatedb.h"
 #include "string_ids.h"
@@ -356,7 +356,7 @@ void WOLQuickMatch::SendServerInfo(const char* exInfo, const char* topic)
 	{
 	if (exInfo && topic)
 		{
-#pragma message(__FILE__" *** HACK ALERT *** SINFO msg is imitating WOLAPI IRC topic!")
+// FIXME  *** HACK ALERT *** SINFO msg is imitating WOLAPI IRC topic!
 
 		// *** WARNING *** DANGER *** HACK ALERT ****
 		//
@@ -430,7 +430,7 @@ void WOLQuickMatch::ParseResponse(const wchar_t* message)
 		while (token)
 			{
 			// Find the first occurance of the token in the message
-			wchar_t* cmd = wcsstr(message, token);
+			const wchar_t* cmd = wcsstr(message, token);
 
 			// If the token was found and it is at the start of the message
 			// then return the type of message this is.

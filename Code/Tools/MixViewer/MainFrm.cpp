@@ -19,7 +19,7 @@
 // MainFrm.cpp : implementation of the CMainFrame class
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "mixviewer.h"
 #include "mainfrm.h"
 #include "wwstring.h"
@@ -185,7 +185,7 @@ Strip_Filename_From_Path (LPCTSTR path)
 	}
 
 	// Return the path only
-	return StringClass (temp_path);
+	return temp_path;
 }
 
 
@@ -211,21 +211,21 @@ CMainFrame::OnCombineDuplicates (void)
 		//
 		//	Determine what directory to search
 		//
-		StringClass full_path	= dialog.GetPathName ();
-		StringClass directory	= Strip_Filename_From_Path (full_path);
+		StringClass full_path	= static_cast<const char *>(dialog.GetPathName ());
+		StringClass directory	= static_cast<const char *>(Strip_Filename_From_Path (full_path));
 		combiner.Set_Destination_File (full_path);
 
 		WIN32_FIND_DATA find_info	= { 0 };
 		BOOL keep_going				= TRUE;
 
-		CString search_mask = directory + "\\*.mix";
+		CString search_mask = static_cast<const char *>(directory + "\\*.mix");
 
 		//
 		// Loop over all the mix files in the search directory
 		//
 		int count = 0;
-		for (HANDLE find_handle = ::FindFirstFile (search_mask, &find_info);
-			  (find_handle != INVALID_HANDLE_VALUE) && keep_going;
+		HANDLE find_handle = ::FindFirstFile (search_mask, &find_info);
+		for (;(find_handle != INVALID_HANDLE_VALUE) && keep_going;
 			  keep_going = ::FindNextFile (find_handle, &find_info))
 		{
 			//
@@ -439,7 +439,7 @@ CMainFrame::OnRemoveAVAssets (void)
 		POSITION pos = dialog.GetStartPosition();
 
 		while (pos != NULL) {
-			StringClass file_name = dialog.GetNextPathName(pos);
+			StringClass file_name = static_cast<const char *>(dialog.GetNextPathName(pos));
 
 			//
 			// Get just the path portion.
@@ -498,7 +498,7 @@ CMainFrame::OnMakeMixPatch(void)
 		// Pull the name of the old source mix file.
 		//
 		POSITION pos = dialog.GetStartPosition();
-		StringClass old_file_name = dialog.GetNextPathName(pos);
+		StringClass old_file_name = static_cast<const char *>(dialog.GetNextPathName(pos));
 
 		//
 		// Ask for the name of the new source mix file.
@@ -517,7 +517,7 @@ CMainFrame::OnMakeMixPatch(void)
 			// Pull the name of the new source mix file.
 			//
 			pos = dialog2.GetStartPosition();
-			StringClass new_file_name = dialog2.GetNextPathName(pos);
+			StringClass new_file_name = static_cast<const char *>(dialog2.GetNextPathName(pos));
 
 
 			//
@@ -537,7 +537,7 @@ CMainFrame::OnMakeMixPatch(void)
 				// Pull the name of the new source mix file.
 				//
 				pos = dialog3.GetStartPosition();
-				StringClass out_file_name = dialog3.GetNextPathName(pos);
+				StringClass out_file_name = static_cast<const char *>(dialog3.GetNextPathName(pos));
 
 				//
 				// Ask for the directory containing the old source art.

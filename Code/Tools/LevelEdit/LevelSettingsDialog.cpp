@@ -19,8 +19,8 @@
 // LevelSettingsDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "levelsettingsdialog.h"
 #include "combat.h"
 #include "scriptmgr.h"

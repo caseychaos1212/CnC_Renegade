@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "terrainnode.h"
 #include "staticphys.h"
 #include "sceneeditor.h"
@@ -57,7 +57,7 @@
 #include "terrainsectionpersist.h"
 #include "lightphys.h"
 #include "lightnode.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "hlod.h"
 
 //////////////////////////////////////////////////////////////////////////////

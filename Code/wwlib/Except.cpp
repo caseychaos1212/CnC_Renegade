@@ -56,7 +56,7 @@
 #include	"except.h"
 //#include "debug.h"
 #include "mpu.h"
-//#include "commando\nat.h"
+//#include "commando/nat.h"
 #include "thread.h"
 #include "wwdebug.h"
 #include "wwmemlog.h"
@@ -87,7 +87,7 @@ bool SymbolsAvailable = false;
 HINSTANCE ImageHelp = (HINSTANCE) -1;
 
 void (*AppCallback)(void) = NULL;
-char *(*AppVersionCallback)(void) = NULL;
+const char *(*AppVersionCallback)(void) = NULL;
 
 /*
 ** Flag to indicate we should exit when an exception occurs.
@@ -434,7 +434,9 @@ void Dump_Exception_Info(EXCEPTION_POINTERS *e_info)
 	/*
 	** Match the exception type with the error string and print it out
 	*/
-	for (int i=0 ; _codes[i] != 0xffffffff ; i++) {
+	int i;
+
+	for (i=0 ; _codes[i] != 0xffffffff ; i++) {
 		if (_codes[i] == e_info->ExceptionRecord->ExceptionCode) {
 			DebugString("Exception Handler: Found exception description\n");
 			break;
@@ -611,8 +613,8 @@ void Dump_Exception_Info(EXCEPTION_POINTERS *e_info)
 	Add_Txt(scrap);
 	sprintf(scrap, "    Data Selector: %08x\r\n", context->FloatSave.DataSelector);
 	Add_Txt(scrap);
-	sprintf(scrap, "      Cr0NpxState: %08x\r\n", context->FloatSave.Cr0NpxState);
-	Add_Txt(scrap);
+	//sprintf(scrap, "      Cr0NpxState: %08x\r\n", context->FloatSave.Cr0NpxState);
+	//Add_Txt(scrap);
 
 	for (int fp=0 ; fp<SIZE_OF_80387_REGISTERS / 10 ; fp++) {
 		sprintf(scrap, "ST%d : ", fp);
@@ -673,17 +675,17 @@ void Dump_Exception_Info(EXCEPTION_POINTERS *e_info)
 			/*
 			** The stack contents cannot be read so just print up question marks.
 			*/
-			sprintf(scrap, "%08X: ", stackptr);
+			sprintf(scrap, "%08p: ", stackptr);
 			strcat(scrap, "????????\r\n");
 		} else {
 			/*
 			** If this stack address is in our memory space then try to match it with a code symbol.
 			*/
 			if (IsBadCodePtr((FARPROC)*stackptr)) {
-				sprintf(scrap, "%08X: %08X ", stackptr, *stackptr);
+				sprintf(scrap, "%08p: %08X ", stackptr, *stackptr);
 				strcat(scrap, "DATA_PTR\r\n");
 			} else {
-				sprintf(scrap, "%08X: %08X", stackptr, *stackptr);
+				sprintf(scrap, "%08p: %08X", stackptr, *stackptr);
 
 				if (symbols_available) {
 					symptr->SizeOfStruct = sizeof(symbol);
@@ -884,7 +886,7 @@ int Exception_Handler(int exception_code, EXCEPTION_POINTERS *e_info)
  * HISTORY:                                                                                    *
  *   8/30/2001 3:04PM ST : Created                                                             *
  *=============================================================================================*/
-void Register_Thread_ID(unsigned long thread_id, char *thread_name, bool main_thread)
+void Register_Thread_ID(unsigned long thread_id, const char *thread_name, bool main_thread)
 {
 	WWMEMLOG(MEM_GAMEDATA);
 	if (thread_name) {
@@ -996,7 +998,7 @@ HANDLE Get_Thread_Handle(int thread_index)
  * HISTORY:                                                                                    *
  *   8/30/2001 3:10PM ST : Created                                                             *
  *=============================================================================================*/
-void Unregister_Thread_ID(unsigned long thread_id, char *thread_name)
+void Unregister_Thread_ID(unsigned long thread_id, const char *thread_name)
 {
 	for (int i=0 ; i<ThreadList.Count() ; i++) {
 		if (strcmp(thread_name, ThreadList[i]->ThreadName) == 0) {
@@ -1285,7 +1287,7 @@ void Register_Application_Exception_Callback(void (*app_callback)(void))
 	AppCallback = app_callback;
 }
 
-void Register_Application_Version_Callback(char *(*app_ver_callback)(void))
+void Register_Application_Version_Callback(const char *(*app_ver_callback)(void))
 {
 	AppVersionCallback = app_ver_callback;
 }

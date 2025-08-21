@@ -19,8 +19,8 @@
 // PresetGeneralTab.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "PresetGeneralTab.h"
 #include "definition.h"
 #include "preset.h"

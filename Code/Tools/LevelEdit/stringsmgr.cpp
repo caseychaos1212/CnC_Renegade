@@ -35,9 +35,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "stringsmgr.h"
-#include "filelocations.h"
+#include "FileLocations.h"
 #include "filemgr.h"
 #include "assetdatabase.h"
 #include "chunkio.h"
@@ -453,7 +453,7 @@ StringsMgrClass::Export_For_Translation (const char *filename, uint32 lang_id)
 	//
 	//	Create the new excel workbook based on this template
 	//
-	StringClass template_path = Make_Path (path, "renegade.xlt");
+	StringClass template_path = static_cast<const char *>(Make_Path (path, "renegade.xlt"));
 	ExcelClass::New_Workbook (template_path);
 
 	//
@@ -561,7 +561,8 @@ StringsMgrClass::Import_From_Translation (const char *filename, uint32 lang_id)
 	//	Keep reading until we don't have any more data to read
 	//
 	bool keep_going = true;
-	for (int index = 0; keep_going; index ++) {
+	int index;
+	for (index = 0; keep_going; index ++) {
 
 		//
 		//	Read these fields of data

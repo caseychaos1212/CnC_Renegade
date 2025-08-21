@@ -19,8 +19,8 @@
 // ColorSelectionDialog.cpp : implementation file
 //
 
-#include "StdAfx.H"
-#include "LevelEdit.H"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "ColorSelectionDialog.H"
 #include "Utils.H"
 

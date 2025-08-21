@@ -22,7 +22,7 @@
 //
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "colorbar.h"
 #include "colorutils.h"
 #include "resource.h"
@@ -34,6 +34,8 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+LRESULT WINAPI fnColorBarProc (HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
 //extern HINSTANCE _hinstance;
 
@@ -1068,7 +1070,8 @@ ColorBarClass::Update_Point_Info (void)
 	if (style & CBRS_HORZ) {
 
 		// Loop through all the color points
-		for (int index = 0; index < m_iColorPoints; index ++) {
+		int index;
+		for (index = 0; index < m_iColorPoints; index ++) {
 
 			// Update the absolute starting position for this point
 			m_ColorPoints[index].StartPos = m_ColorArea.left + int(m_ColorPoints[index].PosPercent * width);
@@ -1099,7 +1102,8 @@ ColorBarClass::Update_Point_Info (void)
 	} else {
 
 		// Loop through all the color points
-		for (int index = 0; index < m_iColorPoints; index ++) {
+		int index;
+		for (index = 0; index < m_iColorPoints; index ++) {
 
 			// Update the absolute starting position for this point
 			m_ColorPoints[index].StartPos = m_ColorArea.top + int(m_ColorPoints[index].PosPercent * height);

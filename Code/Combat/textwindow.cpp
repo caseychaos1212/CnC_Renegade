@@ -42,7 +42,7 @@
 #include "font3d.h"
 #include "objectives.h"
 #include "translatedb.h"
-#include "wwaudio.h"
+#include "WWAudio.h"
 #include "globalsettings.h"
 #include "scene.h"
 #include "rendobj.h"
@@ -283,7 +283,8 @@ TextWindowClass::Set_Backdrop
 		//
 		//	Tile the text backdrop sections
 		//
-		for (int index = 0; index < section_count; index ++) {			
+		int index;
+		for (index = 0; index < section_count; index ++) {			
 			
 			//
 			//	Submit the geometry

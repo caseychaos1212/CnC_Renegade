@@ -35,13 +35,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "undomgr.h"
+#include "StdAfx.h"
+#include "UndoMgr.h"
 #include "utils.h"
 #include "nodemgr.h"
 #include "node.h"
 #include "leveleditdoc.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "mover.h"
 #include "zonenode.h"
 #include "damagezonenode.h"

@@ -19,9 +19,9 @@
 // PerformanceConfigDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "wwconfig.h"
-#include "performanceconfigdialog.h"
+#include "StdAfx.h"
+#include "WWConfig.h"
+#include "PerformanceConfigDialog.h"
 #include "registry.h"
 #include "ww3d.h"
 #include "pscene.h"
@@ -35,7 +35,7 @@
 #include "dx8wrapper.h"
 #include "locale_api.h"
 #include "wwconfig_ids.h"
-#include "..\..\combat\specialbuilds.h"
+#include "../../Combat/specialbuilds.h"
 
 
 #ifdef _DEBUG

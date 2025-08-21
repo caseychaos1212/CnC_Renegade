@@ -67,8 +67,6 @@
 #include "healthbarctrl.h"
 #include "systimer.h"
 
-
-#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 
@@ -317,7 +315,8 @@ DialogBaseClass::End_Dialog (void)
 	//
 	//	Noitify all controls
 	//
-	for (int index = 0; index < ControlList.Count (); index ++) {
+	int index;
+	for (index = 0; index < ControlList.Count (); index ++) {
 		ControlList[index]->On_Destroy ();
 	}
 
@@ -364,7 +363,8 @@ DialogBaseClass::On_Frame_Update (void)
 		//
 		//	Let each control "think"
 		//
-		for (int index = 0; index < ControlList.Count (); index ++) {
+		int index;
+		for (index = 0; index < ControlList.Count (); index ++) {
 			ControlList[index]->On_Frame_Update ();
 		}
 
@@ -395,7 +395,8 @@ DialogBaseClass::Render (void)
 	//	Render each control
 	//
 	if (AreControlsHidden == false) {
-		for (int index = 0; index < ControlList.Count (); index ++) {
+		int index;
+		for (index = 0; index < ControlList.Count (); index ++) {
 			if (ControlList[index]->Is_Visible ()) {
 				ControlList[index]->Render ();
 			}
@@ -1491,7 +1492,8 @@ DialogBaseClass::Build_Control_List (CONTROL_LIST &list)
 	//
 	//	First off add all the controls on this dialog to the list
 	//
-	for (int index = 0; index < ControlList.Count (); index ++) {
+	int index;
+	for (index = 0; index < ControlList.Count (); index ++) {
 		if (ControlList[index]->Is_Enabled ()) {
 			list.Add (ControlList[index]);
 		}
@@ -1527,7 +1529,8 @@ DialogBaseClass::Set_Rect (const RectClass &rect)
 	//
 	//	Move all the controls
 	//
-	for (int index = 0; index < ControlList.Count (); index ++) {
+	int index;
+	for (index = 0; index < ControlList.Count (); index ++) {
 
 		//
 		//	Offset this control
@@ -1627,7 +1630,8 @@ DialogBaseClass::On_Mouse_Wheel (int direction)
 
 void DialogBaseClass::Set_Dirty(bool onoff)
 {
-	for (int index = 0; index < ControlList.Count (); index ++) {
+	int index;
+	for (index = 0; index < ControlList.Count (); index ++) {
 		ControlList[index]->Set_Dirty();
 	}
 

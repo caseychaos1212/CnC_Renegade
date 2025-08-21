@@ -36,7 +36,7 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "lightsolvesavesystem.h"
 #include "sceneeditor.h"
 #include "utils.h"
@@ -84,7 +84,7 @@ bool LightSolveSaveSystemClass::Save(ChunkSaveClass &csave)
 		StaticPhysClass * pobj = it.Peek_Obj()->As_StaticPhysClass();
 		if (	(pobj != NULL) && 
 				(pobj->Peek_Model() != NULL) && 
-				(pobj->Peek_Model()->Has_User_Lighting) ) 
+				(pobj->Peek_Model()->Has_User_Lighting()) ) 
 		{
 			csave.Begin_Chunk(LSS_CHUNKID_OBJECT_LIGHT_SOLVE);
 			Save_Lighting_For_Object(csave,pobj);

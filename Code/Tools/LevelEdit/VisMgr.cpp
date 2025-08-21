@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "vismgr.h"
 #include "sceneeditor.h"
 #include "matrix3d.h"
@@ -47,7 +47,7 @@
 #include "nodemgr.h"
 #include "cameramgr.h"
 #include "camera.h"
-#include "vispointnode.h"
+#include "VisPointNode.h"
 #include "groupmgr.h"
 
 

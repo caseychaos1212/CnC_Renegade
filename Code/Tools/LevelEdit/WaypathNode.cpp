@@ -35,8 +35,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "waypathnode.h"
+#include "StdAfx.h"
+#include "WaypathNode.h"
 #include "sceneeditor.h"
 #include "collisiongroups.h"
 #include "persistfactory.h"
@@ -45,7 +45,7 @@
 #include "chunkio.h"
 #include "nodemgr.h"
 #include "segline.h"
-#include "waypointnode.h"
+#include "WaypointNode.h"
 #include "waypath.h"
 #include "waypoint.h"
 #include "pathfind.h"
@@ -824,7 +824,8 @@ WaypathNodeClass::Update_Line (void)
 		//
 		//	Fill in the array of points with our waypoint locations
 		//
-		for (int index = 0; index < count; index ++) {
+		int index;
+		for (index = 0; index < count; index ++) {
 
 			WaypointNodeClass *waypoint = m_PointList[index];
 

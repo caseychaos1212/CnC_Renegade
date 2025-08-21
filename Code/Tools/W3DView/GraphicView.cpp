@@ -19,7 +19,7 @@
 // GraphicView.cpp : implementation file
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "w3dview.h"
 #include "graphicview.h"
 #include "ww3d.h"
@@ -340,7 +340,7 @@ CGraphicView::OnDestroy (void)
 	}
 
 	// Cache this information in the registry
-	TCHAR temp_string[10];
+	TCHAR temp_string[12];
 	::itoa (m_iWindowed, temp_string, 10);
 	theApp.WriteProfileString ("Config", "Windowed", temp_string);
 
@@ -764,7 +764,7 @@ CGraphicView::OnLButtonUp
     }
     else
     {
-        ::SetCursor (::LoadCursor (NULL, MAKEINTRESOURCE (IDC_ARROW)));
+        ::SetCursor (::LoadCursor (NULL, IDC_ARROW));
 		  ((CW3DViewDoc *)GetDocument())->Set_Cursor ("cursor.tga");
     }
 
@@ -1325,7 +1325,7 @@ CGraphicView::OnRButtonUp
 	if (m_bMouseDown) {
 		((CW3DViewDoc *)GetDocument())->Set_Cursor ("orbit.tga");		
 	} else {
-		::SetCursor (::LoadCursor (NULL, MAKEINTRESOURCE (IDC_ARROW)));
+		::SetCursor (::LoadCursor (NULL, IDC_ARROW));
 		((CW3DViewDoc *)GetDocument())->Set_Cursor ("cursor.tga");
 		ReleaseCapture ();
 	}

@@ -41,7 +41,7 @@
 #ifndef __UNIQUELIST_H
 #define __UNIQUELIST_H
 
-#include "Vector.H"
+#include "vector.h"
 
 /////////////////////////////////////////////////////////////////////
 //
@@ -50,6 +50,13 @@
 template<class T>
 class UniqueListClass : public DynamicVectorClass<T>
 {
+	public:
+	using DynamicVectorClass<T>::Count;
+	using DynamicVectorClass<T>::Add;
+	using DynamicVectorClass<T>::Delete;
+	private:
+	using DynamicVectorClass<T>::Vector;
+
 	public:
 		UniqueListClass (void)
 			: DynamicVectorClass<T> () {}

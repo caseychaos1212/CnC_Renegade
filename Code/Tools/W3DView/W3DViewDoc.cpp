@@ -19,7 +19,7 @@
 // W3DViewDoc.cpp : implementation of the CW3DViewDoc class
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "w3dview.h"
 #include "w3dviewdoc.h"
@@ -1226,7 +1226,8 @@ CW3DViewDoc::GenerateLOD
 		if (plod_array != NULL) {
 
 			// Loop through all the levels-of-detail and add them to our array
-			for (int lod_index = 0; lod_index < lod_count; lod_index ++) {
+			int lod_index;
+			for (lod_index = 0; lod_index < lod_count; lod_index ++) {
 				CString lod_name;
 
 				if (type == TYPE_COMMANDO) {

@@ -125,7 +125,7 @@ const PersistFactoryClass & SAMSiteGameObj::Get_Factory (void) const
 }
 
 
-typedef enum {
+enum {
 	SAMSITE_STATE_DOWN,
 	SAMSITE_STATE_UP,
 	SAMSITE_STATE_RISING,
@@ -339,7 +339,7 @@ void SAMSiteGameObj::Generate_Control( void )
 	}
 }
 
-static char * _profile_name = "SAMSite Think";
+static const char * _profile_name = "SAMSite Think";
 void	SAMSiteGameObj::Think( void ) 
 {
 	SmartGameObj *target = NULL;

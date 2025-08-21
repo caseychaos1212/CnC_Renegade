@@ -31,8 +31,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "StdAfx.H"
-#include "LevelEdit.H"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "UpdateAssetsDialog.H"
 #include "FileMgr.H"
 #include "Utils.H"

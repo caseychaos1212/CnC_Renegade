@@ -34,8 +34,8 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
-#include "presetpropsheet.h"
+#include "StdAfx.h"
+#include "PresetPropSheet.h"
 #include "parameterinheritancedialog.h"
 
 

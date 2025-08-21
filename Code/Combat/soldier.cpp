@@ -98,6 +98,7 @@
 #include "weaponview.h"
 #include "ffactory.h"
 #include "realcrc.h"
+#include "colmathaabox.h" // Agressive inlining causes linker issues if this isn't here.
 
 /*
 **
@@ -1330,7 +1331,7 @@ Matrix3D tm(1);
 	static int crc = UNINITIALLIZED_CRC;
 tm.Rotate_X( 1.4f );
 	if ( crc == UNINITIALLIZED_CRC ) {
-		char * filelist[] = {
+		const char * filelist[] = {
 		"laif`wp-gga",								//"objects.ddb",              
 		"bqnlq-jmj",								//"armor.ini",                
 		"almfp-jmj",								//"bones.ini",                
@@ -2281,7 +2282,7 @@ SyncLegs = true;
 static float	_shake_delay = 0;
 static float	_cry_delay = 0;
 
-static char * _profile_name = "Soldier Think";
+static const char * _profile_name = "Soldier Think";
 
 //------------------------------------------------------------------------------------
 void	SoldierGameObj::Think( void )
@@ -3713,7 +3714,7 @@ void	SoldierGameObj::Apply_Damage_Extended( const OffenseObjectClass & damager, 
 	float armor_before = Get_Defense_Object()->Get_Shield_Strength();
 
 	if ( collision_box_name != NULL ) {
-		char * start = ::strchr( collision_box_name, '.' );
+		const char * start = ::strchr( collision_box_name, '.' );
 		if ( start != NULL ) {
 			start++;
 			float bone_scale = BonesManager::Get_Bone_Damage_Scale( start );

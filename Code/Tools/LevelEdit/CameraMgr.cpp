@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "utils.h"
 #include "camera.h"
 #include "cameramgr.h"
@@ -56,7 +56,7 @@
 #include "combatchunkid.h"
 #include "ccamera.h"
 #include "input.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "nodemgr.h"
 #include "actionparams.h"
 #include "soldier.h"

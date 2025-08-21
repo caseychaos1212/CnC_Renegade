@@ -35,7 +35,7 @@
 *
 ******************************************************************************/
 
-#include "toolkit.h"
+#include "Toolkit.h"
 #include "mission1.h"
 
 /* GENERAL TOOLKIT INFORMATION
@@ -78,9 +78,9 @@ DECLARE_SCRIPT(M00_Debug_Text_File_RMV, "Description=Object:string, Filename=Deb
 	FILE *file;
 	time_t start_time, current_time;
 
-	char* Reason_Lookup(ActionCompleteReason reason)
+	const char* Reason_Lookup(ActionCompleteReason reason)
 	{
-		char* reasons[] = {
+		static constexpr const char* reasons[] = {
 			"ACTION_COMPLETE_NORMAL",
 			"ACTION_COMPLETE_LOW_PRIORITY",
 			"ACTION_COMPLETE_PATH_BAD_START",
@@ -320,7 +320,7 @@ DECLARE_SCRIPT(M00_C130_Explosion, "")
 {
 	void Killed(GameObject * obj, GameObject * killer)
 	{
-		Commands->Create_Explosion_At_Bone("Explosion_Cargo_Plane", obj, "BODYMAIN");
+		Commands->Create_Explosion_At_Bone("Explosion_Cargo_Plane", obj, "BODYMAIN", NULL);
 		//JDG updated this script due to explosion preset name change--07/27/2001
 	}
 };
@@ -371,7 +371,7 @@ DECLARE_SCRIPT(M00_Monitor_Attached_Primary, "")
 	{
 		if(!object_detached)
 		{
-			Commands->Apply_Damage( Commands->Find_Object(attached_object_id), 10000.0f, "DEATH");
+			Commands->Apply_Damage( Commands->Find_Object(attached_object_id), 10000.0f, "DEATH", NULL);
 		}
 	}
 	
@@ -456,7 +456,7 @@ DECLARE_SCRIPT(M00_5MetalBarrels_ChainRxn_Controller_JDG, "Barrel01_Location:vec
 		barrel_04_facing = Get_Float_Parameter("Barrel04_Facing");
 		barrel_05_facing = Get_Float_Parameter("Barrel05_Facing");
 
-		char *simple_barrels[8] = 
+		static constexpr const char* simple_barrels[8] =
 		{
 			"Simple_MetalDrum_01",
 			"Simple_MetalDrum_02",
@@ -468,7 +468,7 @@ DECLARE_SCRIPT(M00_5MetalBarrels_ChainRxn_Controller_JDG, "Barrel01_Location:vec
 			"Simple_MetalDrum_08",
 		};
 
-		char *barrels_animations[8] = 
+		static constexpr const char* barrels_animations[8] =
 		{
 			"DSP_METDRUM01.DSP_METDRUM01",
 			"DSP_METDRUM02.DSP_METDRUM02",
@@ -649,7 +649,7 @@ DECLARE_SCRIPT(M00_ChainRxn_Barrel_JDG, "Controller_ID :int")
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Explosion ( "Explosion_Mine_Remote_01", myPosition, NULL );
 
-			char *barrels_animations[8] = 
+			static constexpr const char* barrels_animations[8] =
 			{
 				"DSP_METDRUM01.DSP_METDRUM01",//there's no #1 yet
 				"DSP_METDRUM02.DSP_METDRUM02",
@@ -673,7 +673,7 @@ DECLARE_SCRIPT(M00_ChainRxn_Barrel_JDG, "Controller_ID :int")
 				8,//8
 			};
 
-			Commands->Set_Animation ( obj, barrels_animations[number], false, NULL, 0, barrels_endframe[number] );
+			Commands->Set_Animation ( obj, barrels_animations[number], false, NULL, 0, barrels_endframe[number], false );
 			Commands->Set_Health ( obj, 0.25f );
 
 			GameObject * controller = Commands->Find_Object ( controller_id );
@@ -832,19 +832,19 @@ DECLARE_SCRIPT (M00_Advanced_Guard_Tower, "")
 		{
 			if (gun_01)
 			{
-				Commands->Send_Custom_Event (obj, gun_01, 1, missile_id);
+				Commands->Send_Custom_Event (obj, gun_01, 1, missile_id, 0.0f);
 			}
 			if (gun_02)
 			{
-				Commands->Send_Custom_Event (obj, gun_02, 1, missile_id);
+				Commands->Send_Custom_Event (obj, gun_02, 1, missile_id, 0.0f);
 			}
 			if (gun_03)
 			{
-				Commands->Send_Custom_Event (obj, gun_03, 1, missile_id);
+				Commands->Send_Custom_Event (obj, gun_03, 1, missile_id, 0.0f);
 			}
 			if (gun_04)
 			{
-				Commands->Send_Custom_Event (obj, gun_04, 1, missile_id);
+				Commands->Send_Custom_Event (obj, gun_04, 1, missile_id, 0.0f);
 			}
 		}
 		else if (timer_id == 2)
@@ -855,38 +855,38 @@ DECLARE_SCRIPT (M00_Advanced_Guard_Tower, "")
 			{
 				if (gun_01)
 				{
-					Commands->Send_Custom_Event (obj, gun_01, 2, 0);
+					Commands->Send_Custom_Event (obj, gun_01, 2, 0, 0.0f);
 				}
 				if (gun_02)
 				{
-					Commands->Send_Custom_Event (obj, gun_02, 2, 0);
+					Commands->Send_Custom_Event (obj, gun_02, 2, 0, 0.0f);
 				}
 				if (gun_03)
 				{
-					Commands->Send_Custom_Event (obj, gun_03, 2, 0);
+					Commands->Send_Custom_Event (obj, gun_03, 2, 0, 0.0f);
 				}
 				if (gun_04)
 				{
-					Commands->Send_Custom_Event (obj, gun_04, 2, 0);
+					Commands->Send_Custom_Event (obj, gun_04, 2, 0, 0.0f);
 				}
 			}
 			else if ((power) && (can_fire))
 			{
 				if (gun_01)
 				{
-					Commands->Send_Custom_Event (obj, gun_01, 2, 1);
+					Commands->Send_Custom_Event (obj, gun_01, 2, 1, 0.0f);
 				}
 				if (gun_02)
 				{
-					Commands->Send_Custom_Event (obj, gun_02, 2, 1);
+					Commands->Send_Custom_Event (obj, gun_02, 2, 1, 0.0f);
 				}
 				if (gun_03)
 				{
-					Commands->Send_Custom_Event (obj, gun_03, 2, 1);
+					Commands->Send_Custom_Event (obj, gun_03, 2, 1, 0.0f);
 				}
 				if (gun_04)
 				{
-					Commands->Send_Custom_Event (obj, gun_04, 2, 1);
+					Commands->Send_Custom_Event (obj, gun_04, 2, 1, 0.0f);
 				}
 			}
 			Commands->Start_Timer (obj, this, 1.0f, 2);
@@ -904,19 +904,19 @@ DECLARE_SCRIPT (M00_Advanced_Guard_Tower, "")
 			can_fire = true;
 			if (gun_01)
 			{
-				Commands->Send_Custom_Event (obj, gun_01, 2, 1);
+				Commands->Send_Custom_Event (obj, gun_01, 2, 1, 0.0f);
 			}
 			if (gun_02)
 			{
-				Commands->Send_Custom_Event (obj, gun_02, 2, 1);
+				Commands->Send_Custom_Event (obj, gun_02, 2, 1, 0.0f);
 			}
 			if (gun_03)
 			{
-				Commands->Send_Custom_Event (obj, gun_03, 2, 1);
+				Commands->Send_Custom_Event (obj, gun_03, 2, 1, 0.0f);
 			}
 			if (gun_04)
 			{
-				Commands->Send_Custom_Event (obj, gun_04, 2, 1);
+				Commands->Send_Custom_Event (obj, gun_04, 2, 1, 0.0f);
 			}
 		}
 		else if (!type)
@@ -924,19 +924,19 @@ DECLARE_SCRIPT (M00_Advanced_Guard_Tower, "")
 			can_fire = false;
 			if (gun_01)
 			{
-				Commands->Send_Custom_Event (obj, gun_01, 2, 0);
+				Commands->Send_Custom_Event (obj, gun_01, 2, 0, 0.0f);
 			}
 			if (gun_02)
 			{
-				Commands->Send_Custom_Event (obj, gun_02, 2, 0);
+				Commands->Send_Custom_Event (obj, gun_02, 2, 0, 0.0f);
 			}
 			if (gun_03)
 			{
-				Commands->Send_Custom_Event (obj, gun_03, 2, 0);
+				Commands->Send_Custom_Event (obj, gun_03, 2, 0, 0.0f);
 			}
 			if (gun_04)
 			{
-				Commands->Send_Custom_Event (obj, gun_04, 2, 0);
+				Commands->Send_Custom_Event (obj, gun_04, 2, 0, 0.0f);
 			}
 		}
 	}
@@ -973,7 +973,7 @@ DECLARE_SCRIPT (M00_Advanced_Guard_Tower_Gun, "")
 			if (missile_obj)
 			{
 				int enemy_id = Commands->Get_ID (enemy);
-				Commands->Send_Custom_Event (obj, missile_obj, 1, enemy_id);
+				Commands->Send_Custom_Event (obj, missile_obj, 1, enemy_id, 0.0f);
 			}
 			Vector3 my_loc = Commands->Get_Position (obj);
 			Vector3 enemy_loc = Commands->Get_Position (enemy);
@@ -1282,7 +1282,7 @@ DECLARE_SCRIPT(M00_Nod_Obelisk_CNC, "Controller_ID=0:int")
 				GameObject * obelisk = Commands->Find_Object (obelisk_id);
 				if (obelisk)
 				{
-					Commands->Send_Custom_Event (obj, obelisk, 1, 0);
+					Commands->Send_Custom_Event (obj, obelisk, 1, 0, 0.0f);
 				}
 			}
 			else if (power)
@@ -1290,7 +1290,7 @@ DECLARE_SCRIPT(M00_Nod_Obelisk_CNC, "Controller_ID=0:int")
 				GameObject * obelisk = Commands->Find_Object (obelisk_id);
 				if (obelisk)
 				{
-					Commands->Send_Custom_Event (obj, obelisk, 1, 1);
+					Commands->Send_Custom_Event (obj, obelisk, 1, 1, 0.0f);
 				}
 			}
 			Commands->Start_Timer (obj, this, 1.0f, 1);
@@ -1357,7 +1357,7 @@ DECLARE_SCRIPT (M00_Obelisk_Weapon_CNC, "")
 		if (obelisk_is_dead == false)//adding extra safety check here -- 02/12/2002 JDG
 		{
 			int enemy_id = Commands->Get_ID (enemy);
-			Commands->Send_Custom_Event (obj, obj, 2, enemy_id);
+			Commands->Send_Custom_Event (obj, obj, 2, enemy_id, 0.0f);
 		}
 	}
 
@@ -1525,7 +1525,7 @@ DECLARE_SCRIPT(M00_Nod_Obelisk, "Controller_ID=0:int")
 				GameObject * obelisk = Commands->Find_Object (obelisk_id);
 				if (obelisk)
 				{
-					Commands->Send_Custom_Event (obj, obelisk, 1, 0);
+					Commands->Send_Custom_Event (obj, obelisk, 1, 0, 0.0f);
 				}
 			}
 			else if (power)
@@ -1533,7 +1533,7 @@ DECLARE_SCRIPT(M00_Nod_Obelisk, "Controller_ID=0:int")
 				GameObject * obelisk = Commands->Find_Object (obelisk_id);
 				if (obelisk)
 				{
-					Commands->Send_Custom_Event (obj, obelisk, 1, 1);
+					Commands->Send_Custom_Event (obj, obelisk, 1, 1, 0.0f);
 				}
 			}
 			Commands->Start_Timer (obj, this, 1.0f, 1);
@@ -1591,7 +1591,7 @@ DECLARE_SCRIPT (M00_Obelisk_Weapon, "")
 	void Enemy_Seen(GameObject * obj, GameObject *enemy )
 	{
 		int enemy_id = Commands->Get_ID (enemy);
-		Commands->Send_Custom_Event (obj, obj, 2, enemy_id);
+		Commands->Send_Custom_Event (obj, obj, 2, enemy_id, 0.0f);
 	}
 
 	void Custom (GameObject * obj, int type, int param, GameObject * sender)
@@ -1785,8 +1785,8 @@ DECLARE_SCRIPT(M00_SSM_DLS, "")
 	{
 		if(type == M00_LAUNCH_SSM)
 		{
-			Commands->Set_Animation(obj, "V_NOD_SSM.V_NOD_SSM", 0);
-			Commands->Set_Animation(Commands->Find_Object(ssm_missile_id), "v_nod_ssm_Missl.v_nod_ssm_Missl", 0);
+			Commands->Set_Animation(obj, "V_NOD_SSM.V_NOD_SSM", false, NULL, 0.0f, -1.0f, false);
+			Commands->Set_Animation(Commands->Find_Object(ssm_missile_id), "v_nod_ssm_Missl.v_nod_ssm_Missl", false, NULL, 0.0f, -1.0f, false);
 
 			Commands->Start_Timer(obj, this, 7.0f, 66000);
 		}
@@ -1815,7 +1815,7 @@ DECLARE_SCRIPT(M00_Generic_Conv_DME, "ConvName:string")
 	void Created (GameObject *obj)
 	{
 		int id = Commands->Create_Conversation(Get_Parameter( "ConvName" ), 99, 2000, false);
-		Commands->Join_Conversation(obj, id);
+		Commands->Join_Conversation(obj, id, true, true, true);
 		Commands->Start_Conversation(id, 100000);
 		Commands->Monitor_Conversation(obj, id);
 	}

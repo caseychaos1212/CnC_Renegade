@@ -36,13 +36,13 @@
 
 #include "DlgWebPage.h"
 #include "WebBrowser.h"
-#include <WWUI\PopupDialog.h>
-#include <WWUI\DialogControl.h>
-#include <Combat\DirectInput.h>
-#include <WW3D2\WW3D.h>
+#include <wwui/PopupDialog.h>
+#include <wwui/DialogControl.h>
+#include <Combat/DirectInput.h>
+#include <WW3D2/WW3D.h>
 #include "DlgMessageBox.h"
 #include "Resource.h"
-#include <Combat\String_IDs.h>
+#include <Combat/String_IDs.h>
 #include "WWDebug.h"
 
 
@@ -62,7 +62,7 @@
 *
 ******************************************************************************/
 
-void DlgWebPage::DoDialog(char* page)
+void DlgWebPage::DoDialog(const char* page)
 	{
 	WWASSERT_PRINT(page && (strlen(page) > 0), "Invalid parameter.\n");
 

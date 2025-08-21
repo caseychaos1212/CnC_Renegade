@@ -19,7 +19,7 @@
 // W3DView.cpp : Defines the class behaviors for the application.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "w3dview.h"
 
 #include "mainfrm.h"
@@ -165,12 +165,6 @@ BOOL CW3DViewApp::InitInstance (void)
 	// If you are not using these features and wish to reduce the size
 	//  of your final executable, you should remove from the following
 	//  the specific initialization routines you do not need.
-
-#ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
-#else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
-#endif
 
 	Do_Version_Check ();
 

@@ -39,22 +39,25 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#define WIN32_LEAN_AND_MEAN
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #pragma warning(disable:4201)
 #include <mmsystem.h>
 #pragma warning(default:4201)
+#include <conio.h>
+#endif
 
 #include <malloc.h>
 #include <stdio.h>
-#include <conio.h>
 #include <stdlib.h>
 #include <assert.h>
 
 #include "BandTest.h"
 
-#include "..\combat\specialbuilds.h"
+#include "../Combat/specialbuilds.h"
+
+#include <algorithm>
 
 // warning C4711: function 'xxx' selected for automatic inline expansion
 #pragma warning(disable:4711)
@@ -201,7 +204,7 @@ static int Ping_Host(unsigned long host_ip, unsigned long my_ip, int times, int 
 static float Average_Ping(int num_pings, unsigned long *ping_times, bool ignore_low_high);
 static float Lowest_Ping(int num_pings, unsigned long *ping_times);
 static int Get_Path_To_Server(unsigned long *path, unsigned long my_ip, unsigned long server_ip);
-static void Ping_Profile(SOCKADDR_IN *router_addr, unsigned long my_ip);
+static void Ping_Profile(struct sockaddr_in *router_addr, unsigned long my_ip);
 
 static bool Set_Registry_Int(const char *name, int value);
 static int Get_Registry_Int(const char *name, int def_value);
@@ -784,7 +787,7 @@ unsigned long Upstream_Detect(unsigned long server_ip, unsigned long my_ip, int 
 	*/
 	unsigned long downstream_bandwidth = upstream_bandwidth;
 	int old_band = Get_Registry_Int("Up", 0);
-	unsigned long diff = abs(upstream_bandwidth - old_band);
+	unsigned long diff = abs(int(upstream_bandwidth - old_band));
 	bool calc_down = true;
 	if (diff < upstream_bandwidth / 10) {
 		downstream_bandwidth = Get_Registry_Int("Down", upstream_bandwidth);
@@ -813,7 +816,7 @@ unsigned long Upstream_Detect(unsigned long server_ip, unsigned long my_ip, int 
 
 	if (calc_down && upstream_bandwidth < 576 * 1000 && upstream_bandwidth > 8) {
 
-		int new_ping_timeout = max((int)(average_ping * 5), 200);
+		int new_ping_timeout = std::max((int)(average_ping * 5), 200);
 #if (0)
 		if (upstream_bandwidth > 80000) {
 			method_one = true;
@@ -924,7 +927,7 @@ unsigned long Upstream_Detect(unsigned long server_ip, unsigned long my_ip, int 
 			}
 		}
 
-		//int new_ping_timeout = max((int)(average_ping * 5), 200);
+		//int new_ping_timeout = std::max((int)(average_ping * 5), 200);
 		float old_average_ping = average_ping;
 		//float old_lowest_ping = lowest_ping;
 		average_ping = 0.0f;
@@ -1069,7 +1072,7 @@ unsigned long Upstream_Detect(unsigned long server_ip, unsigned long my_ip, int 
 
 
 
-void Ping_Profile(SOCKADDR_IN *router_addr, unsigned long my_ip)
+void Ping_Profile(struct sockaddr_in *router_addr, unsigned long my_ip)
 {
 	float ping_averages[1000];
 	unsigned long ping_times[100];
@@ -1175,10 +1178,11 @@ void Ping_Profile(SOCKADDR_IN *router_addr, unsigned long my_ip)
 	*/
 	float min_ping = 10000.0f;
 	float max_ping = -1.0f;
+	int i;
 
-	for (int i=0 ; i<ping_number ; i++) {
-		min_ping = min(min_ping, ping_averages[i]);
-		max_ping = max(max_ping, ping_averages[i]);
+	for (i=0 ; i<ping_number ; i++) {
+		min_ping = std::min(min_ping, ping_averages[i]);
+		max_ping = std::max(max_ping, ping_averages[i]);
 	}
 
 	sprintf(temp_buffer, "%3.1f", max_ping);
@@ -1637,7 +1641,7 @@ float Lowest_Ping(int num_pings, unsigned long *ping_times)
 {
 	float lowest_ping = 1000000.0;
 	for (int i=0 ; i<num_pings ; i++) {
-		lowest_ping = min(lowest_ping, (float)(ping_times[i]));
+		lowest_ping = std::min(lowest_ping, (float)(ping_times[i]));
 	}
 	return(lowest_ping);
 }
@@ -2173,7 +2177,7 @@ bool Open_Registry(void)
 {
 	HKEY key;
 	unsigned long disposition;
-	long result = RegCreateKeyEx(HKEY_LOCAL_MACHINE, RegistryPath, 0, NULL, 0, KEY_ALL_ACCESS, NULL, &key, &disposition);
+	long result = RegCreateKeyEx(HKEY_CURRENT_USER, RegistryPath, 0, NULL, 0, KEY_ALL_ACCESS, NULL, &key, &disposition);
 	if (result == ERROR_SUCCESS) {
 		RegistryKey = key;
 		return(true);

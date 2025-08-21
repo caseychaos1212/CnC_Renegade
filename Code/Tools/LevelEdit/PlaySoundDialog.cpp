@@ -19,8 +19,8 @@
 // PlaySoundDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "PlaySoundDialog.h"
 #include "Utils.H"
 #include "AudibleSound.H"

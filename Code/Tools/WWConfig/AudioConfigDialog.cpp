@@ -19,13 +19,13 @@
 // AudioConfigDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "wwconfig.h"
+#include "StdAfx.h"
+#include "WWConfig.h"
 #include "audioconfigdialog.h"
 #include "wwaudio.h"
 #include "locale_api.h"
 #include "wwconfig_ids.h"
-#include "..\..\combat\specialbuilds.h"
+#include "../../Combat/specialbuilds.h"
 
 
 

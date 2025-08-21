@@ -19,8 +19,8 @@
 // StringPickerDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "stringpickerdialog.h"
 #include "stringscategoryviewdialog.h"
 #include "translatedb.h"
@@ -279,7 +279,8 @@ StringPickerDialogClass::OnInitDialog (void)
 	//	Loop over all the categories in the database
 	//
 	int count = TranslateDBClass::Get_Category_Count ();
-	for (int index = 0; index < count; index ++) {
+	int index;
+	for (index = 0; index < count; index ++) {
 		
 		//
 		//	Lookup this category

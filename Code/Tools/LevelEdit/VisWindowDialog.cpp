@@ -19,8 +19,8 @@
 // VisWindowDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "viswindowdialog.h"
 #include "visrasterizer.h"
 #include "visrendercontext.h"

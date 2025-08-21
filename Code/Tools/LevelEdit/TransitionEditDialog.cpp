@@ -19,10 +19,10 @@
 // TransitionEditDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "leveleditview.h"
-#include "transitioneditdialog.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "LevelEditView.h"
+#include "TransitionEditDialog.h"
 #include "ww3d.h"
 #include "scene.h"
 #include "camera.h"
@@ -364,7 +364,7 @@ TransitionEditDialogClass::OnDestroy (void)
 void
 TransitionEditDialogClass::Render_View (void)
 {
-	static render_lock = false;
+	static bool render_lock = false;
 
 	if (!render_lock) {
 		render_lock = true;

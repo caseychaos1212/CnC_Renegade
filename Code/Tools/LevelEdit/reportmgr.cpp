@@ -34,7 +34,7 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "reportmgr.h"
 #include "textfile.h"
 #include "nodemgr.h"
@@ -104,7 +104,8 @@ ReportMgrClass::Export_File_Usage_Report (const char *filename)
 		//
 		//	Now add all W3D file-depenedencies to this list
 		//
-		for (int index = 0; index < file_list.Count (); index ++) {			
+		int index;
+		for (index = 0; index < file_list.Count (); index ++) {			
 			StringClass filename (file_list[index], true);			
 
 			//

@@ -22,7 +22,7 @@
 //
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "colorpicker.h"
 #include "colorpickerdialogclass.h"
 #include <math.h>
@@ -35,7 +35,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-
+LRESULT WINAPI fnColorPickerProc (HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
 //extern HINSTANCE _hinstance;
 

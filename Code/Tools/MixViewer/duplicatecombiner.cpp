@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "duplicatecombiner.h"
 #include "ffactory.h"
 #include "mixfile.h"
@@ -363,7 +363,7 @@ DuplicateRemoverClass::Make_Temp_Directory (void)
 	char temp_dir[MAX_PATH] = { 0 };
 	::GetTempPath (sizeof (temp_dir), temp_dir);
 
-	CString temp_path = Make_Path (temp_dir, "mixcombiner");
+	CString temp_path = static_cast<const char *>(Make_Path (temp_dir, "mixcombiner"));
 	
 	//
 	//	Try to find a unique temp directory to store our data
@@ -425,9 +425,8 @@ DuplicateRemoverClass::Clean_Directory (LPCTSTR local_dir)
 	//
 	DynamicVectorClass<StringClass> file_list;
 	BOOL keep_going = TRUE;
-	WIN32_FIND_DATA find_info = { 0 };
-	for (HANDLE hfind = ::FindFirstFile (search_mask, &find_info);
-		  (hfind != INVALID_HANDLE_VALUE) && keep_going;
+	WIN32_FIND_DATA find_info = { 0 };HANDLE hfind = ::FindFirstFile (search_mask, &find_info);
+	for (;(hfind != INVALID_HANDLE_VALUE) && keep_going;
 		  keep_going = ::FindNextFile (hfind, &find_info))
 	{
 		
@@ -508,7 +507,7 @@ DuplicateRemoverClass::Make_Path (LPCTSTR path, LPCTSTR filename)
 void
 DuplicateRemoverClass::Get_Temp_Filename (StringClass &full_path)
 {
-	CString temp_path = Make_Path (TempDirectory, "tempfile");
+	CString temp_path = static_cast<const char *>(Make_Path (TempDirectory, "tempfile"));
 	
 	//
 	//	Try to find a unique temp filename

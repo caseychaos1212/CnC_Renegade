@@ -19,8 +19,8 @@
 // StringsCategoryViewDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "stringscategoryviewdialog.h"
 #include "translateobj.h"
 #include "translatedb.h"
@@ -121,7 +121,8 @@ StringsCategoryViewDialogClass::Remove_Column (int col_id)
 		// it from list
 		//
 		if (Columns[index] == col_id) {
-			Columns.Delete (index);
+			// Cast needed to disambiguate Delete(int) and Delete(const T &) where T = int
+			(Columns.*(static_cast<bool (DynamicVectorClass<int>::*) (int)>(&DynamicVectorClass<int>::Delete))) (index);
 			break;
 		}
 	}

@@ -38,12 +38,12 @@
 #include "WOLLoginProfile.h"
 #include "_globals.h"
 #include "Resource.h"
-#include <WWOnline\WOLLoginInfo.h>
-#include <WWUI\DialogBase.h>
-#include <WWUI\ListCtrl.h>
-#include <WWLib\Registry.h>
+#include <WWOnline/WOLLoginInfo.h>
+#include <wwui/DialogBase.h>
+#include <wwui/ListCtrl.h>
+#include <wwlib/Registry.h>
 #include "String_IDs.h"
-#include <WWTranslateDB\TranslateDB.h>
+#include <wwtranslatedb/TranslateDB.h>
 #include <stdio.h>
 
 using namespace WWOnline;
@@ -57,7 +57,7 @@ static const char* REG_VALUE_TEAMRANK = "RankTeam";
 static const char* REG_VALUE_CLANRANK = "RankClan";
 
 // Profile ranking columns
-static enum
+enum
 {
 	COL_LADDERNAME = 0,
 	COL_WINS,

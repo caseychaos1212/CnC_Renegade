@@ -19,13 +19,13 @@
 // VisErrorReportDialog.cpp : implementation file
 //
 
-#include "StdAfx.H"
-#include "LevelEdit.H"
-#include "VisErrorReportDialog.H"
-#include "Utils.H"
-#include "VisLog.H"
-#include "SceneEditor.H"
-#include "CameraMgr.H"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "VisErrorReportDialog.h"
+#include "Utils.h"
+#include "VisLog.h"
+#include "SceneEditor.h"
+#include "CameraMgr.h"
 #include "phys.h"
 #include "rendobj.h"
 
@@ -403,7 +403,7 @@ VisErrorReportDialogClass::OnMouseMove (UINT nFlags, CPoint point)
 	if (m_bTrackingSel) {		 
 		 int new_pixel = point.x - m_GraphArea.left;
 		 new_pixel = max (new_pixel, 0);
-		 new_pixel = min (new_pixel, m_GraphArea.right-1);
+		 new_pixel = min<int> (new_pixel, m_GraphArea.right-1);
 		 m_Graph.Set_Selection (m_TrackPixel, new_pixel);
 		 Refresh_View ();
 		 On_Graph_Sel_Changed ();
@@ -872,7 +872,7 @@ VisErrorReportDialogClass::Paint_Axis_Area (HDC hdc)
 	return ;
 }
 
-UINT VisErrorReportDialogClass::OnNcHitTest(CPoint point) 
+LRESULT VisErrorReportDialogClass::OnNcHitTest(CPoint point) 
 {
 	// TODO: Add your message handler code here and/or call default
 	

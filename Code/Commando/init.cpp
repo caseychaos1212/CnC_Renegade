@@ -40,7 +40,7 @@
 #include "wwmath.h"
 #include "ww3d.h"
 #include "wwphys.h"
-#include "WWAudio.H"
+#include "WWAudio.h"
 #include "wwsaveload.h"
 #include "input.h"
 #include "inputconfigmgr.h"
@@ -1077,12 +1077,6 @@ bool Game_Init(void)
 
 #endif
 
-
-	//
-	// Send our Spy Usage Info off to Gamespy
-	//
-	GameSpyQnR.TrackUsage();
-
 	return true;
 }
 
@@ -1109,7 +1103,7 @@ bool Game_Init(void)
  * HISTORY:                                                                                    *
  *   11/9/2001 3:39PM ST : Created                                                             *
  *=============================================================================================*/
-char *Build_Registry_Location_String(char *base, char *modifier, char *sub)
+char *Build_Registry_Location_String(const char *base, const char *modifier, const char *sub)
 {
 	static char _whole_registry_string[1024];
 

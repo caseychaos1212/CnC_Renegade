@@ -19,10 +19,10 @@
 // LevelEditView.cpp : implementation of the CLevelEditView class
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "leveleditdoc.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "camera.h"
 #include "cameramgr.h"
 #include "mainfrm.h"
@@ -134,7 +134,7 @@ CLevelEditView::~CLevelEditView (void)
 	MEMBER_RELEASE (m_p2DCamera);
 
     // Cache this information in the registry
-	 TCHAR temp_string[10];
+	 TCHAR temp_string[12];
 	 ::itoa (m_iWindowed, temp_string, 10);
     theApp.WriteProfileString ("Config", "Windowed", temp_string);
 

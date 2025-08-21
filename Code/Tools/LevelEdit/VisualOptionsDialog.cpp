@@ -19,8 +19,8 @@
 // VisualOptionsDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "VisualOptionsDialog.h"
 #include "Utils.H"
 #include "WW3D.H"

@@ -46,14 +46,14 @@
 #include "nat.h"
 #include "FirewallWait.h"
 #include "BandwidthCheck.h"
-#include <WWOnline\WOLLoginInfo.h>
-#include <WWOnline\WOLServer.h>
-#include <WWOnline\WOLLoginInfo.h>
-#include <WWOnline\WaitCondition.h>
-#include <WWOnline\PingProfile.h>
+#include <WWOnline/WOLLoginInfo.h>
+#include <WWOnline/WOLServer.h>
+#include <WWOnline/WOLLoginInfo.h>
+#include <WWOnline/WaitCondition.h>
+#include <WWOnline/PingProfile.h>
 #include "string_ids.h"
-#include <WWTranslateDB\TranslateDB.h>
-#include <WWDebug\WWDebug.h>
+#include <wwtranslatedb/TranslateDB.h>
+#include <wwdebug/WWDebug.h>
 #include "UserOptions.h"
 #include "autostart.h"
 #include "consolemode.h"
@@ -1294,7 +1294,7 @@ void WOLLogonMgr::HandleNotification(MessageOfTheDayEvent &event)
 		// Get the text of the news section
 		WideStringClass news_body(0, true);
 		news_body = news + TAG_NEWS_START_LEN;
-		WCHAR* news_end = ::wcsstr(news_body, TAG_NEWS_END);
+		WCHAR* news_end = (WCHAR*)::wcsstr(news_body, TAG_NEWS_END);
 
 		if (news_end)
 			{

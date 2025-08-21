@@ -43,7 +43,7 @@
 #include "definition.h"
 #include "definitionmgr.h"
 #include "definitionclassids.h"
-#include "wwaudio.h"
+#include "WWAudio.h"
 #include "audiblesound.h"
 #include "htree.h"
 #include "hanim.h"
@@ -108,7 +108,8 @@ Build_List_From_String
 		//
 		// Determine how many entries there will be in the list
 		//
-		for (const char *entry = buffer;
+		const char *entry;
+		for (entry = buffer;
 			  (entry != NULL) && (entry[1] != 0);
 			  entry = ::strstr (entry, delimiter))
 		{
@@ -151,7 +152,7 @@ Build_List_From_String
 				// Copy this entry into its own string
 				//
 				StringClass entry_string = entry;
-				char *delim_start = ::strstr (entry_string, delimiter);				
+				char *delim_start = (char *)::strstr (entry_string, delimiter);				
 				if (delim_start != NULL) {
 					delim_start[0] = 0;
 				}

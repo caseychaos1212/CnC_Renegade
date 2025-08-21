@@ -35,8 +35,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "transitionnode.h"
+#include "StdAfx.h"
+#include "TransitionNode.h"
 #include "sceneeditor.h"
 
 #include "filemgr.h"

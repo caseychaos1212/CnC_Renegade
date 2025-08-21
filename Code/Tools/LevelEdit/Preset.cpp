@@ -34,7 +34,7 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "preset.h"
 #include "presetgeneraltab.h"
@@ -56,7 +56,7 @@
 #include "combatchunkid.h"
 #include "spawnernode.h"
 #include "soundnode.h"
-#include "vispointnode.h"
+#include "VisPointNode.h"
 #include "presettransitiontab.h"
 #include "vehicle.h"
 #include "zonenode.h"
@@ -69,7 +69,7 @@
 #include "lightnode.h"
 #include "physobjedittab.h"
 #include "definitionutils.h"
-#include "waypathnode.h"
+#include "WaypathNode.h"
 #include "utils.h"
 #include "coverspotnode.h"
 #include "presetdependencytab.h"
@@ -601,7 +601,8 @@ PresetClass::Copy_Properties (const PresetClass &preset)
 			//
 			//	Free any existing transitions
 			//
-			for (int index = 0; index < dest_list->Count (); index ++) {
+			int index;
+			for (index = 0; index < dest_list->Count (); index ++) {
 				TransitionDataClass *data = (*dest_list)[index];
 				SAFE_DELETE (data);
 			}
@@ -970,7 +971,7 @@ PresetClass::Is_Valid_Sound_Preset (void)
 		//
 		//	Does this preset point to a file?
 		//
-		CString filename = definition->Get_Filename ();
+		CString filename = static_cast<const char *>(definition->Get_Filename ());
 		DWORD file_attrs = ::GetFileAttributes (definition->Get_Filename ());
 		if (	filename.GetLength () > 0 && 
 				(file_attrs == 0xFFFFFFFF ||
@@ -1352,7 +1353,8 @@ PresetClass::Remove_Child_Preset (int child_id)
 {
 	int index = m_ChildIDList.ID (child_id);
 	if (index != -1) {
-		m_ChildIDList.Delete (index);
+		// Cast needed to disambiguate Delete(int) and Delete(const T &) where T = int
+		(m_ChildIDList.*(static_cast<bool (DynamicVectorClass<int>::*) (int)>(&DynamicVectorClass<int>::Delete))) (index);
 	}
 		
 	return ;

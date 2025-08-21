@@ -35,7 +35,7 @@
 *
 ******************************************************************************/
 
-#include "toolkit.h"
+#include "Toolkit.h"
 
 // The Soldier Powerup Tables contains three columns.
 // The first chars of the preset name, the weapon powerup, and the twiddler powerup.
@@ -196,7 +196,7 @@ DECLARE_SCRIPT(M00_Soldier_Powerup_Disable, "")
 	{
 		if (timer_id == 1)
 		{
-			Commands->Send_Custom_Event(obj, obj, M00_CUSTOM_POWERUP_GRANT_DISABLE, 0);
+			Commands->Send_Custom_Event(obj, obj, M00_CUSTOM_POWERUP_GRANT_DISABLE, 0, 0.0f);
 		}
 	}
 };

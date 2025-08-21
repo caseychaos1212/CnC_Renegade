@@ -19,10 +19,10 @@
 // ZoneEditDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "leveleditview.h"
-#include "zoneeditdialog.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "LevelEditView.h"
+#include "ZoneEditDialog.h"
 #include "ww3d.h"
 #include "scene.h"
 #include "camera.h"
@@ -296,7 +296,7 @@ ZoneEditDialogClass::OnDestroy (void)
 void
 ZoneEditDialogClass::Render_View (void)
 {
-	static render_lock = false;
+	static bool render_lock = false;
 
 	if (!render_lock) {
 		render_lock = true;

@@ -19,8 +19,8 @@
 // VisStatsDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "VisStatsDialog.h"
 #include "cameramgr.h"
 #include "utils.h"

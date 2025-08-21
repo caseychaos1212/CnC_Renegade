@@ -70,7 +70,7 @@
 #include	"natter.h"
 #include	"vistable.h"
 #include "gameinitmgr.h"
-#include "dlgmessagebox.h"
+#include "DlgMessageBox.h"
 #include "apppacketstats.h"
 #include "clientfps.h"
 #include "gamechanlist.h"
@@ -89,7 +89,7 @@
 #include "dlgmpconnectionrefused.h"
 
 #include "Resource.h"
-#include <WWUI\DialogMgr.h>
+#include <wwui/DialogMgr.h>
 #include "ffactory.h"
 #include "realcrc.h"
 
@@ -396,7 +396,7 @@ int cNetwork::Get_Data_Files_CRC(void)
 #define	UNINITIALLIZED_CRC	0x4592abf1
 	static int crc = UNINITIALLIZED_CRC;
 	if ( crc == UNINITIALLIZED_CRC ) {
-		char * filelist[] = {
+		const char * filelist[] = {
 		"jgo`fqv+aag",					//"objects.ddb",           
 		"dwhjw+lkl",					//"armor.ini",             
 		"gjk`v+lkl",					//"bones.ini",             
@@ -590,7 +590,7 @@ void cNetwork::Onetime_Shutdown(void)
 	}
 #endif // 0
 
-#pragma message("(TSS) This packet ref count assert very occasionally fails.")
+// FIXME (TSS) This packet ref count assert very occasionally fails.
    //WWASSERT(cPacket::Get_Ref_Count() == 0);
 
 	REF_PTR_RELEASE(VisTable);
@@ -1089,11 +1089,11 @@ LPCSTR cNetwork::Get_Client_Enumeration_String(void)
    WWASSERT(I_Am_Server());
    WWASSERT(PServerConnection->Is_Established());
 
-   char temp_str[10];
+   char temp_str[12];
    strcpy(ClientEnumerationString, "");
    for (int rhost_id = PServerConnection->Get_Min_RHost(); rhost_id <= PServerConnection->Get_Max_RHost(); rhost_id++) {
 		if (Get_Server_Rhost(rhost_id) != NULL) {
-         strcat(ClientEnumerationString, itoa(rhost_id, temp_str, 10));
+         strcat(ClientEnumerationString, itoa(rhost_id, temp_str, 12));
          strcat(ClientEnumerationString, " ");
       }
 

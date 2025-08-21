@@ -19,8 +19,8 @@
 // VideoConfigDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "wwconfig.h"
+#include "StdAfx.h"
+#include "WWConfig.h"
 #include "videoconfigdialog.h"
 #include "ww3d.h"
 #include "assetmgr.h"
@@ -46,7 +46,7 @@ WW3DAssetManager *_TheAssetMgr = NULL;;
 /////////////////////////////////////////////////////////////////////////////
 //	Local prototypes
 /////////////////////////////////////////////////////////////////////////////
-int _cdecl ResolutionSortCallback (const void *elem1, const void *elem2);
+int __cdecl ResolutionSortCallback (const void *elem1, const void *elem2);
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -328,7 +328,8 @@ VideoConfigDialogClass::Update_Resolution_Slider (void)
 	//	Filter out any resolutions that don't fit the current
 	// bit depth
 	//
-	for (int index = 0; index < ResolutionList.Count (); index ++) {
+	int index;
+	for (index = 0; index < ResolutionList.Count (); index ++) {
 		const ResolutionDescClass &res_desc = ResolutionList[index];
 
 		//
@@ -546,7 +547,7 @@ VideoConfigDialogClass::OnItemchangedDriverList
 // ResolutionSortCallback
 //
 /////////////////////////////////////////////////////////////////////////////
-int _cdecl
+int __cdecl
 ResolutionSortCallback (const void *elem1, const void *elem2)
 {
 	const ResolutionDescClass *res1 = ((const ResolutionDescClass *)elem1);

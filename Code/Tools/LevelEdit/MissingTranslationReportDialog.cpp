@@ -19,8 +19,8 @@
 // MissingTranslationReportDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "missingtranslationreportdialog.h"
 #include "reportmgr.h"
 #include "translatedb.h"

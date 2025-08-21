@@ -35,9 +35,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
-#include "leveledit.h"
+#include "LevelEdit.h"
 #include "leveleditdoc.h"
 #include "export.h"
 #include "editorini.h"
@@ -224,8 +224,8 @@ ExporterClass::Export_Dependency_File (void)
 	//	Make a file that contains a list of all the W3D files that
 	// were part of this export
 	//
-	StringClass dep_filename	= FilenameBase + ".dep";
-	StringClass dep_path			= ::Make_Path (TempDirectory, dep_filename);
+	StringClass dep_filename	= static_cast<const char *>(FilenameBase + ".dep");
+	StringClass dep_path			= static_cast<const char *>(::Make_Path (TempDirectory, dep_filename));
 	AssetDependencyManager::Save_Level_Dependencies (dep_path, m_AssetList);
 
 	//
@@ -559,8 +559,8 @@ ExporterClass::Find_Files (const char *search_mask, STRING_LIST &file_list)
 	//
 	WIN32_FIND_DATA find_info = { 0 };
 	BOOL keep_going = TRUE;
-	for (HANDLE hfile_find = ::FindFirstFile (search_mask, &find_info);
-		  (hfile_find != INVALID_HANDLE_VALUE) && keep_going;
+	HANDLE hfile_find = ::FindFirstFile (search_mask, &find_info);
+	for (;(hfile_find != INVALID_HANDLE_VALUE) && keep_going;
 		  keep_going = ::FindNextFile (hfile_find, &find_info))
 	{			
 		//
@@ -725,8 +725,8 @@ ExporterClass::Clean_Directory (LPCTSTR local_dir)
 	DynamicVectorClass<CString> file_list;
 	BOOL keep_going = TRUE;
 	WIN32_FIND_DATA find_info = { 0 };
-	for (HANDLE hfind = ::FindFirstFile (search_mask, &find_info);
-		  (hfind != INVALID_HANDLE_VALUE) && keep_going;
+	HANDLE hfind = ::FindFirstFile (search_mask, &find_info);
+	for (;(hfind != INVALID_HANDLE_VALUE) && keep_going;
 		  keep_going = ::FindNextFile (hfind, &find_info))
 	{
 		

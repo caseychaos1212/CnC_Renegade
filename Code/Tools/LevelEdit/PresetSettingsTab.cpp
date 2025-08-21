@@ -19,9 +19,9 @@
 // PresetSettingsTab.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "presetsettingstab.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "PresetSettingsTab.h"
 #include "definition.h"
 #include "preset.h"
 #include "specsheet.h"

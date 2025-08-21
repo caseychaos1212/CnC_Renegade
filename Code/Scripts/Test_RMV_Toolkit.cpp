@@ -39,7 +39,7 @@
 #include "scripts.h"
 #include <string.h>
 #include <stdio.h>
-#include "toolkit.h"
+#include "Toolkit.h"
 
 enum {
 	TECHNICIAN_MOVEMENT,
@@ -56,7 +56,7 @@ DECLARE_SCRIPT(RMV_Trigger_Zone, "TargetID:int, Type:int, Param:int")
 			int param = Get_Int_Parameter("Param");
 			GameObject *target = Commands->Find_Object(Get_Int_Parameter("TargetID"));
 			if (target)
-				Commands->Send_Custom_Event(obj, target, type, param);
+				Commands->Send_Custom_Event(obj, target, type, param, 0.0f);
 			if (obj) 
 				Commands->Destroy_Object(obj);
 		}
@@ -73,7 +73,7 @@ DECLARE_SCRIPT(RMV_Trigger_Zone_2, "TargetID:int, Type:int, Param:int")
 			int param = Get_Int_Parameter("Param");
 			GameObject *target = Commands->Find_Object(Get_Int_Parameter("TargetID"));
 			if (target)
-				Commands->Send_Custom_Event(obj, target, type, param);
+				Commands->Send_Custom_Event(obj, target, type, param, 0.0f);
 		}
 	}
 };
@@ -95,7 +95,7 @@ DECLARE_SCRIPT(RMV_Trigger_Poked, "Target_ID:int, Type:int, Param:int")
 		}
 		if (target)
 		{
-			Commands->Send_Custom_Event(obj, target, type, param);
+			Commands->Send_Custom_Event(obj, target, type, param, 0.0f);
 		}
 	}
 };
@@ -141,12 +141,12 @@ DECLARE_SCRIPT(RMV_Engineer_Wander, "Custom_Type:int, Custom_Param_1:int, Custom
 			{
 				emergency = true;
 			}
-			Commands->Send_Custom_Event(obj, sound.Creator, c_type, c_param_1);
+			Commands->Send_Custom_Event(obj, sound.Creator, c_type, c_param_1, 0.0f);
 		}
 		else if (sound.Type == M00_SOUND_ENGINEER_WANDER_EMERGENCY && !busy)
 		{
 			emergency = true;
-			Commands->Send_Custom_Event(obj, sound.Creator, c_type, c_param_1);
+			Commands->Send_Custom_Event(obj, sound.Creator, c_type, c_param_1, 0.0f);
 		}
 		else if (sound.Type == M00_SOUND_BUILDING_DESTROYED + Get_Int_Parameter("Building_Number"))
 		{
@@ -214,7 +214,8 @@ DECLARE_SCRIPT(RMV_Engineer_Wander, "Custom_Type:int, Custom_Param_1:int, Custom
 				float facing = Commands->Get_Facing(terminal);
 				Commands->Set_Facing(obj, facing + 180);
 			}
-			char *anim;
+			//#CFE_TODO uhh....
+			const char *anim;
 			anim = (char *)int_anim;
 			anim = "s_a_human.h_a_con2";
 			ActionParamsStruct params;
@@ -226,7 +227,7 @@ DECLARE_SCRIPT(RMV_Engineer_Wander, "Custom_Type:int, Custom_Param_1:int, Custom
 		{
 			GameObject *terminal;
 			terminal = Commands->Find_Object(terminal_id);
-			Commands->Send_Custom_Event(obj, terminal, c_type, c_param_2);
+			Commands->Send_Custom_Event(obj, terminal, c_type, c_param_2, 0.0f);
 			busy = emergency = false;
 			if (always_run)
 			{
@@ -322,7 +323,7 @@ DECLARE_SCRIPT(RMV_Building_Engineer_Controller, "Killed_Broadcast_Radius:float,
 					GameObject * target = Commands->Find_Object(Get_Int_Parameter("25_Start_ID") + x);
 					if (target)
 					{
-						Commands->Send_Custom_Event(obj, target, 1000, 1000);
+						Commands->Send_Custom_Event(obj, target, 1000, 1000, 0.0f);
 					}
 				}
 			}
@@ -340,7 +341,7 @@ DECLARE_SCRIPT(RMV_Building_Engineer_Controller, "Killed_Broadcast_Radius:float,
 					GameObject * target = Commands->Find_Object(Get_Int_Parameter("50_Start_ID") + x);
 					if (target)
 					{
-						Commands->Send_Custom_Event(obj, target, 1000, 1000);
+						Commands->Send_Custom_Event(obj, target, 1000, 1000, 0.0f);
 					}
 				}
 			}
@@ -355,7 +356,7 @@ DECLARE_SCRIPT(RMV_Building_Engineer_Controller, "Killed_Broadcast_Radius:float,
 					GameObject * target = Commands->Find_Object(Get_Int_Parameter("75_Start_ID") + x);
 					if (target)
 					{
-						Commands->Send_Custom_Event(obj, target, 1000, 1000);
+						Commands->Send_Custom_Event(obj, target, 1000, 1000, 0.0f);
 					}
 				}
 			}
@@ -374,7 +375,7 @@ DECLARE_SCRIPT(RMV_Building_Engineer_Controller, "Killed_Broadcast_Radius:float,
 					GameObject * target = Commands->Find_Object(Get_Int_Parameter("25_Start_ID") + x);
 					if (target)
 					{
-						Commands->Send_Custom_Event(obj, target, 2000, 2000);
+						Commands->Send_Custom_Event(obj, target, 2000, 2000, 0.0f);
 					}
 				}
 			}
@@ -392,7 +393,7 @@ DECLARE_SCRIPT(RMV_Building_Engineer_Controller, "Killed_Broadcast_Radius:float,
 					GameObject * target = Commands->Find_Object(Get_Int_Parameter("50_Start_ID") + x);
 					if (target)
 					{
-						Commands->Send_Custom_Event(obj, target, 2000, 2000);
+						Commands->Send_Custom_Event(obj, target, 2000, 2000, 0.0f);
 					}
 				}
 			}
@@ -407,7 +408,7 @@ DECLARE_SCRIPT(RMV_Building_Engineer_Controller, "Killed_Broadcast_Radius:float,
 					GameObject * target = Commands->Find_Object(Get_Int_Parameter("75_Start_ID") + x);
 					if (target)
 					{
-						Commands->Send_Custom_Event(obj, target, 2000, 2000);
+						Commands->Send_Custom_Event(obj, target, 2000, 2000, 0.0f);
 					}
 				}
 			}
@@ -478,7 +479,7 @@ DECLARE_SCRIPT(RMV_Toggled_Engineer_Target, "Emergency=1:int, Animation_Name:str
 			i_am_occupied = true;
 			const char *anim;
 			anim = Get_Parameter("Animation_Name");
-			Commands->Send_Custom_Event(obj, sender, c_type, (int)anim);
+			Commands->Send_Custom_Event(obj, sender, c_type, (int)anim, 0.0f);
 		}
 		if ((type == c_type) && (param == c_param_2) && (i_am_occupied))
 		{

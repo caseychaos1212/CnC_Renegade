@@ -35,8 +35,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "vispointnode.h"
+#include "StdAfx.h"
+#include "VisPointNode.h"
 #include "sceneeditor.h"
 #include "collisiongroups.h"
 #include "persistfactory.h"

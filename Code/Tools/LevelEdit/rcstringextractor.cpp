@@ -34,7 +34,7 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "rcstringextractor.h"
 #include "translatedb.h"
 #include "stringsmgr.h"
@@ -74,7 +74,7 @@ RCStringExtractorClass::Find_String
 	//
 	//	Did we find the keyword?
 	//
-	char *buffer = ::strstr (new_line, keyword);
+	char *buffer = const_cast<char *>(::strstr (new_line, keyword));
 	if (buffer != NULL) {
 		buffer += ::lstrlen (keyword);
 

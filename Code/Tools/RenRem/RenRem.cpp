@@ -39,13 +39,15 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include <winsock.h>
+#include "network-typedefs.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 
 #include "servercontrol.h"
+
+#include <timeapi.h>
 
 #define RENREM_PORT 1234
 #define PROMPT ">"

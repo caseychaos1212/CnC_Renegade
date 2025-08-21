@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "StdAfx.H"
-#include "UniqueList.H"
+#include "StdAfx.h"
+#include "UniqueList.h"
 
 

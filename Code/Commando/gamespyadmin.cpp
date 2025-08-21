@@ -32,7 +32,7 @@
 #include "cnetwork.h"
 #include "dlgmpconnect.h"
 #include "gamespy_qnr.h"
-#include <Gamespy\ghttp.h>
+#include <Gamespy/ghttp/ghttp.h>
 #include "useroptions.h"
 #include "renegadedialogmgr.h"
 #include "dialogtests.h"
@@ -128,7 +128,7 @@ void cGameSpyAdmin::HandleNotification(DlgWOLWaitEvent& event) {
 					Join_Server();
 				} else { // This must be an Abort...
 					DetectingBandwidth = false;
-#pragma message ("Is Stop_Main_Loop() safe here?")
+// FIXME Is Stop_Main_Loop() safe here?
 					extern void Stop_Main_Loop (int);
 					Stop_Main_Loop(EXIT_SUCCESS);
 				}
@@ -140,7 +140,7 @@ void cGameSpyAdmin::HandleNotification(DlgWOLWaitEvent& event) {
 		case WaitCondition::Error:
 		{
 			DetectingBandwidth = false;
-#pragma message ("Is Stop_Main_Loop() safe here?")
+// FIXME Is Stop_Main_Loop() safe here?
 			extern void Stop_Main_Loop (int);
 			Stop_Main_Loop(EXIT_SUCCESS);
 		}

@@ -19,10 +19,10 @@
 // SelectPresetDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "SelectPresetDialog.h"
-#include "presetmgr.h"
+#include "PresetMgr.h"
 #include "preset.h"
 #include "icons.h"
 #include "nodecategories.h"

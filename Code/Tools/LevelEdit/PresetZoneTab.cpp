@@ -19,13 +19,13 @@
 // PresetGeneralTab.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "presetzonetab.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "PresetZoneTab.h"
 #include "definition.h"
 #include "preset.h"
 #include "utils.h"
-#include "zoneeditdialog.h"
+#include "ZoneEditDialog.h"
 #include "objectnode.h"
 #include "rendobj.h"
 #include "SceneEditor.h"

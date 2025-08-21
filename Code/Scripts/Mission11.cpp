@@ -37,9 +37,9 @@
 
 #include "scripts.h"
 #include <string.h>
-#include "toolkit.h"
-#include "mission1.h"
-#include "mission11.h"
+#include "Toolkit.h"
+#include "Mission1.h"
+#include "Mission11.h"
 
 
 /***********************************************************************************************************************
@@ -279,9 +279,9 @@ DECLARE_SCRIPT(M11_Mission_Controller_JDG, "")
 						{
 							//Commands->Attach_Script(STAR, "M11_Havocs_Script_JDG", "");
 							missionIntroConv = Commands->Create_Conversation( "M11_Level_Intro_Conversation", 100, 1000, false);
-							Commands->Join_Conversation( NULL, missionIntroConv, false, false );
-							Commands->Join_Conversation( STAR, missionIntroConv, false, false );
-							//Commands->Join_Conversation( NULL, missionIntroConv, false, false );
+							Commands->Join_Conversation( NULL, missionIntroConv, false, false, true );
+							Commands->Join_Conversation( STAR, missionIntroConv, false, false, true );
+							//Commands->Join_Conversation( NULL, missionIntroConv, false, false, true );
 							Commands->Start_Conversation( missionIntroConv,  missionIntroConv );
 							Commands->Monitor_Conversation (obj, missionIntroConv);
 						}
@@ -298,9 +298,9 @@ DECLARE_SCRIPT(M11_Mission_Controller_JDG, "")
 						if (STAR)
 						{
 							missionIntroConv02 = Commands->Create_Conversation( "M11_Level_Intro_Conversation02", 100, 1000, false);
-							Commands->Join_Conversation( NULL, missionIntroConv02, false, false );
-							Commands->Join_Conversation( NULL, missionIntroConv02, false, false );
-							//Commands->Join_Conversation( STAR, missionIntroConv02, false, false );
+							Commands->Join_Conversation( NULL, missionIntroConv02, false, false, true );
+							Commands->Join_Conversation( NULL, missionIntroConv02, false, false, true );
+							//Commands->Join_Conversation( STAR, missionIntroConv02, false, false, true );
 							Commands->Start_Conversation( missionIntroConv02,  missionIntroConv02 );
 							Commands->Monitor_Conversation (obj, missionIntroConv02);
 
@@ -339,7 +339,7 @@ DECLARE_SCRIPT(M11_Mission_Controller_JDG, "")
 						//Commands->Send_Custom_Event ( obj, obj, 0, M11_ADD_SECOND_OBJECTIVE_JDG, 5 );
 
 						evaPingedSydneyConv = Commands->Create_Conversation( "M11_EVA_SydneyPinged_Conversation", 100, 1000, false);
-						Commands->Join_Conversation( NULL, evaPingedSydneyConv, false, false );;
+						Commands->Join_Conversation( NULL, evaPingedSydneyConv, false, false, true );;
 						Commands->Start_Conversation( evaPingedSydneyConv,  evaPingedSydneyConv );
 						Commands->Monitor_Conversation (obj, evaPingedSydneyConv);
 
@@ -379,7 +379,7 @@ DECLARE_SCRIPT(M11_Mission_Controller_JDG, "")
 						Commands->Send_Custom_Event( obj, obj, 0, M11_ADD_FORTH_OBJECTIVE_JDG, 5 );
 
 						//nukeIntroConv = Commands->Create_Conversation( "M11_EVA_Activate_Nuke_Conversation", 100, 1000, false);
-						//Commands->Join_Conversation( NULL, nukeIntroConv, false, false );
+						//Commands->Join_Conversation( NULL, nukeIntroConv, false, false, true );
 						//Commands->Start_Conversation( nukeIntroConv,  nukeIntroConv );
 						//Commands->Monitor_Conversation (obj, nukeIntroConv);
 					}
@@ -440,7 +440,7 @@ DECLARE_SCRIPT(M11_Mission_Controller_JDG, "")
 				case M11_ADD_FIFTH_OBJECTIVE_JDG: //player's fifth objective is to sabotage the nuclear missle  
 					{
 						evaNukeConv = Commands->Create_Conversation( "M11_EVA_Activate_Nuke_Conversation", 100, 1000, false);
-						Commands->Join_Conversation( NULL, evaNukeConv, false, false );;
+						Commands->Join_Conversation( NULL, evaNukeConv, false, false, true );;
 						Commands->Start_Conversation( evaNukeConv,  evaNukeConv );
 						Commands->Monitor_Conversation (obj, evaNukeConv);
 					}
@@ -618,7 +618,7 @@ DECLARE_SCRIPT(M11_Floor01_SecurityTurret_JDG, "")
 				powerupSpawnLocation = turret12_spawnLocation;
 			}
 			
-			char *powerups[9] = 
+			static constexpr const char *powerups[9] =
 			{
 				//this is a list of potential powerups to be dropped by destroyed security turrets
 				"POW_Health_100",
@@ -1175,7 +1175,7 @@ DECLARE_SCRIPT(M11_ExternalArtillery_Controller_JDG, "")
 				Vector3 explosion_location = sound_location;
 				
 				explosion_location.Z -= 10;
-				Commands->Create_Explosion("Ground Explosions Twiddler", explosion_location);
+				Commands->Create_Explosion("Ground Explosions Twiddler", explosion_location, NULL);
 
 				float delayTimer = Commands->Get_Random ( delayTimerMin, delayTimerMax );
 				Commands->Send_Custom_Event( obj, obj, 0, M01_PICK_A_NEW_LOCATION_JDG, delayTimer );
@@ -2016,7 +2016,7 @@ DECLARE_SCRIPT(M11_WetBar_NeighborRoom_SpawnedDude_JDG, "")
 				{
 					if (action_id == M01_WALKING_WAYPATH_01_JDG)
 					{
-						char *animationName = M01_Choose_Search_Animation ( );
+						const char* animationName = M01_Choose_Search_Animation ( );
 
 						params.Set_Basic( this, INNATE_PRIORITY_BULLET_HEARD - 5, M01_DOING_ANIMATION_01_JDG );
 						params.Set_Animation (animationName, false);
@@ -2473,7 +2473,7 @@ DECLARE_SCRIPT(M11_Barracks_SpawnedDude_JDG, "")//
 				{
 					if (action_id == M01_WALKING_WAYPATH_01_JDG)
 					{
-						char *animationName = M01_Choose_Search_Animation ( );
+						const char* animationName = M01_Choose_Search_Animation ( );
 
 						params.Set_Basic( this, INNATE_PRIORITY_ENEMY_SEEN - 5, M01_DOING_ANIMATION_01_JDG );
 						params.Set_Animation (animationName, false);
@@ -2546,7 +2546,7 @@ DECLARE_SCRIPT(M11_Barracks_MutantReject_JDG, "")//M11_BARRACKS_MUTANT_REJECT_JD
 			params.Set_Attack( STAR, 1, 0, true );
 			Commands->Action_Attack ( obj, params );
 
-			char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+			const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Sound ( soundName, myPosition, obj );
 		}
@@ -3377,7 +3377,7 @@ DECLARE_SCRIPT(M11_Mutant_TrajectoryBone_JDG, "")//
 	void Created( GameObject * obj ) 
 	{
 		Commands->Enable_Hibernation(obj, false );
-		Commands->Set_Animation ( obj, "X11E_Trajectory.X11E_Trajectory", false, NULL, 0, 120 );
+		Commands->Set_Animation ( obj, "X11E_Trajectory.X11E_Trajectory", false, NULL, 0, 120, false );
 	}
 
 	void Animation_Complete(GameObject * obj, const char *anim)
@@ -3395,7 +3395,7 @@ DECLARE_SCRIPT(M11_Mutant_ShatterGlass_JDG, "")
 	void Created( GameObject * obj ) 
 	{
 		Commands->Enable_Hibernation(obj, false );
-		Commands->Set_Animation ( obj, "X11E_Shatter.X11E_Shatter", false, NULL, 0, 120 );
+		Commands->Set_Animation ( obj, "X11E_Shatter.X11E_Shatter", false, NULL, 0, 120, false );
 	}
 
 	void Animation_Complete(GameObject * obj, const char *anim)
@@ -3419,7 +3419,7 @@ DECLARE_SCRIPT(M11_Cryochamber_DestroyedSimple_JDG, "")
 
 	void Damaged( GameObject * obj, GameObject * damager, float amount ) 
 	{
-		Commands->Set_Animation ( obj, "DSP_CRYOBIGD.DSP_CRYOBIGD", false, NULL, 0, 5 );
+		Commands->Set_Animation ( obj, "DSP_CRYOBIGD.DSP_CRYOBIGD", false, NULL, 0, 5, false );
 		Commands->Set_Health ( obj, 0.25f );	
 	}
 };
@@ -3629,7 +3629,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner06_Guy_JDG, "")//this one has been fixed f
 		if (obj && enemy == STAR && myState == IDLE)//
 		{
 			myState = ATTACKING;
-			char *soundName = M11_Choose_Mutant_Alerted_Sound ( );
+			const char* soundName = M11_Choose_Mutant_Alerted_Sound ( );
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -3653,7 +3653,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner06_Guy_JDG, "")//this one has been fixed f
 		{
 			if (obj && myState == IDLE)
 			{
-				char *soundName = M11_Choose_Mutant_Idle_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Idle_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -3663,7 +3663,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner06_Guy_JDG, "")//this one has been fixed f
 
 			else if (obj && myState != DEAD)
 			{
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -3739,7 +3739,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner06_Guy_JDG, "")//this one has been fixed f
 
 			else if (obj && action_id == M01_WALKING_WAYPATH_01_JDG)
 			{
-				char *animationName = M01_Choose_Idle_Animation ( );
+				const char* animationName = M01_Choose_Idle_Animation ( );
 
 				params.Set_Basic( this, 60, M01_DOING_ANIMATION_01_JDG );
 				params.Set_Animation (animationName, false);
@@ -3758,11 +3758,11 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner06_Guy_JDG, "")//this one has been fixed f
 			{
 				if (STAR)
 				{
-					char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+					const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 					Vector3 myPosition = Commands->Get_Position ( obj );
 					Commands->Create_Sound ( soundName, myPosition, obj );
 
-					char *animationName = M11_Choose_Mutant_Attack_Animation ( );
+					const char* animationName = M11_Choose_Mutant_Attack_Animation ( );
 
 					params.Set_Basic( this, 100, M01_DOING_ANIMATION_01_JDG );
 					params.Set_Animation (animationName, false);
@@ -3816,7 +3816,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner05_Guy_JDG, "")
 		if (obj && enemy == STAR && myState == IDLE)//
 		{
 			myState = ATTACKING;
-			char *soundName = M11_Choose_Mutant_Alerted_Sound ( );
+			const char* soundName = M11_Choose_Mutant_Alerted_Sound ( );
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -3840,7 +3840,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner05_Guy_JDG, "")
 		{
 			if (obj && myState == IDLE)
 			{
-				char *soundName = M11_Choose_Mutant_Idle_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Idle_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -3850,7 +3850,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner05_Guy_JDG, "")
 
 			else if (obj && myState != DEAD)
 			{
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -3932,7 +3932,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner05_Guy_JDG, "")
 
 			else if (obj && action_id == M01_WALKING_WAYPATH_01_JDG)
 			{
-				char *animationName = M01_Choose_Idle_Animation ( );
+				const char* animationName = M01_Choose_Idle_Animation ( );
 
 				params.Set_Basic( this, 60, M01_DOING_ANIMATION_01_JDG );
 				params.Set_Animation (animationName, false);
@@ -3951,11 +3951,11 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner05_Guy_JDG, "")
 			{
 				if (STAR)
 				{
-					char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+					const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 					Vector3 myPosition = Commands->Get_Position ( obj );
 					Commands->Create_Sound ( soundName, myPosition, obj );
 
-					char *animationName = M11_Choose_Mutant_Attack_Animation ( );
+					const char* animationName = M11_Choose_Mutant_Attack_Animation ( );
 
 					params.Set_Basic( this, 100, M01_DOING_ANIMATION_01_JDG );
 					params.Set_Animation (animationName, false);
@@ -4014,7 +4014,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner04_Guy_JDG, "")
 		if (obj && enemy == STAR && myState == IDLE)//
 		{
 			myState = ATTACKING;
-			char *soundName = M11_Choose_Mutant_Alerted_Sound ( );
+			const char* soundName = M11_Choose_Mutant_Alerted_Sound ( );
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4038,7 +4038,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner04_Guy_JDG, "")
 		{
 			if (obj && myState == IDLE)
 			{
-				char *soundName = M11_Choose_Mutant_Idle_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Idle_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4048,7 +4048,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner04_Guy_JDG, "")
 
 			else if (obj && myState != DEAD)
 			{
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4094,11 +4094,11 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner04_Guy_JDG, "")
 			{
 				if (STAR)
 				{
-					char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+					const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 					Vector3 myPosition = Commands->Get_Position ( obj );
 					Commands->Create_Sound ( soundName, myPosition, obj );
 
-					char *animationName = M11_Choose_Mutant_Attack_Animation ( );
+					const char* animationName = M11_Choose_Mutant_Attack_Animation ( );
 
 					params.Set_Basic( this, 100, M01_DOING_ANIMATION_01_JDG );
 					params.Set_Animation (animationName, false);
@@ -4152,7 +4152,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner03_Guy_JDG, "")
 		if (obj && enemy == STAR && myState == IDLE)//
 		{
 			myState = ATTACKING;
-			char *soundName = M11_Choose_Mutant_Alerted_Sound ( );
+			const char* soundName = M11_Choose_Mutant_Alerted_Sound ( );
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4176,7 +4176,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner03_Guy_JDG, "")
 		{
 			if (obj && myState == IDLE)
 			{
-				char *soundName = M11_Choose_Mutant_Idle_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Idle_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4186,7 +4186,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner03_Guy_JDG, "")
 
 			else if (obj && myState != DEAD)
 			{
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4271,7 +4271,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner03_Guy_JDG, "")
 
 			else if (obj && action_id == M01_WALKING_WAYPATH_01_JDG)
 			{
-				char *animationName = M01_Choose_Idle_Animation ( );
+				const char* animationName = M01_Choose_Idle_Animation ( );
 
 				params.Set_Basic( this, 60, M01_DOING_ANIMATION_01_JDG );
 				params.Set_Animation (animationName, false);
@@ -4291,11 +4291,11 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner03_Guy_JDG, "")
 			{
 				if (STAR)
 				{
-					char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+					const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 					Vector3 myPosition = Commands->Get_Position ( obj );
 					Commands->Create_Sound ( soundName, myPosition, obj );
 
-					char *animationName = M11_Choose_Mutant_Attack_Animation ( );
+					const char* animationName = M11_Choose_Mutant_Attack_Animation ( );
 
 					params.Set_Basic( this, 100, M01_DOING_ANIMATION_01_JDG );
 					params.Set_Animation (animationName, false);
@@ -4354,7 +4354,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner02_Guy_JDG, "")//this script goes on mutan
 		if (obj && enemy == STAR && myState == IDLE)//
 		{
 			myState = ATTACKING;
-			char *soundName = M11_Choose_Mutant_Alerted_Sound ( );
+			const char* soundName = M11_Choose_Mutant_Alerted_Sound ( );
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4378,7 +4378,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner02_Guy_JDG, "")//this script goes on mutan
 		{
 			if (obj && myState == IDLE)
 			{
-				char *soundName = M11_Choose_Mutant_Idle_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Idle_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4388,7 +4388,7 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner02_Guy_JDG, "")//this script goes on mutan
 
 			else if (obj && myState != DEAD)
 			{
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 
@@ -4425,11 +4425,11 @@ DECLARE_SCRIPT(M11_MutantCrypt_Spawner02_Guy_JDG, "")//this script goes on mutan
 			{
 				if (STAR)
 				{
-					char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+					const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 					Vector3 myPosition = Commands->Get_Position ( obj );
 					Commands->Create_Sound ( soundName, myPosition, obj );
 
-					char *animationName = M11_Choose_Mutant_Attack_Animation ( );
+					const char* animationName = M11_Choose_Mutant_Attack_Animation ( );
 
 					params.Set_Basic( this, 100, M01_DOING_ANIMATION_01_JDG );
 					params.Set_Animation (animationName, false);
@@ -4514,11 +4514,11 @@ DECLARE_SCRIPT(M11_PowerCore_WanderingMutantSpawner_JDG, "")//
 			{
 				if (STAR)
 				{
-					char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+					const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 					Vector3 myPosition = Commands->Get_Position ( obj );
 					Commands->Create_Sound ( soundName, myPosition, obj );
 
-					char *animationName = M11_Choose_Mutant_Attack_Animation ( );
+					const char* animationName = M11_Choose_Mutant_Attack_Animation ( );
 
 					params.Set_Basic( this, 100, M01_DOING_ANIMATION_01_JDG );
 					params.Set_Animation (animationName, false);
@@ -4565,7 +4565,7 @@ DECLARE_SCRIPT(M11_PowerCore_StealthSoldier_Group2_JDG, "")
 		Vector3 powerupSpawnLocation = Commands->Get_Position (obj );
 		powerupSpawnLocation.Z += 0.75f;
 
-		char *powerups[2] = 
+		static constexpr const char *powerups[2] =
 		{
 			//this is a list of potential powerups to be dropped by destroyed security turrets
 			"POW_Health_100",
@@ -4656,7 +4656,7 @@ DECLARE_SCRIPT(M11_PowerCore_Powerup_Zone_JDG, "")//
 		{
 			Vector3 powerupSpawnLocation (-5.568f, 57.285f, -38.736f);
 
-			char *powerups[9] = 
+			static constexpr const char *powerups[9] =
 			{
 				//this is a list of potential powerups to be dropped by destroyed security turrets
 				"POW_Health_100",
@@ -4836,7 +4836,7 @@ DECLARE_SCRIPT(M11_Start_Third_Objective_Zone_JDG, "")//player's third objective
 		{
 			entered = true;
 			addThirdObjectiveConv = Commands->Create_Conversation( "M11_Add_Third_Objective_Conversation", 100, 1000, false);
-			Commands->Join_Conversation( NULL, addThirdObjectiveConv, false, false );;
+			Commands->Join_Conversation( NULL, addThirdObjectiveConv, false, false, true );;
 			Commands->Start_Conversation( addThirdObjectiveConv,  addThirdObjectiveConv );
 			Commands->Monitor_Conversation (obj, addThirdObjectiveConv);	
 		}
@@ -4916,7 +4916,7 @@ DECLARE_SCRIPT(M11_End_Mission_Switch_JDG, "")//this guys ID is M11_END_MISSION_
 	{
 		if (param == M01_START_ACTING_JDG)
 		{
-			Commands->Set_Animation ( obj, "DSP_MINICONSEL.DSP_MINICONSEL", false, NULL, 0, 13 );
+			Commands->Set_Animation ( obj, "DSP_MINICONSEL.DSP_MINICONSEL", false, NULL, 0, 13, false );
 		}
 	}
 };
@@ -4952,7 +4952,7 @@ DECLARE_SCRIPT(M11_KanesRoom_SecurityTurret_JDG, "")
 			Vector3 powerupSpawnLocation = Commands->Get_Position (obj);
 			powerupSpawnLocation.Z = -28.705f;
 			
-			char *powerups[9] = 
+			static constexpr const char* powerups[9] =
 			{
 				//this is a list of potential powerups to be dropped by destroyed security turrets
 				"POW_Health_100",
@@ -5265,8 +5265,8 @@ DECLARE_SCRIPT(M11_Seths_Room_Conversation_Zone_JDG, "")//101103
 		if (enterer == STAR)
 		{
 			int sethConv = Commands->Create_Conversation( "M11_Kane_Regarding_Seth_Conversation", 100, 1000, false);
-			Commands->Join_Conversation( NULL, sethConv, false, false );
-			Commands->Join_Conversation( STAR, sethConv, false, false );
+			Commands->Join_Conversation( NULL, sethConv, false, false, true );
+			Commands->Join_Conversation( STAR, sethConv, false, false, true );
 			Commands->Start_Conversation( sethConv,  sethConv );
 
 			Commands->Destroy_Object ( obj );
@@ -5344,7 +5344,7 @@ DECLARE_SCRIPT(M11_CeilingRepellers_Controller_JDG, "")//M11_FIRSTFLOOR_REPELER_
 					GameObject *controller = Commands->Create_Object("Invisible_Object", ropeA_v3);
 					Commands->Set_Facing ( controller, 75 );
 					Commands->Attach_Script(controller, "Test_Cinematic", "X11D_Repel_Part2.txt");
-					Commands->Set_Animation ( rope_A, "X11D_Rope.X11D_Rope_L", false);
+					Commands->Set_Animation ( rope_A, "X11D_Rope.X11D_Rope_L", false, NULL, 0.0f, -1.0f, false);
 
 					spawned_units++;
 
@@ -5360,7 +5360,7 @@ DECLARE_SCRIPT(M11_CeilingRepellers_Controller_JDG, "")//M11_FIRSTFLOOR_REPELER_
 					GameObject *controller = Commands->Create_Object("Invisible_Object", ropeB_v3);
 					Commands->Set_Facing ( controller, -10 );
 					Commands->Attach_Script(controller, "Test_Cinematic", "X11D_Repel_Part2.txt");
-					Commands->Set_Animation ( rope_B, "X11D_Rope.X11D_Rope_L", true);
+					Commands->Set_Animation ( rope_B, "X11D_Rope.X11D_Rope_L", true, NULL, 0.0f, -1.0f, false);
 
 					spawned_units++;
 
@@ -5373,7 +5373,7 @@ DECLARE_SCRIPT(M11_CeilingRepellers_Controller_JDG, "")//M11_FIRSTFLOOR_REPELER_
 				GameObject * rope_A = Commands->Find_Object ( rope_A_id );
 				if (rope_A != NULL)
 				{
-					Commands->Set_Animation ( rope_A, "X11D_Rope.X11D_Rope_Z", true);
+					Commands->Set_Animation ( rope_A, "X11D_Rope.X11D_Rope_Z", true, NULL, 0.0f, -1.0f, false);
 				}
 			}
 
@@ -5382,7 +5382,7 @@ DECLARE_SCRIPT(M11_CeilingRepellers_Controller_JDG, "")//M11_FIRSTFLOOR_REPELER_
 				GameObject * rope_B = Commands->Find_Object ( rope_B_id );
 				if (rope_B != NULL)
 				{
-					Commands->Set_Animation ( rope_B, "X11D_Rope.X11D_Rope_Z", true);
+					Commands->Set_Animation ( rope_B, "X11D_Rope.X11D_Rope_Z", true, NULL, 0.0f, -1.0f, false);
 				}
 			}
 
@@ -5827,7 +5827,7 @@ DECLARE_SCRIPT(M11_Temple_Hologram_01_JDG, "")//100252
 {
 	void Created( GameObject * obj ) 
 	{
-		Commands->Set_Animation (obj, "DSP_HOLO_BIG.DSP_HOLO_BIG", true);
+		Commands->Set_Animation (obj, "DSP_HOLO_BIG.DSP_HOLO_BIG", true, NULL, 0.0f, -1.0f, false);
 	}
 };
 
@@ -5961,7 +5961,7 @@ DECLARE_SCRIPT(M11_KaneRoom_KaneEncounter_Kane_JDG, "")//M11_KanesRoom_Kane_Conv
 		{
 			kane_conversation02 = Commands->Create_Conversation( "M11_KanesRoom_Kane_Conversation", 100, 1000, false);
 			Commands->Join_Conversation( obj, kane_conversation02, false, true, true );
-			Commands->Join_Conversation( STAR, kane_conversation02, false, false );
+			Commands->Join_Conversation( STAR, kane_conversation02, false, false, true );
 			Commands->Start_Conversation( kane_conversation02,  kane_conversation02 );
 
 			Commands->Monitor_Conversation( obj, kane_conversation02 );
@@ -5998,7 +5998,7 @@ DECLARE_SCRIPT(M11_KaneRoom_KaneEncounter_Hologram_JDG, "")//101226
 {
 	void Created( GameObject * obj ) 
 	{
-		Commands->Set_Animation (obj, "DSP_HOLO.DSP_HOLO", true);
+		Commands->Set_Animation (obj, "DSP_HOLO.DSP_HOLO", true, NULL, 0.0f, -1.0f, false);
 	}
 };
 
@@ -6092,7 +6092,7 @@ DECLARE_SCRIPT(M11_CABAL_Babble_Contoller_JDG, "")//  101204
 				speaker03position.Y += Commands->Get_Random(-10,10);
 				speaker03position.Z += Commands->Get_Random(0,10);
 
-				char *cabalSounds[6] = 
+				static constexpr const char* cabalSounds[6] =
 				{
 					//this is a list of potential cabal sayings
 					"M11DSGN_DSGN0088I1EVAC_SND",
@@ -6785,7 +6785,7 @@ DECLARE_SCRIPT(M11_Barracks_MutantUprising_Mutant01_JDG, "")//M11_BARRACKS_MUTAN
 				params.Set_Attack( blackhand, 0.5f, 0, true );
 				Commands->Action_Attack ( obj, params );
 
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 			}
@@ -6815,7 +6815,7 @@ DECLARE_SCRIPT(M11_Barracks_MutantUprising_Mutant02_JDG, "")//M11_BARRACKS_MUTAN
 				params.Set_Attack( blackhand, 0.5f, 0, true );
 				Commands->Action_Attack ( obj, params );
 
-				char *soundName = M11_Choose_Mutant_Attack_Sound ( );
+				const char* soundName = M11_Choose_Mutant_Attack_Sound ( );
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				Commands->Create_Sound ( soundName, myPosition, obj );
 			}
@@ -6844,7 +6844,7 @@ DECLARE_SCRIPT(M11_Flyover_Contoller_JDG, "")
 		{
 			last = 0;
 		}
-		char *flyovers[4] = 
+		static constexpr const char* flyovers[4] =
 		{
 			//this is a low level traffic lane from nod comm to gdi ocean-- N->S
 			"X11A_Flyover_01.txt",
@@ -6883,7 +6883,7 @@ DECLARE_SCRIPT(M11_Sydney_SandM_Machine_Script_JDG, "")//157366
 	void Created( GameObject * obj ) 
 	{
 		Commands->Enable_Cinematic_Freeze( obj, false );
-		Commands->Set_Animation ( obj, "DSP_TORTURE.DSP_TORTURE_01", true );
+		Commands->Set_Animation ( obj, "DSP_TORTURE.DSP_TORTURE_01", true, NULL, 0.0f, -1.0f, false );
 	}
 
 	void Custom( GameObject * obj, int type, int param, GameObject * sender ) 
@@ -6894,7 +6894,7 @@ DECLARE_SCRIPT(M11_Sydney_SandM_Machine_Script_JDG, "")//157366
 			{
 				Commands->Enable_Hibernation( obj, false );
 				Commands->Enable_Cinematic_Freeze( obj, false );
-				Commands->Set_Animation ( obj, "DSP_TORTURE.DSP_TORTURE_02", false );
+				Commands->Set_Animation ( obj, "DSP_TORTURE.DSP_TORTURE_02", false, NULL, 0.0f, -1.0f, false );
 			}
 		}
 	}
@@ -6916,7 +6916,7 @@ DECLARE_SCRIPT(M11_Sydney_SandM_Chair_Script_JDG, "")//101606
 			{
 				Commands->Enable_Hibernation( obj, false );
 				Commands->Enable_Cinematic_Freeze( obj, false );
-				Commands->Set_Animation ( obj, "DSP_TORTURE_TBL.DSP_TORTURE_T01", false );
+				Commands->Set_Animation ( obj, "DSP_TORTURE_TBL.DSP_TORTURE_T01", false, NULL, 0.0f, -1.0f, false );
 			}
 		}
 	}
@@ -6952,28 +6952,28 @@ DECLARE_SCRIPT(M11_Sydney_SandM_Sydney_Bone_JDG, "")
 			{
 				Commands->Enable_Hibernation( obj, false  );
 				Commands->Debug_Message ( "**********************Sydney bone custom received....going to anim A\n" );
-				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_A", false);
+				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_A", false, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (param == M01_MODIFY_YOUR_ACTION_02_JDG)//play animation B
 			{
 				Commands->Enable_Hibernation( obj, false  );
 				Commands->Debug_Message ( "**********************Sydney bone custom received....going to anim B\n" );
-				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_B", false);
+				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_B", false, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (param == M01_MODIFY_YOUR_ACTION_03_JDG)//play animation c
 			{
 				Commands->Enable_Hibernation( obj, false  );
 				Commands->Debug_Message ( "**********************Sydney bone custom received....going to anim C\n" );
-				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_C", false);
+				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_C", false, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (param == M01_MODIFY_YOUR_ACTION_04_JDG)//play animation d
 			{
 				Commands->Enable_Hibernation( obj, false  );
 				Commands->Debug_Message ( "**********************Sydney bone custom received....going to anim D\n" );
-				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_D", false);
+				Commands->Set_Animation ( obj, "X11C_BN_Sydney.X11C_SYD_D", false, NULL, 0.0f, -1.0f, false);
 			}
 		}
 	}
@@ -7021,7 +7021,7 @@ DECLARE_SCRIPT(M11_SimpleSydney_Script_JDG, "")//M11_SIMPLE_SYDNEY_MOBIUS_JDG	10
 				{
 					Commands->Debug_Message ( "**********************Sydney anim D sending custom to bone\n" );
 					Commands->Send_Custom_Event ( obj, troopbone, 0, M01_MODIFY_YOUR_ACTION_04_JDG, 0 );
-					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_D", false);
+					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_D", false, NULL, 0.0f, -1.0f, false);
 				}
 
 				else
@@ -7037,7 +7037,7 @@ DECLARE_SCRIPT(M11_SimpleSydney_Script_JDG, "")//M11_SIMPLE_SYDNEY_MOBIUS_JDG	10
 				{
 					Commands->Debug_Message ( "**********************Sydney anim A sending custom to bone\n" );
 					Commands->Send_Custom_Event ( obj, troopbone, 0, M01_MODIFY_YOUR_ACTION_JDG, 0 );
-					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_A", false);
+					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_A", false, NULL, 0.0f, -1.0f, false);
 				}
 
 				else
@@ -7053,7 +7053,7 @@ DECLARE_SCRIPT(M11_SimpleSydney_Script_JDG, "")//M11_SIMPLE_SYDNEY_MOBIUS_JDG	10
 				{
 					Commands->Debug_Message ( "**********************Sydney anim B sending custom to bone\n" );
 					Commands->Send_Custom_Event ( obj, troopbone, 0, M01_MODIFY_YOUR_ACTION_02_JDG, 0 );
-					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_B", false);
+					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_B", false, NULL, 0.0f, -1.0f, false);
 				}
 
 				else
@@ -7069,7 +7069,7 @@ DECLARE_SCRIPT(M11_SimpleSydney_Script_JDG, "")//M11_SIMPLE_SYDNEY_MOBIUS_JDG	10
 				{
 					Commands->Debug_Message ( "**********************Sydney anim C sending custom to bone\n" );
 					Commands->Send_Custom_Event ( obj, troopbone, 0, M01_MODIFY_YOUR_ACTION_03_JDG, 0 );
-					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_C", false);
+					Commands->Set_Animation ( obj, "S_B_HUMAN.H_B_X11C_SYD_C", false, NULL, 0.0f, -1.0f, false);
 				}
 
 				else
@@ -7559,7 +7559,7 @@ DECLARE_SCRIPT(M11_Petrova_Taunt_Controller_JDG, "")//103797
 
 			else if (param == M01_MODIFY_YOUR_ACTION_JDG && commandClearance == true && PetrovaDead == false)
 			{
-				char *taunt_sound[9] = 
+				static constexpr const char* taunt_sound[9] =
 				{
 					"M00MBPT_ATOC0001I1MBPT_SND",
 					"M00MBPT_ATOS0001I1MBPT_SND",
@@ -8431,7 +8431,7 @@ DECLARE_SCRIPT(M11_Cryochamber_Simple_JDG, "chamber_number:int")
 				Vector3 myPosition = Commands->Get_Position ( obj );
 				float myFacing = Commands->Get_Facing ( obj );
 				Commands->Create_Explosion ( "Explosion_Barrel_Toxic", myPosition, NULL );
-				Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 0, 15 );
+				Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 0, 15, false );
 				Commands->Send_Custom_Event ( obj, Commands->Find_Object ( M11_LABORATORY_MUTANT_CONTROLLER_JDG ), M01_IVE_BEEN_KILLED_JDG, my_number, 0 );
 				Commands->Set_Health ( obj, 1 );
 
@@ -8464,12 +8464,12 @@ DECLARE_SCRIPT(M11_Cryochamber_Simple_JDG, "chamber_number:int")
 
 		if (myHealthPercentage > 25 && destroyed == false)
 		{
-			Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 0, 9 );
+			Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 0, 9, false );
 		}
 
 		else if (destroyed == true)
 		{
-			Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 12, 15 );
+			Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 12, 15, false );
 			Commands->Set_Health ( obj, 1 );
 		}
 
@@ -8479,7 +8479,7 @@ DECLARE_SCRIPT(M11_Cryochamber_Simple_JDG, "chamber_number:int")
 			Vector3 myPosition = Commands->Get_Position ( obj );
 			float myFacing = Commands->Get_Facing ( obj );
 			Commands->Create_Explosion ( "Explosion_Barrel_Toxic", myPosition, NULL );
-			Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 0, 15 );
+			Commands->Set_Animation ( obj, "DSP_CRYOBIG2.DSP_CRYOBIG2", false, NULL, 0, 15, false );
 			Commands->Send_Custom_Event ( obj, Commands->Find_Object ( M11_LABORATORY_MUTANT_CONTROLLER_JDG ), M01_IVE_BEEN_KILLED_JDG, my_number, 0 );
 			Commands->Set_Health ( obj, 1 );
 
@@ -8543,7 +8543,7 @@ DECLARE_SCRIPT(M11_LabMutant_Simple_JDG, "")
 
 			if (currentDifficulty == easy)
 			{
-				char *powerups[2] = 
+				static constexpr const char *powerups[2] =
 				{
 					//this is a list of potential powerups to be dropped by lab mutants
 					"POW_Health_100",
@@ -8555,7 +8555,7 @@ DECLARE_SCRIPT(M11_LabMutant_Simple_JDG, "")
 
 			else if (currentDifficulty == medium)
 			{
-				char *powerups[2] = 
+				static constexpr const char *powerups[2] =
 				{
 					//this is a list of potential powerups to be dropped by lab mutants
 					"POW_Health_050",
@@ -8567,7 +8567,7 @@ DECLARE_SCRIPT(M11_LabMutant_Simple_JDG, "")
 
 			else
 			{
-				char *powerups[2] = 
+				static constexpr const char *powerups[2] =
 				{
 					//this is a list of potential powerups to be dropped by lab mutants
 					"POW_Health_025",
@@ -8593,7 +8593,7 @@ DECLARE_SCRIPT(M11_LabMutant_Simple_JDG, "")
 				if (obj)
 				{
 					Commands->Attach_To_Object_Bone( obj, cryoTrajectory_00, "BN_Trajectory" );
-					Commands->Set_Animation ( obj, "S_C_Human.H_C_X11E_Escape", false, NULL, 0, 120 );
+					Commands->Set_Animation ( obj, "S_C_Human.H_C_X11E_Escape", false, NULL, 0, 120, false );
 					freed = true;
 				}
 			}
@@ -8606,7 +8606,7 @@ DECLARE_SCRIPT(M11_LabMutant_Simple_JDG, "")
 				sabotaged = true;
 				freed = true;
 				//Commands->Apply_Damage( obj, 10000, "BlamoKiller", NULL );
-				Commands->Set_Animation ( obj, "S_C_Human.H_C_Tubedie", false, NULL, 0, 22 );
+				Commands->Set_Animation ( obj, "S_C_Human.H_C_Tubedie", false, NULL, 0, 22, false );
 			}
 		}
 	}
@@ -10020,7 +10020,7 @@ DECLARE_SCRIPT(M11_Sydney_Script_JDG, "")//M11_REAL_SYDNEY_MOBIUS_JDG 100644
 						}
 
 						missionEndConv = Commands->Create_Conversation( "M11_End_Mission_Conversation", 100, 1000, false);
-						Commands->Join_Conversation( STAR, missionEndConv, false, false );
+						Commands->Join_Conversation( STAR, missionEndConv, false, false, true );
 						Commands->Join_Conversation( obj, missionEndConv, false, false, true );
 						Commands->Start_Conversation( missionEndConv,  missionEndConv );
 						Commands->Monitor_Conversation (obj, missionEndConv);
@@ -10396,7 +10396,7 @@ DECLARE_SCRIPT(M11_ForthFloor_Elevator_Switch_Script_JDG, "")//101689 101651 101
 		{
 			if (type == 0)//elevator is moving--flash lights
 			{
-				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true);
+				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (type == 1)//elevator is at top--goto green
@@ -10462,7 +10462,7 @@ DECLARE_SCRIPT(M11_ThirdFloor_Elevator_Switch_Script_JDG, "")//101692 101693 101
 		{
 			if (type == 0)//elevator is moving--flash lights
 			{
-				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true);
+				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (type == 1)//elevator is at top--goto green
@@ -10529,7 +10529,7 @@ DECLARE_SCRIPT(M11_SecondFloor_Elevator_Switch_Script_JDG, "")//101717 101718 10
 		{
 			if (type == 0)//elevator is moving--flash lights
 			{
-				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true);
+				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (type == 1)//elevator is at top--goto green
@@ -10595,7 +10595,7 @@ DECLARE_SCRIPT(M11_FirstFloor_Elevator_Switch_Script_JDG, "")//101721 101722 101
 		{
 			if (type == 0)//elevator is moving--flash lights
 			{
-				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true);
+				Commands->Set_Animation ( obj, "DSP_DOORSWITCH.DSP_DOORSWITCH", true, NULL, 0.0f, -1.0f, false);
 			}
 
 			else if (type == 1)//elevator is at top--goto green
@@ -11186,7 +11186,7 @@ DECLARE_SCRIPT(M11_CeilingRepellers_Controller2_JDG, "")//106908
 					GameObject *controller = Commands->Create_Object("Invisible_Object", ropeC_v3);
 					//Commands->Set_Facing ( controller, 75 );
 					Commands->Attach_Script(controller, "Test_Cinematic", "X11D_Repel_Part4.txt");
-					Commands->Set_Animation ( rope_C, "X11D_Rope.X11D_Rope_L", false);
+					Commands->Set_Animation ( rope_C, "X11D_Rope.X11D_Rope_L", false, NULL, 0.0f, -1.0f, false);
 
 					spawned_units++;
 
@@ -11200,7 +11200,7 @@ DECLARE_SCRIPT(M11_CeilingRepellers_Controller2_JDG, "")//106908
 				GameObject * rope_C = Commands->Find_Object ( rope_C_id );
 				if (rope_C != NULL)
 				{
-					Commands->Set_Animation ( rope_C, "X11D_Rope.X11D_Rope_Z", true);
+					Commands->Set_Animation ( rope_C, "X11D_Rope.X11D_Rope_Z", true, NULL, 0.0f, -1.0f, false);
 				}
 			}
 

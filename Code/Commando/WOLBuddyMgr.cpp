@@ -46,13 +46,13 @@
 #include "WOLJoinGame.h"
 #include "WOLGameInfo.h"
 #include "consolemode.h"
-#include <WWOnline\WOLChannel.h>
-#include <WWOnline\WOLProduct.h>
-#include <WWLib\Registry.h>
+#include <WWOnline/WOLChannel.h>
+#include <WWOnline/WOLProduct.h>
+#include <wwlib/Registry.h>
 
 #include "String_IDs.h"
-#include <WWTranslateDB\TranslateDB.h>
-#include <WWDebug\WWDebug.h>
+#include <wwtranslatedb/TranslateDB.h>
+#include <wwdebug/WWDebug.h>
 
 using namespace WWOnline;
 
@@ -208,7 +208,7 @@ void WOLBuddyMgr::LoadIgnoreList(void)
 	mIgnoreList.clear();
 
 	HKEY hKey;
-	LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, APPLICATION_SUB_KEY_NAME_IGNORE_LIST, 0, KEY_READ, &hKey);
+	LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, APPLICATION_SUB_KEY_NAME_IGNORE_LIST, 0, KEY_READ, &hKey);
 
 	if (ERROR_SUCCESS == result)
 		{

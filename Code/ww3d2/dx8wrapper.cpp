@@ -645,7 +645,8 @@ void DX8Wrapper::Enumerate_Devices()
 bool DX8Wrapper::Set_Any_Render_Device(void)
 {
 	// Then fullscreen
-	for (int dev_number = 0; dev_number < _RenderDeviceNameTable.Count(); dev_number++) {
+	int dev_number;
+	for (dev_number = 0; dev_number < _RenderDeviceNameTable.Count(); dev_number++) {
 		if (Set_Render_Device(dev_number,-1,-1,-1,0,false)) {
 			return true;
 		}
@@ -1014,7 +1015,7 @@ bool DX8Wrapper::Set_Device_Resolution(int width,int height,int bits,int windowe
 		if (height != -1) {
 			_PresentParameters.BackBufferHeight = ResolutionHeight = height;
 		}
-#pragma message("TODO: support changing windowed status and changing the bit depth")
+// FIXME TODO: support changing windowed status and changing the bit depth
 		return Reset_Device();
 	} else {
 		return false;
@@ -1235,8 +1236,9 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(int resx,int resy,int bitdepth,D3DFORMAT 
 	*/
 	bool found = false;
 	unsigned int mode = 0;
+	int format_index;
 
-	for (int format_index=0; format_index < format_count; format_index++) {
+	for (format_index=0; format_index < format_count; format_index++) {
 		found |= Find_Color_Mode(format_table[format_index],resx,resy,&mode);
 		if (found) break;
 	}
@@ -1964,12 +1966,12 @@ void DX8Wrapper::Apply_Render_State_Changes()
 	unsigned mask=TEXTURE0_CHANGED;
 	for (unsigned i=0;i<MAX_TEXTURE_STAGES;++i,mask<<=1) {
 		if (render_state_changed&mask) {
-			SNAPSHOT_SAY(("DX8 - apply texture %d (%s)\n",i,render_state.Textures[i] ? render_state.Textures[i]->Get_Full_Path() : "NULL"));
+			SNAPSHOT_SAY(("DX8 - apply texture %d (%s)\n",i,render_state.Textures[i] ? static_cast<const char *>(render_state.Textures[i]->Get_Full_Path()) : "NULL"));
 			if (render_state.Textures[i]) render_state.Textures[i]->Apply(i);
 			else TextureClass::Apply_Null(i);
 		}
 		else {
-			SNAPSHOT_SAY(("DX8 - texture %d not changed (%s)\n",i,render_state.Textures[i] ? render_state.Textures[i]->Get_Full_Path() : "NULL"));
+			SNAPSHOT_SAY(("DX8 - texture %d not changed (%s)\n",i,render_state.Textures[i] ? static_cast<const char *>(render_state.Textures[i]->Get_Full_Path()) : "NULL"));
 		}
 	}
 
@@ -2422,8 +2424,9 @@ void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass* light_env)
 		D3DLIGHT8 light;
 		::ZeroMemory(&light, sizeof(D3DLIGHT8));
 		light.Type=D3DLIGHT_DIRECTIONAL;
+		int l;
 
-		for (int l=0;l<light_count;++l) {
+		for (l=0;l<light_count;++l) {
 			(Vector3&)light.Diffuse=light_env->Get_Light_Diffuse(l);
 			Vector3 dir=-light_env->Get_Light_Direction(l);
 			light.Direction=(const D3DVECTOR&)(dir);

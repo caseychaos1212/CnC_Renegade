@@ -36,12 +36,14 @@
 #include "always.h"
 
 #include "WebBrowser.h"
-#include <WWLib\WWCOMUtil.h>
-#include <WW3D2\WW3D.h>
-#include <WWOnline\WOLLoginInfo.h>
-#include <WWDebug\WWDebug.h>
+#include <WWLib/WWCOMUtil.h>
+#include <WW3D2/WW3D.h>
+#include <WWOnline/WOLLoginInfo.h>
+#include <WWDebug/WWDebug.h>
 #include "win.h"
 #include "_globals.h"
+
+#include <shellapi.h>
 
 WebBrowser* WebBrowser::_mInstance = NULL;
 
@@ -102,7 +104,7 @@ bool WebBrowser::InstallPrerequisites(void)
 
 	// Attempt to open the URL key
 	HKEY key;
-	LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, APPLICATION_SUB_KEY_NAME_URL, 0, KEY_ALL_ACCESS, &key);
+	LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, APPLICATION_SUB_KEY_NAME_URL, 0, KEY_ALL_ACCESS, &key);
 
 	if (ERROR_SUCCESS != result)
 		{
@@ -111,7 +113,7 @@ bool WebBrowser::InstallPrerequisites(void)
 				"Renegade Warning!", MB_ICONWARNING|MB_OK);
 
 		// Attempt to create the key.
-		LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE, APPLICATION_SUB_KEY_NAME_URL, 0, NULL,
+		LONG result = RegCreateKeyEx(HKEY_CURRENT_USER, APPLICATION_SUB_KEY_NAME_URL, 0, NULL,
 			REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
 
 		if (ERROR_SUCCESS != result)
@@ -410,7 +412,7 @@ bool WebBrowser::FinalizeCreate(HWND window)
 *
 ******************************************************************************/
 
-bool WebBrowser::ShowWebPage(char* page)
+bool WebBrowser::ShowWebPage(const char* page)
 	{
 	// Retrieve URL from page identifier
 	char url[512];
@@ -524,7 +526,7 @@ void WebBrowser::Hide(void)
 bool WebBrowser::RetrievePageURL(const char* page, char* url, int size)
 	{
 	HKEY key;
-	LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, APPLICATION_SUB_KEY_NAME_URL, 0, KEY_READ, &key);
+	LONG result = RegOpenKeyEx(HKEY_CURRENT_USER, APPLICATION_SUB_KEY_NAME_URL, 0, KEY_READ, &key);
 
 	if (result == ERROR_SUCCESS)
 		{

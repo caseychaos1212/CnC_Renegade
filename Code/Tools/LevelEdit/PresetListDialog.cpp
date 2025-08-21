@@ -19,10 +19,10 @@
 // PresetListDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "PresetListDialog.h"
-#include "presetmgr.h"
+#include "PresetMgr.h"
 #include "definition.h"
 #include "definitionfactory.h"
 #include "definitionfactorymgr.h"

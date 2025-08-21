@@ -19,14 +19,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include <wwdebug.h>
-#include "Viseme.h"
+#include "viseme.h"
+#include <ctype.h>
 
 #define IS_VOWEL(x)			( x && (x=='a' || x=='e' || x=='i' || x=='o' || x=='u') )
 #define IS_CONSONANT(x)		( x && !IS_VOWEL(x) )
 
 struct VisemeTableItem
 {
-	char	*LetterCombination;
+	const char	*LetterCombination;
 	char	Visemes[2];
 };
 

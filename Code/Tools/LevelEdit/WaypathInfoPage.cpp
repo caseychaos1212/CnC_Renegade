@@ -19,11 +19,11 @@
 // WaypathInfoPage.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "waypathinfopage.h"
-#include "waypathnode.h"
-#include "waypointnode.h"
+#include "WaypathNode.h"
+#include "WaypointNode.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -19,9 +19,9 @@
 // NewAssetPackageDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "newassetpackagedialog.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "NewAssetPackageDialog.h"
 #include "assetpackagemgr.h"
 
 

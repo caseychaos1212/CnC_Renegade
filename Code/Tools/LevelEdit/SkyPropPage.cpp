@@ -19,11 +19,11 @@
 // SkyPropPage.cpp : implementation file
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "skyproppage.h"
 #include "backgroundmgr.h"
 #include "combat.h"
-#include "leveledit.h"
+#include "LevelEdit.h"
 #include "phys.h"
 #include "pscene.h"
 

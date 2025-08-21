@@ -19,8 +19,8 @@
 // GenerateBaseDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "GenerateBaseDialog.h"
 
 #ifdef _DEBUG

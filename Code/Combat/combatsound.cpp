@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 #include "combatsound.h"
-#include "wwaudio.h"
+#include "WWAudio.h"
 
 /*
 **
@@ -55,7 +55,8 @@ const char * CombatSoundTypeNames[NUM_DEFINED_SOUND_TYPES] =
 */
 void	CombatSoundManager::Init( void )
 {
-	for ( int i = 0; i < NUM_DEFINED_SOUND_TYPES; i++ ) {
+	int i;
+	for ( i = 0; i < NUM_DEFINED_SOUND_TYPES; i++ ) {
 		WWAudioClass::Get_Instance()->Add_Logical_Type( i, CombatSoundTypeNames[i] );
 	}
 

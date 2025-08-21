@@ -74,7 +74,7 @@ enum
 ///////////////////////////////////////////////////////////////////////////
 //	Static member initialization
 ///////////////////////////////////////////////////////////////////////////
-__int64 PathSolveClass::_TicksPerMilliSec = 0;
+int64_t PathSolveClass::_TicksPerMilliSec = 0;
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -86,10 +86,10 @@ __int64 PathSolveClass::_TicksPerMilliSec = 0;
 //	Get_Time
 //
 ///////////////////////////////////////////////////////////////////////////
-static inline __int64
+static inline int64_t
 Get_Time (void)
 {
-	__int64 curr_time = 0;
+	int64_t curr_time = 0;
 	::QueryPerformanceCounter ((LARGE_INTEGER *)&curr_time);
 	return curr_time;
 }
@@ -337,8 +337,8 @@ PathSolveClass::Resolve_Path (unsigned int milliseconds)
 {
 	WWMEMLOG(MEM_PATHFIND);
 
-	__int64 start_time	= Get_Time ();
-	__int64 end_time		= start_time + (((__int64)milliseconds) * _TicksPerMilliSec);
+	int64_t start_time	= Get_Time ();
+	int64_t end_time		= start_time + (((int64_t)milliseconds) * _TicksPerMilliSec);
 
 	int iterations = 0;
 	//Begin_Distributed_Solve ();
@@ -1512,7 +1512,8 @@ PathSolveClass::Post_Process_Path (void)
 	m_Path[m_Path.Count () - 1].m_SectorCenter = m_StartSector->Get_Bounding_Box ().Center;
 	m_Path[m_Path.Count () - 1].m_SectorExtent = m_StartSector->Get_Bounding_Box ().Extent;
 
-	for (int index = 0; index < temp_node_list.Count (); index ++) {
+	int index;
+	for (index = 0; index < temp_node_list.Count (); index ++) {
 
 		PathNodeClass *node				= temp_node_list[index];
 		PathfindPortalClass *portal	= node->Peek_Portal ();

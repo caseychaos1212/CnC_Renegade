@@ -24,11 +24,11 @@
 //
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "mainfrm.h"
 #include "leveleditdoc.h"
-#include "leveleditview.h"
-#include "leveledit.h"
+#include "LevelEditView.h"
+#include "LevelEdit.h"
 #include "utils.h"
 #include "outputform.h"
 #include "sceneeditor.h"
@@ -608,7 +608,8 @@ Find_File
 			CString search_mask = current_dir + "\\*.*";
 
 			// Loop through all the files in the current directory
-			for (HANDLE hfilefind = ::FindFirstFile (search_mask, &find_info);
+			HANDLE hfilefind;
+			for (hfilefind = ::FindFirstFile (search_mask, &find_info);
 				  (hfilefind != INVALID_HANDLE_VALUE) && bcontinue && !bfound;
 				  bcontinue = ::FindNextFile (hfilefind, &find_info)) {
 
@@ -730,7 +731,8 @@ Build_List_From_String
 		int delim_len = ::strlen (delimiter);
 
 		// Determine how many entries there will be in the list
-		for (LPCTSTR entry = buffer;
+		LPCTSTR entry;
+		for (entry = buffer;
 			  (entry != NULL) && (entry[1] != 0);
 			  entry = ::strstr (entry, delimiter)) {
 			

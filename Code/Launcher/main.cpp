@@ -66,12 +66,12 @@
 
 #ifdef COPY_PROTECT
 #include "Protect.h"
-#include <Debug\DebugPrint.h>
+#include <Debug/DebugPrint.h>
 #endif
 
 #define UPDATE_RETVAL 123456789  // if a program returns this it means it wants to check for patches
 
-#include "..\combat\specialbuilds.h"
+#include "../Combat/specialbuilds.h"
 
 /*
 #ifdef FREEDEDICATEDSERVER
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
 	InitCommonControls();
 
 	// Goto the folder where launcher is installed
-	myChdir(argv[0]);
+	//myChdir(argv[0]);
 
 	// extract the program name from argv[0].  Change the extension to
 	//   .lcf (Launcher ConFig).  This is the name of our config file.
@@ -512,7 +512,7 @@ bool Get_Restart_Flag(Process &proc, bool &slave)
 	}
 	strcat(regpath, APPLICATION_SUB_KEY_NAME_WOLSETTINGS);
 
-	int result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, regpath, 0, KEY_ALL_ACCESS, &key);
+	int result = RegOpenKeyEx(HKEY_CURRENT_USER, regpath, 0, KEY_ALL_ACCESS, &key);
 
 	if (result == ERROR_SUCCESS) {
 

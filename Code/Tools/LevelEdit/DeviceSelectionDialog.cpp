@@ -19,9 +19,9 @@
 // DeviceSelectionDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
-#include "leveledit.h"
+#include "LevelEdit.h"
 #include "deviceselectiondialog.h"
 #include "ww3d.h"
 #include "resource.h"

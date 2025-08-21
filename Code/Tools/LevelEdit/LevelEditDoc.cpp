@@ -19,8 +19,8 @@
 // LevelEditDoc.cpp : implementation of the CLevelEditDoc class
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "leveleditdoc.h"
 #include "utils.h"
 #include "physcoltest.h"
@@ -28,7 +28,7 @@
 #include "aabtreecull.h"
 #include "light.h"
 #include "ffactory.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "filemgr.h"
 #include "profilesection.h"
 #include "editorphys.h"

@@ -39,16 +39,16 @@
 #include "gamedata.h"
 #include "wolgameinfo.h"
 #include "wolloginprofile.h"
-#include "dlgmessagebox.h"
+#include "DlgMessageBox.h"
 #include "renegadedialogmgr.h"
-#include <combat\playertype.h>
-#include <wwonline\wolgameoptions.h>
-#include <wwui\listctrl.h>
-#include <wwui\comboboxctrl.h>
-#include <wwui\imagectrl.h>
+#include <combat/playertype.h>
+#include <wwonline/wolgameoptions.h>
+#include <wwui/listctrl.h>
+#include <wwui/comboboxctrl.h>
+#include <wwui/imagectrl.h>
 #include "resource.h"
 #include "string_ids.h"
-#include <wwtranslatedb\translatedb.h>
+#include <wwtranslatedb/translatedb.h>
 #include "modpackagemgr.h"
 #include "gameinitmgr.h"
 
@@ -797,7 +797,7 @@ void DlgMPTeamSelect::HandleNotification(GameOptionsMessage& message)
 		while (token)
 			{
 			// Find the first occurance of the token in the message
-			char* cmd = strstr(options, token);
+			const char* cmd = strstr(options, token);
 
 			// If the token was found and it is at the start of the message
 			// then invoke the handler for this message.
@@ -946,7 +946,7 @@ void DlgMPTeamSelect::ProcessWOLPlayerInfo(DlgMPTeamSelect& dialog, const char* 
 		strncpy(info, data, 255);
 
 		// Get players name
-		char* name = "";
+		char* name = NULL;
 		PARSE_STRING(info, " ", name);
 
 		// Team type

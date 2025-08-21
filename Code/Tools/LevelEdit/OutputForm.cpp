@@ -19,9 +19,9 @@
 // OutputFormClass.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "outputform.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "OutputForm.h"
 #include "utils.h"
 
 

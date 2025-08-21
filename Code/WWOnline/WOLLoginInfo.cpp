@@ -37,12 +37,12 @@
 #include <atlbase.h>
 #include "WOLLoginInfo.h"
 #include "WOLSession.h"
-#include <WWLib\WWString.h>
-#include <WWDebug\WWDebug.h>
+#include <wwlib/WWString.h>
+#include <wwdebug/WWDebug.h>
 
 namespace WOL
 {
-#include <WOLAPI\wolapi.h>
+#include <wolapi/wolapi.h>
 }
 
 namespace WWOnline {
@@ -594,7 +594,8 @@ void LoginInfo::StoreLogin(const char* nickname, const char* password,
 		const CComPtr<WOL::IChat>& chat = session->GetChatObject();
 
 		// Find the next empty slot
-		for (int index = 1; index <= MAX_NICKNAMES; ++index)
+		int index;
+		for (index = 1; index <= MAX_NICKNAMES; ++index)
 			{
 			const char* slotNick = NULL;
 			const char* slotPass = NULL;

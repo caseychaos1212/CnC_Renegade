@@ -37,8 +37,8 @@
 #ifndef __WEBBROWSER_H__
 #define __WEBBROWSER_H__
 
-#include "WOLBrowser\WOLBrowser.h"
-#include <WWLib\Notify.h>
+#include "WOLBrowser/WOLBrowser.h"
+#include <WWLib/Notify.h>
 #include <atlbase.h>
 #include <windows.h>
 
@@ -100,7 +100,7 @@ class WebBrowser :
 		bool IsExternalBrowserRunning(void) const;
 
 		//! Display the specified web content.
-		bool ShowWebPage(char* page);
+		bool ShowWebPage(const char* page);
 
 		//! Launch the external browser
 		bool LaunchExternal(const char* url);

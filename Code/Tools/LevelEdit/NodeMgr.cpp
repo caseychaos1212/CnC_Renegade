@@ -35,8 +35,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "nodemgr.h"
+#include "StdAfx.h"
+#include "NodeMgr.H"
 #include "node.h"
 #include "editorchunkids.h"
 #include "preset.h"
@@ -44,11 +44,11 @@
 #include "chunkio.h"
 #include "persistfactory.h"
 #include "sceneeditor.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "instancespage.h"
 #include "gameobjmanager.h"
 #include "terrainnode.h"
-#include "leveledit.h"
+#include "LevelEdit.h"
 #include "regkeys.h"
 #include "presetmgr.h"
 #include "presetremapdialog.h"
@@ -1148,7 +1148,8 @@ NodeMgrClass::Make_Static_Anim_Phys_Collideable (bool onoff)
 	//
 	//	Loop over all the terrains in the level
 	//
-	for (	NodeClass *node = NodeMgrClass::Get_First (NODE_TYPE_TERRAIN);
+	NodeClass *node;
+	for (	node = NodeMgrClass::Get_First (NODE_TYPE_TERRAIN);
 			node != NULL;
 			node = NodeMgrClass::Get_Next (node, NODE_TYPE_TERRAIN))
 	{

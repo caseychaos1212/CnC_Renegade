@@ -31,9 +31,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "updatepresetdialog.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "UpdatePresetDialog.h"
 #include "utils.h"
 #include "filemgr.h"
 #include "filelocations.h"

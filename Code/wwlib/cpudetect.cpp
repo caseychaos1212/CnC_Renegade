@@ -76,7 +76,7 @@ int CPUDetectClass::ProcessorFamily;
 int CPUDetectClass::ProcessorModel;
 int CPUDetectClass::ProcessorRevision;
 int CPUDetectClass::ProcessorSpeed;
-__int64 CPUDetectClass::ProcessorTicksPerSecond;	// Ticks per second
+int64_t CPUDetectClass::ProcessorTicksPerSecond;	// Ticks per second
 double CPUDetectClass::InvProcessorTicksPerSecond;	// 1.0 / Ticks per second
 
 unsigned CPUDetectClass::FeatureBits;
@@ -144,7 +144,7 @@ const char* CPUDetectClass::Get_Processor_Manufacturer_Name()
 
 #define ASM_RDTSC _asm _emit 0x0f _asm _emit 0x31
 
-static unsigned Calculate_Processor_Speed(__int64& ticks_per_second)
+static unsigned Calculate_Processor_Speed(int64_t& ticks_per_second)
 {
 	struct {
 		unsigned timer0_h;
@@ -169,7 +169,7 @@ static unsigned Calculate_Processor_Speed(__int64& ticks_per_second)
 		}
 	}
 
-	__int64 t=*(__int64*)&Time.timer1_h-*(__int64*)&Time.timer0_h;
+	int64_t t=*(int64_t*)&Time.timer1_h-*(int64_t*)&Time.timer0_h;
 	ticks_per_second=(1000/200)*t;	// Ticks per second
 	return unsigned(t/(elapsed*1000));
 }
@@ -897,15 +897,31 @@ void CPUDetectClass::Init_Memory()
 
 void CPUDetectClass::Init_OS()
 {
-	OSVERSIONINFO os;
-	os.dwOSVersionInfoSize=sizeof(os);
-	GetVersionEx(&os);
+	// GetVersionEx only returns the version of Windows it was manifested for since Windows 8.
+	// RtlGetVersion returns the correct information at least at the time of writing.
+	typedef LONG(WINAPI * RtlGetVersionFuncPtr)(PRTL_OSVERSIONINFOW);
+	HMODULE nt_lib = LoadLibraryExA("ntdll", NULL, 0);
+	if (nt_lib != nullptr) {
+		RtlGetVersionFuncPtr RtlGetVersion = (RtlGetVersionFuncPtr)::GetProcAddress(nt_lib, "RtlGetVersion");
 
-	OSVersionNumberMajor=os.dwMajorVersion;
-	OSVersionNumberMinor=os.dwMinorVersion;
-	OSVersionBuildNumber=os.dwBuildNumber;
-	OSVersionPlatformId=os.dwPlatformId;
-	OSVersionExtraInfo=os.szCSDVersion;
+		if (RtlGetVersion != nullptr) {
+			RTL_OSVERSIONINFOW os = {0};
+			os.dwOSVersionInfoSize = sizeof(os);
+			RtlGetVersion(&os);
+			OSVersionNumberMajor = os.dwMajorVersion;
+			OSVersionNumberMinor = os.dwMinorVersion;
+			OSVersionBuildNumber = os.dwBuildNumber;
+			OSVersionPlatformId = os.dwPlatformId;		
+            OSVersionExtraInfo = os.szCSDVersion;
+			return;
+		}
+	}
+
+	OSVersionNumberMajor = 6;
+	OSVersionNumberMinor = 2;
+	OSVersionBuildNumber = 0;
+	OSVersionPlatformId = 2;	
+    OSVersionExtraInfo = "";
 }
 
 bool CPUDetectClass::CPUID(
@@ -1022,7 +1038,7 @@ void CPUDetectClass::Init_Processor_Log()
 	}
 
 	if (CPUDetectClass::Get_L1_Instruction_Trace_Cache_Size()) {
-		SYSLOG(("L1 Instruction Trace Cache: %d way set associative, %dk µOPs\r\n",
+		SYSLOG(("L1 Instruction Trace Cache: %d way set associative, %dk uOPs\r\n",
 			CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
 			CPUDetectClass::Get_L1_Instruction_Cache_Size()/1024));
 	}
@@ -1075,7 +1091,7 @@ void CPUDetectClass::Init_Compact_Log()
 static class CPUDetectInitClass
 {
 public:
-	CPUDetectInitClass::CPUDetectInitClass()
+	CPUDetectInitClass()
 	{
 		CPUDetectClass::Init_CPUID_Instruction();
 		// We pretty much need CPUID, but let's not crash if it doesn't exist.
@@ -1271,8 +1287,42 @@ void Get_OS_Info(
 				os_info.Code="WINXP";
 				return;
 			}
-			os_info.Code="WINXX";
+			if (OSVersionNumberMinor==2) {
+				os_info.Code="WIN2K3";
+				return;
+			}
+			os_info.Code="WIN5.X";
 			return;
 		}
+		if (OSVersionNumberMajor==6) {
+			if (OSVersionNumberMinor == 0) {
+				os_info.Code = "WIN2K8";
+				return;
+			}
+			if (OSVersionNumberMinor == 1) {
+				os_info.Code = "WIN7";
+				return;
+			}
+			if (OSVersionNumberMinor == 2) {
+				os_info.Code = "WIN2013";
+				return;
+			}
+			if (OSVersionNumberMinor == 3) {
+				os_info.Code = "WIN8";
+				return;
+			}
+			os_info.Code="WIN6.X";
+			return;
+		}
+		if (OSVersionNumberMajor==10) {
+			if (OSVersionNumberMinor == 0) {
+				os_info.Code = "WIN10";
+				return;
+			}
+			os_info.Code="WIN10.X";
+			return;
+		}
+		os_info.Code="UNKNOWN";
+		return;
 	}
 }

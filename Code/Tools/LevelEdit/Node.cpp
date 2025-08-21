@@ -34,8 +34,8 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
-#include "node.h"
+#include "StdAfx.h"
+#include "Node.h"
 #include "phys.h"
 #include "sceneeditor.h"
 #include "utils.h"

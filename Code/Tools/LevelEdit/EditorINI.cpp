@@ -35,7 +35,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "StdAfx.H"
+#include "StdAfx.h"
 #include "EditorINI.H"
 #include "b64pipe.h"
 #include "b64straw.h"
@@ -126,12 +126,12 @@ EditorINIClass::Get_Matrix3D
 (
 	LPCTSTR section,
 	LPCTSTR entry,
-	Matrix3D &defvalue
+	const Matrix3D &defvalue
 ) const
 {
 	// check input parameters
 	if ( section == NULL || entry == NULL ) {
-		return false;
+		return defvalue;
 	}
 
 	// read UU string

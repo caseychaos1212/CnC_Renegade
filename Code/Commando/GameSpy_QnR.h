@@ -23,8 +23,8 @@
 /********
 INCLUDES
 ********/
-#include <GameSpy\gqueryreporting.h>
-#include <WWLib\WideString.h>
+#include <GameSpy/qr/gqueryreporting.h>
+#include <wwlib/WideString.h>
 #include "trim.h"
 
 /********
@@ -33,7 +33,7 @@ DEFINES
 
 class CGameSpyQnR
 {
-
+	friend class CCDKeyAuth;
 protected:
 	char secret_key[9];
 	BOOL m_GSInit;
@@ -53,7 +53,6 @@ protected:
 public:
 	void Init(void);
 	void LaunchArcade(void);
-	void TrackUsage(void);
 	void Shutdown(void);
 	BOOL Parse_HeartBeat_List(const char *list);
 	const char *Get_GameSpy_GameName(void) { return gamename; } 

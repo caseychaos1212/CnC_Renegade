@@ -19,14 +19,14 @@
 // GeneratingVisDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "generatingvisdialog.h"
 #include "utils.h"
 #include "sceneeditor.h"
 #include "nodemgr.h"
 #include "vispointgenerator.h"
-#include "leveleditview.h"
+#include "LevelEditView.h"
 #include "groupmgr.h"
 #include "node.h"
 #include "VisPointNode.h"
@@ -424,7 +424,8 @@ GeneratingVisDialogClass::Generate_Points
 	//
 	int total_polys	= 0;
 	int count			= node_list.Count ();
-	for (int index = 0; (index < count) && !m_bStop; index ++) {			
+	int index;
+	for (index = 0; (index < count) && !m_bStop; index ++) {			
 		NodeClass *node = node_list[index];
 		RenderObjClass *rendobj = node->Peek_Render_Obj ();
 		if (rendobj != NULL) {

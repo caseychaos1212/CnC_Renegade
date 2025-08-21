@@ -35,8 +35,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "objectnode.h"
+#include "StdAfx.h"
+#include "ObjectNode.h"
 #include "sceneeditor.h"
 
 #include "tiledefinition.h"

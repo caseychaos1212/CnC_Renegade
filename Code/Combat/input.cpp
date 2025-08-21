@@ -50,8 +50,6 @@
 #include "combat.h"
 #include "ccamera.h"
 
-
-#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
 #include <stdio.h>
@@ -112,7 +110,7 @@ const char *DEFAULT_INPUT_FILENAME = "DEFAULT_INPUT.CFG";
 
 typedef struct {
 	short	ID;
-	char	*Name;
+	const char	*Name;
 } StringID;
 
 StringID	ButtonNames[] = {
@@ -873,7 +871,8 @@ void	Input::Update( void )
 		//
 		//	Update the value of each function based on what keys are down
 		//
-		for (int index = 0; index < INPUT_FUNCTION_COUNT; index ++) {
+		int index;
+		for (index = 0; index < INPUT_FUNCTION_COUNT; index ++) {
 
 			float value1 = Get_Value (index, FunctionPrimaryKeys[index], 1.0F);
 			float value2 = Get_Value (index, FunctionSecondaryKeys[index], 1.0F);
@@ -1129,7 +1128,8 @@ const char *Input::Get_Key_Name( short key_id )
 	//
 	// Check each button name
 	//
-	for (int index = 0; index < NUM_BUTTON_NAMES; index ++) {
+	int index;
+	for (index = 0; index < NUM_BUTTON_NAMES; index ++) {
 		if (ButtonNames[index].ID == key_id) {
 			return ButtonNames[index].Name;
 		}
@@ -1158,7 +1158,8 @@ short	Input::Get_Key( const char *name )
 		//
 		// Check each button name
 		//
-		for (int index = 0; index < NUM_BUTTON_NAMES; index ++) {
+		int index;
+		for (index = 0; index < NUM_BUTTON_NAMES; index ++) {
 			if (::stricmp (name, ButtonNames[index].Name) == 0) {
 				return ButtonNames[index].ID;
 			}
@@ -1637,7 +1638,7 @@ Input::Load_Misc_Settings (INIClass *input_ini)
 	MouseInvert					= input_ini->Get_Bool (SECTION_MISC_SETTINGS, ENTRY_MOUSE_INVERT, true);
 	Mouse2DInvert				= input_ini->Get_Bool (SECTION_MISC_SETTINGS, ENTRY_MOUSE_2D_INVERT, false);
 
-	bool is_target_steering	= input_ini->Get_Bool (ENTRY_TARGET_STEERING, false);
+	bool is_target_steering	= input_ini->Get_Bool (SECTION_MISC_SETTINGS, ENTRY_TARGET_STEERING, false);
 	VehicleGameObj::Set_Target_Steering (is_target_steering);
 
 	//

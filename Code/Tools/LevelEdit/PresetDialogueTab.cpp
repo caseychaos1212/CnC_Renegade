@@ -19,8 +19,8 @@
 // PresetDialogueTab.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "presetdialoguetab.h"
 #include "definition.h"
 #include "preset.h"

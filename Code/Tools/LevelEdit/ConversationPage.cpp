@@ -35,9 +35,9 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
+#include "StdAfx.h"
 
-#include "leveledit.h"
+#include "LevelEdit.h"
 #include "conversationpage.h"
 #include "nodemgr.h"
 #include "node.h"

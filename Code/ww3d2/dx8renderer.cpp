@@ -259,7 +259,8 @@ void DX8TextureCategoryClass::Remove_Polygon_Renderer(DX8PolygonRendererClass* p
 
 void DX8FVFCategoryContainer::Remove_Texture_Category(DX8TextureCategoryClass* tex_category)
 {
-	for (unsigned pass=0;pass<passes;++pass) {
+	unsigned pass;
+	for (pass=0;pass<passes;++pass) {
 		texture_category_list[pass].Remove(tex_category);
 	}
 	for (pass=0; pass<passes; pass++) {
@@ -1622,7 +1623,7 @@ void DX8TextureCategoryClass::Render(void)
 	#endif
 
 		for (unsigned i=0;i<MAX_TEXTURE_STAGES;++i) {
-			SNAPSHOT_SAY(("Set_Texture(%d,%s)\n",i,Peek_Texture(i) ? Peek_Texture(i)->Get_Texture_Name() : "NULL"));
+			SNAPSHOT_SAY(("Set_Texture(%d,%s)\n",i,Peek_Texture(i) ? static_cast<const char *>(Peek_Texture(i)->Get_Texture_Name()) : "NULL"));
 			DX8Wrapper::Set_Texture(i,Peek_Texture(i));
 		}
 
@@ -1630,7 +1631,7 @@ void DX8TextureCategoryClass::Render(void)
 	}
 	#endif
 
-	SNAPSHOT_SAY(("Set_Material(%s)\n",Peek_Material() ? Peek_Material()->Get_Name() : "NULL"));
+	SNAPSHOT_SAY(("Set_Material(%s)\n",Peek_Material() ? static_cast<const char *>(Peek_Material()->Get_Name()) : "NULL"));
 	DX8Wrapper::Set_Material(Peek_Material());
 
 	SNAPSHOT_SAY(("Set_Shader(0x%x)\n",Get_Shader()));
@@ -1920,7 +1921,8 @@ void DX8MeshRendererClass::Register_Mesh_Type(MeshClass* mesh)
 			/*
 			** Search for an existing FVF Category Container that matches this mesh
 			*/
-			for (int i=0;i<texture_category_container_lists_rigid.Count();++i) {
+			int i;
+			for (i=0;i<texture_category_container_lists_rigid.Count();++i) {
 				FVFCategoryList * list=texture_category_container_lists_rigid[i];
 				WWASSERT(list);
 				DX8FVFCategoryContainer * container=list->Peek_Head();

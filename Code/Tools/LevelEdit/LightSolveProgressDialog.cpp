@@ -19,10 +19,10 @@
 // LightSolveProgressDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "LightSolveProgressDialog.h"
-#include "utils.h"
+#include "Utils.h"
 #include "sceneeditor.h"
 #include "lightsolvecontext.h"
 #include "lightsolveprogress.h"

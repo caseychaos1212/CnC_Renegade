@@ -35,8 +35,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 
-#include "stdafx.h"
-#include "waypathnode.h"
+#include "StdAfx.h"
+#include "WaypathNode.h"
 #include "sceneeditor.h"
 #include "collisiongroups.h"
 #include "persistfactory.h"
@@ -45,8 +45,8 @@
 #include "chunkio.h"
 #include "nodemgr.h"
 #include "segline.h"
-#include "waypointnode.h"
-#include "waypathnode.h"
+#include "WaypointNode.h"
+#include "WaypathNode.h"
 #include "waypathinfopage.h"
 #include "nodeinfopage.h"
 #include "positionpage.h"
@@ -356,7 +356,7 @@ WaypointNodeClass::On_Translate (void)
 			//
 			//	Notify our waypath that we have been moved
 			//
-			Matrix3D &tm = Get_Transform ();
+			const Matrix3D &tm = Get_Transform ();
 			m_Waypath->On_Point_Moved (index, tm.Get_Translation ());
 		}
 	}

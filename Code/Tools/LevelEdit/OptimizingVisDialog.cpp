@@ -19,9 +19,9 @@
 // OptimizingVisDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
-#include "optimizingvisdialog.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
+#include "OptimizingVisDialog.h"
 #include "utils.h"
 #include "sceneeditor.h"
 #include "rendobj.h"

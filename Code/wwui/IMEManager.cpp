@@ -184,14 +184,9 @@ bool IMEManager::FinalizeCreate(HWND hwnd)
 
 	mHWND = hwnd;
 
-	// Check the OS version, if Win98 or better then we can use unicode
-	OSVERSIONINFO osvi;
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&osvi);
-
-	bool isWin98orLater = (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) && ((osvi.dwMajorVersion > 4) || ((osvi.dwMajorVersion == 4) && (osvi.dwMinorVersion >= 10)));
-	bool isNT4orLater = (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) && ((osvi.dwMajorVersion > 4) || ((osvi.dwMajorVersion == 4) && (osvi.dwMinorVersion >= 0)));
-	mOSCanUnicode = (isWin98orLater || isNT4orLater);
+	// Assume we have at least Win98 or NT4 which is the min spec
+	// on the box for the original game anyhow.
+	mOSCanUnicode = true;
 
 	// Create new input context for the specified window.
 	mHIMC = ImmCreateContext();
@@ -837,7 +832,7 @@ HKL IMEManager::InputLanguageChangeRequest(HKL hkl)
 		std::vector<HKL> layoutList(numLayouts);
 		layoutList.resize(numLayouts);
 
-		numLayouts = GetKeyboardLayoutList(numLayouts, layoutList.begin());
+		numLayouts = GetKeyboardLayoutList(numLayouts, &(*layoutList.begin()));
 
 		// Find the position in the list of the layout which has been requested.
 		std::vector<HKL>::iterator iter = std::find(layoutList.begin(), layoutList.end(), hkl);

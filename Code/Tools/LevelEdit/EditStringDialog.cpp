@@ -19,8 +19,8 @@
 // EditStringDialog.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "leveledit.h"
+#include "StdAfx.h"
+#include "LevelEdit.h"
 #include "editstringdialog.h"
 #include "translateobj.h"
 #include "definitionclassids.h"
@@ -118,7 +118,7 @@ EditStringDialogClass::OnInitDialog (void)
 	//	Fill in the text controls
 	//
 	if (m_Object != NULL) {
-		CString text = m_Object->Get_English_String ();
+		CString text = static_cast<const char *>(m_Object->Get_English_String ());
 		Convert_Newline_To_Chars (text);
 		
 		SetDlgItemText (IDC_CODEID_EDIT, m_Object->Get_ID_Desc ());

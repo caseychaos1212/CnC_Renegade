@@ -34,8 +34,8 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "stdafx.h"
-#include "spawnernode.h"
+#include "StdAfx.h"
+#include "SpawnerNode.h"
 #include "spawnpointnode.h"
 #include "sceneeditor.h"
 #include "collisiongroups.h"

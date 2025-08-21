@@ -478,7 +478,7 @@ void cGameData::Rebalance_Team_Sides(void)
 void cGameData::Set_Ip_And_Port(void)
 {
 	/*
-	SOCKADDR_IN local_address;
+	struct sockaddr_in local_address;
    bool retcode = cNetUtil::Get_Local_Address(&local_address);
 	WWASSERT(retcode == true);
 
@@ -595,7 +595,7 @@ bool cGameData::Set_Current_Players(int current)
 }
 
 //-----------------------------------------------------------------------------
-void cGameData::Set_Owner(WideStringClass & owner)
+void cGameData::Set_Owner(const WideStringClass & owner)
 {
    Owner = owner;
 }
@@ -1860,7 +1860,8 @@ void cGameData::Show_Game_Settings_Limits(void)
 	// Re-compose the OldBottomText vector
 
 	OldBottomText.Reset_Active();
-	for (int j=0;j<BottomText.Count();++j) {
+	int j;
+	for (j=0;j<BottomText.Count();++j) {
 		OldBottomText.Add(BottomText[j]);
 	}
 	BottomText.Reset_Active();
