@@ -32,6 +32,7 @@
 #define NETSTATS_H
 
 #include "bittype.h"
+#include <cstdint>
 #include "wwdebug.h"
 
 //
@@ -104,15 +105,15 @@ class cNetStats
       ~cNetStats() {};
 
 		void Init_Net_Stats();
-		bool Update_If_Sample_Done(int this_frame_time, bool force_update = false);
+        bool Update_If_Sample_Done(uint32_t this_frame_time, bool force_update = false);
 
       double Get_Pc_Packetloss_Received() const;
       void Set_Pc_Packetloss_Sent(double packetloss_pc);
       double Get_Pc_Packetloss_Sent() const {return RemotePacketloss;}
-		int Get_Remote_Service_Count() {return RemoteServiceCount;}
+      int Get_Remote_Service_Count() const { return RemoteServiceCount; }
 		void Set_Remote_Service_Count(int remote_service_count);
 
-		int Get_Sample_Start_Time() const {return SampleStartTime;}
+        uint32_t Get_Sample_Start_Time() const { return SampleStartTime; }
 
       int Get_Last_Unreliable_Packet_Id() const {return LastUnreliablePacketId;}
       void Set_Last_Unreliable_Packet_Id(int id) {LastUnreliablePacketId = id;}
@@ -121,41 +122,41 @@ class cNetStats
 
 		void Increment_Unreliable_Count() {UnreliableCount++;}
 
-      UINT Get_Stat_Sample(int stat)	const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatSample[stat];}
-      UINT Get_Stat_Macro_Sample(int stat) const	{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatMacroSample[stat];}
-      UINT Get_Stat_Snapshot(int stat)	const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatSnapshot[stat];}
-      UINT Get_Stat_Macro_Snapshot(int stat)	const	{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatMacroSnapshot[stat];}
-      UINT Get_Stat_Total(int stat)		const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatTotal[stat];}
-      UINT Get_Stat_Average(int stat)	const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatAverage[stat];}
+      uint32_t Get_Stat_Sample(int stat)	const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatSample[stat];}
+      uint32_t Get_Stat_Macro_Sample(int stat) const	{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatMacroSample[stat];}
+      uint32_t Get_Stat_Snapshot(int stat)	const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatSnapshot[stat];}
+      uint32_t Get_Stat_Macro_Snapshot(int stat)	const	{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatMacroSnapshot[stat];}
+      uint32_t Get_Stat_Total(int stat)		const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatTotal[stat];}
+      uint32_t Get_Stat_Average(int stat)	const			{WWASSERT(stat >= 0 && stat < STAT_COUNT); return StatAverage[stat];}
 
-      void Increment_Stat_Sample(int stat, UINT increment)			{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatSample[stat] += increment;}
-      void Increment_Stat_Macro_Sample(int stat, UINT increment)	{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatMacroSample[stat] += increment;}
-      void Increment_Stat_Snapshot(int stat, UINT increment)		{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatSnapshot[stat] += increment;}
-      void Increment_Stat_Macro_Snapshot(int stat, UINT increment){WWASSERT(stat >= 0 && stat < STAT_COUNT); StatMacroSnapshot[stat] += increment;}
-      void Increment_Stat_Total(int stat, UINT increment)			{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatTotal[stat] += increment;}
-      void Increment_Stat_Average(int stat, UINT increment)			{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatAverage[stat] += increment;}
+      void Increment_Stat_Sample(int stat, uint32_t increment)			{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatSample[stat] += increment;}
+      void Increment_Stat_Macro_Sample(int stat, uint32_t increment)	{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatMacroSample[stat] += increment;}
+      void Increment_Stat_Snapshot(int stat, uint32_t increment)		{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatSnapshot[stat] += increment;}
+      void Increment_Stat_Macro_Snapshot(int stat, uint32_t increment){WWASSERT(stat >= 0 && stat < STAT_COUNT); StatMacroSnapshot[stat] += increment;}
+      void Increment_Stat_Total(int stat, uint32_t increment)			{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatTotal[stat] += increment;}
+      void Increment_Stat_Average(int stat, uint32_t increment)			{WWASSERT(stat >= 0 && stat < STAT_COUNT); StatAverage[stat] += increment;}
 
       //
 		// TSS - shift these down, and use above access operators
 		//
-		UINT StatSample[STAT_COUNT];
-		UINT StatMacroSample[STAT_COUNT];
-      UINT StatSnapshot[STAT_COUNT];
-      UINT StatMacroSnapshot[STAT_COUNT];
-      UINT StatTotal[STAT_COUNT];
-      UINT StatAverage[STAT_COUNT];
+      uint32_t StatSample[STAT_COUNT];
+      uint32_t StatMacroSample[STAT_COUNT];
+      uint32_t StatSnapshot[STAT_COUNT];
+      uint32_t StatMacroSnapshot[STAT_COUNT];
+      uint32_t StatTotal[STAT_COUNT];
+      uint32_t StatAverage[STAT_COUNT];
 
 	private:
       cNetStats(const cNetStats& source); // Disallow copy (compile/link time)
       cNetStats& operator=(const cNetStats& rhs); // Disallow assignment (compile/link time)
 
       //int PrevLastUnreliable;
-		unsigned long SampleStartTime;
+      uint32_t SampleStartTime;
       int LastUnreliablePacketId;
       int FreezePacketId;
       int UnreliableCount;
 
-		unsigned long StartTime;
+      uint32_t StartTime;
       double RemotePacketloss;
 		int RemoteServiceCount;
 };

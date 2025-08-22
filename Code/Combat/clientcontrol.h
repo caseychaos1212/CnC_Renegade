@@ -53,7 +53,7 @@ public:
 	~CClientControl();
 
 	void					Init(void);
-	virtual uint32		Get_Network_Class_ID(void) const					{return NETCLASSID_CLIENTCONTROL;}
+	virtual uint32_t		Get_Network_Class_ID(void) const					{return NETCLASSID_CLIENTCONTROL;}
 	virtual void		Delete(void)											{delete this;}
 
 	void					Set_Update_Flag(int id);

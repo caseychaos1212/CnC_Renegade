@@ -32,6 +32,7 @@ set(WWNET_SRC
     wwpacket.cpp
     wwpacket.h
     network-typedefs.h
+    socket_wrapper.h
 )
 
 # Targets to build.
@@ -42,3 +43,9 @@ target_link_libraries(wwnet PRIVATE
 )
 
 target_sources(wwnet PRIVATE ${WWNET_SRC})
+
+if (WIN32)
+    target_sources(wwnet PRIVATE socket_wrapper_win32.cpp)
+else()
+    target_sources(wwnet PRIVATE socket_wrapper_posix.cpp)
+endif()

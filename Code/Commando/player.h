@@ -65,7 +65,7 @@ class cPlayer : public PlayerDataClass, public NetworkObjectClass {
    public:
       friend class cPlayerManager; // so that only cPlayerManager can call ~cPlayer
 
-		virtual uint32		Get_Network_Class_ID(void) const		{return NETCLASSID_PLAYER;}
+		virtual uint32_t		Get_Network_Class_ID(void) const		{return NETCLASSID_PLAYER;}
 		virtual void		Delete(void);
 
 		void Init(void);

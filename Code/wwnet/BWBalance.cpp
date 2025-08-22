@@ -39,13 +39,16 @@
 #include "connect.h"
 #include "packetmgr.h"
 #include "systimer.h"
+#include <cstdint>
+#include <algorithm>
+#include <limits>
 
 BandwidthBalancerClass BandwidthBalancer;
 
 /*
 ** 8000 bits per second is about as low as we want to go.
 */
-#define MIN_ACCEPTABLE_BANDWIDTH	8000
+constexpr uint32_t MIN_ACCEPTABLE_BANDWIDTH = 8000u;
 
 
 
@@ -148,7 +151,7 @@ void BandwidthBalancerClass::Allocate_Client_Structs(int num_structs)
  *=============================================================================================*/
 void BandwidthBalancerClass::Adjust(cConnection *connection, bool is_dedicated)
 {
-	static unsigned long _last_adjustment = 0;	//TIMEGETTIME();
+	static uint32_t _last_adjustment = 0;	//TIMEGETTIME();
 
 	/*
 	**
@@ -222,17 +225,23 @@ void BandwidthBalancerClass::Adjust(cConnection *connection, bool is_dedicated)
 				average_priority = average_priority / NumClients;
 				int bw_adjust = 100;
 
-				unsigned long total_bbo_allocated = Allocate_Bandwidth(average_priority, bw_adjust, connection->Get_Bandwidth_Budget_Out());
+				uint32_t total_bbo_allocated = Allocate_Bandwidth(average_priority, bw_adjust, connection->Get_Bandwidth_Budget_Out());
 
 				/*
 				** Ok, we have a rough bandwidth allocation. If we allocated too much or too little then we will need to do
 				** some fine tuning.
 				*/
-				unsigned long total_bbo = connection->Get_Bandwidth_Budget_Out();
-				int diff = total_bbo - total_bbo_allocated;
-				int percent_diff = (100 * abs(diff)) / total_bbo;
-				diff = total_bbo - total_bbo_allocated;
-				bw_adjust = 100 + ((100 * diff) / (((int)total_bbo * 9) / 10));
+
+				uint32_t total_bbo = connection->Get_Bandwidth_Budget_Out();
+				int64_t diff = static_cast<int64_t>(total_bbo) -
+					static_cast<int64_t>(total_bbo_allocated);
+
+				int percent_diff = static_cast<int>(
+					(100LL * (diff < 0 ? -diff : diff)) / (total_bbo ? total_bbo : 1)
+					);
+				bw_adjust = 100 + static_cast<int>(
+					(100LL * diff) / ((static_cast<int64_t>(total_bbo) * 9) / 10)
+					);
 
 				if (bw_adjust) {
 
@@ -240,12 +249,16 @@ void BandwidthBalancerClass::Adjust(cConnection *connection, bool is_dedicated)
 					** If we allocated more or less than we have then keep adjusting until it comes out at about 95%.
 					*/
 					int tries = 5;
-					while ((diff < 0 || percent_diff > 10) && tries >= 0) {
-						//WWDEBUG_SAY(("Allocated too much or too little bandwidth. total_bbo = %d, total_bbo_allocated = %d, bw_adjust = %d\n", total_bbo, total_bbo_allocated, bw_adjust));
+					while ((diff < 0 || percent_diff > 10) && tries-- > 0) {
 						total_bbo_allocated = Allocate_Bandwidth(average_priority, bw_adjust, connection->Get_Bandwidth_Budget_Out());
-						diff = total_bbo - total_bbo_allocated;
-						percent_diff = (100 * abs(diff)) / total_bbo;
-						bw_adjust = bw_adjust * (100 + ((100 * diff) / (((int)total_bbo * 9) / 10))) / 100;
+						diff = static_cast<int64_t>(total_bbo) - static_cast<int64_t>(total_bbo_allocated);
+						percent_diff = static_cast<int>(
+							(100LL * (diff < 0 ? -diff : diff)) / (total_bbo ? total_bbo : 1)
+							 );
+						bw_adjust = static_cast<int>(
+							(static_cast<long long>(bw_adjust) *
+								(100 + ((100LL * diff) / (((static_cast<long long>(total_bbo) * 9) / 10))))) / 100
+							 );
 						if (bw_adjust <= 0) {
 							break;
 						}
@@ -257,7 +270,10 @@ void BandwidthBalancerClass::Adjust(cConnection *connection, bool is_dedicated)
 					*/
 					if (diff < 0 && percent_diff > 3) {
 						WWDEBUG_SAY(("***** WARNING - BandwidthBalancer: Insufficient bandwidth for the number of clients in the game *********\n"));
-						WWDEBUG_SAY(("Allocated too much bandwidth. total_bbo = %d, total_bbo_allocated = %d, bw_adjust = %d\n", total_bbo, total_bbo_allocated, bw_adjust));
+						WWDEBUG_SAY(("Allocated too much bandwidth. total_bbo = %u, total_bbo_allocated = %u, bw_adjust = %d\n",
+							static_cast<unsigned>(total_bbo),
+							static_cast<unsigned>(total_bbo_allocated),
+							bw_adjust));
 					}
 
 					/*
@@ -293,7 +309,7 @@ void BandwidthBalancerClass::Adjust(cConnection *connection, bool is_dedicated)
  * HISTORY:                                                                                    *
  *   10/21/2001 8:49PM ST : Created                                                            *
  *=============================================================================================*/
-unsigned long BandwidthBalancerClass::Allocate_Bandwidth(float average_priority, int bw_adjust, unsigned long total_server_bbo)
+uint32_t BandwidthBalancerClass::Allocate_Bandwidth(float average_priority, int bw_adjust, uint32_t total_server_bbo)
 {
 	WWASSERT(bw_adjust != 0);
 	WWASSERT(average_priority >= 0.0f);
@@ -302,9 +318,9 @@ unsigned long BandwidthBalancerClass::Allocate_Bandwidth(float average_priority,
 	/*
 	** Get our total bandwidth budget out. This has to be split between all clients.
 	*/
-	unsigned long total_bbo = total_server_bbo;
-	unsigned long bbo_per_client = total_bbo / NumClients;
-	unsigned long total_bbo_allocated = 0;
+	uint32_t total_bbo = total_server_bbo;
+	uint32_t bbo_per_client = total_bbo / NumClients;
+	uint32_t total_bbo_allocated = 0;
 
 	/*
 	** Loop through and assign bandwidth based on average priority and other metrics.
@@ -317,13 +333,15 @@ unsigned long BandwidthBalancerClass::Allocate_Bandwidth(float average_priority,
 		/*
 		** Work out the bandwidth, initially based on average priority.
 		*/
-		int client_bbo_adjust = (pri - average_priority) * bbo_per_client;
+		int client_bbo_adjust = static_cast<int>((pri - average_priority) * static_cast<float>(bbo_per_client));
 		if (client_bbo_adjust > 0) {
-			client_bbo_adjust = min(client_bbo_adjust, (int)bbo_per_client / 2);
-		} else {
-			client_bbo_adjust = max(client_bbo_adjust, -((int)bbo_per_client / 2));
+			client_bbo_adjust = std::min(client_bbo_adjust, static_cast<int>(bbo_per_client / 2));
 		}
-		int new_client_bbo = bbo_per_client + client_bbo_adjust;
+		else {
+			client_bbo_adjust = std::max(client_bbo_adjust, -static_cast<int>(bbo_per_client / 2));
+		}
+
+		int new_client_bbo = static_cast<int>(bbo_per_client) + client_bbo_adjust;
 		WWASSERT(new_client_bbo > 0);
 
 		/*
@@ -337,25 +355,24 @@ unsigned long BandwidthBalancerClass::Allocate_Bandwidth(float average_priority,
 		/*
 		** Apply the overall percentage adjustment.
 		*/
-		double big_client_bbo = (double) new_client_bbo;
-		double big_bw_adjust = (double) bw_adjust;
-		big_client_bbo = (big_client_bbo * big_bw_adjust) / 100.0;
-		big_client_bbo = min(big_client_bbo, (double) 0x7fffffff);
-		//new_client_bbo = (new_client_bbo * bw_adjust) / 100;
-		new_client_bbo = (int) big_client_bbo;
+		double big_client_bbo = static_cast<double>(new_client_bbo);
+		big_client_bbo = (big_client_bbo * static_cast<double>(bw_adjust)) / 100.0;
+		big_client_bbo = std::min(big_client_bbo, static_cast<double>(std::numeric_limits<int>::max()));
+		new_client_bbo = static_cast<int>(big_client_bbo);
 
 		/*
 		** OK, we have the bandwidth adjusted according to priority.
 		** Clamp it to the min allowed and the max the client can take.
 		*/
-		new_client_bbo = min(new_client_bbo, (int)client->MaxBpsDown);
-		new_client_bbo = max(new_client_bbo, MIN_ACCEPTABLE_BANDWIDTH);
+		new_client_bbo = std::clamp(new_client_bbo,
+			static_cast<int>(MIN_ACCEPTABLE_BANDWIDTH),
+			static_cast<int>(client->MaxBpsDown));
 
-		client->AllocatedBBO = (unsigned long) new_client_bbo;
-		total_bbo_allocated += (unsigned long) new_client_bbo;
+		client->AllocatedBBO = static_cast<uint32_t>(new_client_bbo);
+		total_bbo_allocated += static_cast<uint32_t>(new_client_bbo);
 	}
 
-	return(total_bbo_allocated);
+	return total_bbo_allocated;
 }
 
 
@@ -378,8 +395,8 @@ unsigned long BandwidthBalancerClass::Allocate_Bandwidth(float average_priority,
  *=============================================================================================*/
 void BandwidthBalancerClass::Adjust_Connection_Budget(cConnection *connection)
 {
-	static unsigned long _last_time = 0;
-	unsigned long time = TIMEGETTIME();
+	static uint32_t _last_time = 0;
+	uint32_t time = TIMEGETTIME();
 
 	/*
 	** Check every n seconds and see if we had any send errors that would be caused by sending too much data.
@@ -387,10 +404,11 @@ void BandwidthBalancerClass::Adjust_Connection_Budget(cConnection *connection)
 	if (PacketManager.Get_Error_State() == PacketManagerClass::STATE_WS_BUFFERS_FULL) {
 		if (time - _last_time > 10000) {
 			_last_time = time;
-			ULONG bbo = connection->Get_Bandwidth_Budget_Out();
-			ULONG new_bbo = (bbo * 9) / 10;
+			uint32_t bbo = connection->Get_Bandwidth_Budget_Out();
+			uint32_t new_bbo = (bbo * 9) / 10;
 			connection->Set_Bandwidth_Budget_Out(new_bbo);
-			WWDEBUG_SAY(("*** WARNING BandwidthBalancerClass - Adjusting Server connection BBO from %d to %d due to send overflow ***\n", bbo, new_bbo));
+			WWDEBUG_SAY(("*** WARNING BandwidthBalancerClass - Adjusting Server connection BBO from %u to %u due to send overflow ***\n",
+				static_cast<unsigned>(bbo), static_cast<unsigned>(new_bbo)));
 		}
 	}
 }

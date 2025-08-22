@@ -978,7 +978,7 @@ cNetwork::Send_Object_Update(NetworkObjectClass *object, int client_id)
 		//
 		//	Add the class id of the object so it can be created on the client.
 		//
-		uint32 net_classid = object->Get_Network_Class_ID ();
+		uint32_t net_classid = object->Get_Network_Class_ID ();
 		packet.Add (net_classid);
 
 		//

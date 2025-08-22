@@ -61,7 +61,7 @@ class cTeam : public NetworkObjectClass {
 
 		cTeam(void);
 
-		virtual uint32		Get_Network_Class_ID(void) const					{return NETCLASSID_TEAM;}
+		virtual uint32_t		Get_Network_Class_ID(void) const					{return NETCLASSID_TEAM;}
 		virtual void		Delete(void)											{delete this;}
 
 		//

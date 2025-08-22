@@ -115,7 +115,7 @@ public:
 	virtual	ScriptableGameObj	*As_ScriptableGameObj( void )	{ return (ScriptableGameObj*)NULL; };
 
 	// Network support
-	virtual uint32					Get_Network_Class_ID( void ) const		{ return NETCLASSID_GAMEOBJ; }
+	virtual uint32_t					Get_Network_Class_ID( void ) const		{ return NETCLASSID_GAMEOBJ; }
 	virtual void					Delete (void)									{ delete this; }
 
 	bool								Is_Post_Think_Allowed( void )				{ return IsPostThinkAllowed; }

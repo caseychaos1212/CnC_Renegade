@@ -55,7 +55,7 @@ public:
 	virtual void			Export_Creation(BitStreamClass &packet);
 	virtual void			Import_Creation(BitStreamClass &packet);
 
-	virtual uint32			Get_Network_Class_ID(void) const				{return NETCLASSID_CSHINT;}
+	virtual uint32_t			Get_Network_Class_ID(void) const				{return NETCLASSID_CSHINT;}
 
 private:
 

@@ -46,6 +46,7 @@
 #include "wwmemlog.h"
 #include "crc.h"
 #include "wwprofile.h"
+#include <cstdint>
 #include "connect.h"
 
 /*
@@ -594,7 +595,7 @@ int PacketManagerClass::Get_Next_Free_Buffer_Index(void)
  * HISTORY:                                                                                    *
  *   9/18/2001 4:24PM ST : Created                                                             *
  *=============================================================================================*/
-bool PacketManagerClass::Take_Packet(unsigned char *packet, int packet_len, unsigned char *dest_ip, unsigned short dest_port, SOCKET source_socket)
+bool PacketManagerClass::Take_Packet(unsigned char* packet, int packet_len, unsigned char* dest_ip, uint16_t dest_port, SOCKET source_socket)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
 
@@ -661,7 +662,7 @@ WWPROFILE("PMgr Flush");
 	/*
 	** If it's not time to send packets yet then just return.
 	*/
-	unsigned long time = TIMEGETTIME();
+	uint32_t time = TIMEGETTIME();
 	if (!forced && FlushFrequency != 0) {
 		if (time - LastSendTime < FlushFrequency) {
 			return;
@@ -745,7 +746,9 @@ WWPROFILE("PMgr Flush");
 						/*
 						** Is this packet for the same recipient?
 						*/
-						if (SendBuffers[base_index].Port == SendBuffers[index].Port && (*(unsigned long*)(&SendBuffers[index].IPAddress[0])) == (*(unsigned long*)(&SendBuffers[base_index].IPAddress[0]))) {
+						if (SendBuffers[base_index].Port == SendBuffers[index].Port &&
+							memcmp(&SendBuffers[index].IPAddress[0], &SendBuffers[base_index].IPAddress[0], 4) == 0) {
+
 
 							//WWDEBUG_SAY(("Found secondary packet %d\n", index));
 
@@ -850,7 +853,8 @@ WWPROFILE("PMgr Flush");
 				for (int j=i+1 ; j<NumSendBuffers ; j++) {
 					if (SendBuffers[j].PacketReady && SendBuffers[j].PacketSendSocket == socket) {
 						if (SendBuffers[i].PacketSendLength + SendBuffers[j].PacketSendLength < PACKET_MANAGER_MTU) {
-							if (SendBuffers[i].Port == SendBuffers[j].Port && (*(unsigned long*)(&SendBuffers[i].IPAddress[0])) == (*(unsigned long*)(&SendBuffers[j].IPAddress[0]))) {
+							if (SendBuffers[base_index].Port == SendBuffers[index].Port &&
+								memcmp(&SendBuffers[index].IPAddress[0], &SendBuffers[base_index].IPAddress[0], 4) == 0) {
 								unsigned char *dest_ptr = &SendBuffers[i].PacketBuffer->Buffer[current_len];
 								memcpy(dest_ptr, SendBuffers[j].PacketBuffer, SendBuffers[j].PacketSendLength);
 								current_header->MorePackets = 1;
@@ -894,46 +898,48 @@ WWPROFILE("PMgr Flush");
 
 #ifdef WRAPPER_CRC
 
-			unsigned long crc = CRC::Memory((unsigned char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength);
+			uint32_t crc = CRC::Memory((unsigned char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength);
 #if (1)
 			/*
 			** Reverse byte order to prevent the demo from having the same CRC as the game.
 			*/
-			_asm {
-				push	eax;
-				mov	eax,crc;
-				bswap	eax;
-				mov	crc,eax;
-				pop	eax;
-			};
+#if defined(_MSC_VER)
+			#include <intrin.h>
+				 crc = _byteswap_ulong(crc);
+			#else
+				 crc = ((crc & 0x000000FFu) << 24) |
+				((crc & 0x0000FF00u) << 8) |
+				((crc & 0x00FF0000u) >> 8) |
+				((crc & 0xFF000000u) >> 24);
+			#endif
 #endif //(0)
 			char *crc_and_buffer = (char*)_alloca(SendBuffers[i].PacketSendLength + sizeof(crc));
-			*((unsigned long*) crc_and_buffer) = crc;
+			*((uint32_t*) crc_and_buffer) = crc;
 			memcpy(crc_and_buffer + sizeof(crc), (const char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength);
 
 			Register_Packet_Out(&SendBuffers[i].IPAddress[0], SendBuffers[i].Port, SendBuffers[i].PacketSendLength + UDP_HEADER_SIZE + sizeof(crc), 0);
-			int result = sendto(socket, crc_and_buffer, SendBuffers[i].PacketSendLength + sizeof(crc), 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
+			int result = wwnet::SocketSendTo(socket, crc_and_buffer, SendBuffers[i].PacketSendLength + sizeof(crc), 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
 
 #else //WRAPPER_CRC
 
 			Register_Packet_Out(&SendBuffers[i].IPAddress[0], SendBuffers[i].Port, SendBuffers[i].PacketSendLength + UDP_HEADER_SIZE, 0);
-			int result = sendto(socket, (const char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength, 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
+			int result = wwnet::SocketSendTo(socket, (const char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength, 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
 
 #endif //WRAPPER_CRC
 
 
 			if (result == SOCKET_ERROR){
-				if (WSAGetLastError() != WSAEWOULDBLOCK) {
+				if (wwnet::SocketGetLastError() != WSAEWOULDBLOCK) {
 					int error_code = 0;
-					error_code = WSAGetLastError();// avoid release build compiler warning
-					WWDEBUG_SAY(("PacketManagerClass - sendto returned error code %d - %s\n", error_code, cNetUtil::Winsock_Error_Text(error_code)));
+					error_code = wwnet::SocketGetLastError();// avoid release build compiler warning
+					WWDEBUG_SAY(("PacketManagerClass - wwnet::SocketSendTo returned error code %d - %s\n", error_code, cNetUtil::Winsock_Error_Text(error_code)));
 					Clear_Socket_Error(socket);
 				} else {
 
 					/*
 					** No more room for outgoing packets. Unfortunately, this means we lose the lot.
 					*/
-					WWDEBUG_SAY(("PacketManagerClass - sendto returned WSAEWOULDBLOCK\n"));
+					WWDEBUG_SAY(("PacketManagerClass - wwnet::SocketSendTo returned WSAEWOULDBLOCK\n"));
 					Sleep(0);
 					ErrorState = STATE_WS_BUFFERS_FULL;
 				}
@@ -946,7 +952,7 @@ WWPROFILE("PMgr Flush");
 			//for (int i=0 ; i<540 ; i++) {
 			//	garbage[i] = rand();
 			//}
-			//sendto(socket, (const char*)garbage, 540, 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
+			//wwnet::SocketSendTo(socket, (const char*)garbage, 540, 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
 
 		}
 	}
@@ -993,7 +999,7 @@ void PacketManagerClass::Disable_Optimizations(void)
  * HISTORY:                                                                                    *
  *   9/26/2001 2:25PM ST : Created                                                             *
  *=============================================================================================*/
-bool PacketManagerClass::Break_Packet(unsigned char *packet, int original_packet_size, unsigned char *ip_address, unsigned short port)
+bool PacketManagerClass::Break_Packet(unsigned char *packet, int original_packet_size, unsigned char *ip_address, uint16_t port)
 {
 	/*
 	** Dereference a pointer to the packet header.
@@ -1111,12 +1117,12 @@ bool PacketManagerClass::Break_Packet(unsigned char *packet, int original_packet
  *=============================================================================================*/
 void PacketManagerClass::Clear_Socket_Error(SOCKET socket)
 {
-	unsigned long error_code;
-	int length = 4;
+	uint32_t error_code = 0;
+	int length = sizeof(error_code);
 	assert(socket != INVALID_SOCKET);
 
 	if (socket != INVALID_SOCKET) {
-		getsockopt (socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, &length);
+		wwnet::SocketGetSockOpt(socket, SOL_SOCKET, SO_ERROR, (char*)&error_code, &length);
 		WWDEBUG_SAY(("Per socket error is %d - %s\n", error_code, cNetUtil::Winsock_Error_Text(error_code)));
 	}
 }
@@ -1141,7 +1147,7 @@ void PacketManagerClass::Clear_Socket_Error(SOCKET socket)
  * HISTORY:                                                                                    *
  *   9/26/2001 2:28PM ST : Created                                                             *
  *=============================================================================================*/
-int PacketManagerClass::Get_Packet(SOCKET socket, unsigned char *packet_buffer, int packet_buffer_size, unsigned char *ip_address, unsigned short &port)
+int PacketManagerClass::Get_Packet(SOCKET socket, unsigned char *packet_buffer, int packet_buffer_size, unsigned char *ip_address, uint16_t &port)
 {
 {
 WWPROFILE("Pmgr Get");
@@ -1153,17 +1159,17 @@ WWPROFILE("Pmgr Get");
 		memset(&addr, 0, sizeof(addr));
 		pm_assert(packet_buffer_size >= PACKET_MANAGER_MTU);
 		int bytes;
-		int result = ioctlsocket(socket, FIONREAD, (unsigned long *)&bytes);
+		int result = wwnet::SocketIoctl(socket, FIONREAD, (uint32_t*)&bytes);
 		if (result == 0 && bytes != 0) {
 
-			bytes = recvfrom(socket, (char*)packet_buffer, packet_buffer_size, 0, (LPSOCKADDR) &addr, &address_size);
+			bytes = wwnet::SocketRecvFrom(socket, (char*)packet_buffer, packet_buffer_size, 0, (LPSOCKADDR) &addr, &address_size);
 			if (bytes > 0) {
 #ifndef WRAPPER_CRC
 				Register_Packet_In((unsigned char*) &addr.sin_addr.s_addr, addr.sin_port, bytes + UDP_HEADER_SIZE, 0);
 #endif //WRAPPER_CRC
 
 #ifdef WRAPPER_CRC
-				unsigned long crc = CRC::Memory((unsigned char*)packet_buffer + 4, bytes - sizeof(crc));
+				uint32_t crc = CRC::Memory((unsigned char*)packet_buffer + 4, bytes - sizeof(crc));
 #if (1)
 				/*
 				** Reverse byte order to prevent the demo from having the same CRC as the game.
@@ -1176,7 +1182,7 @@ WWPROFILE("Pmgr Get");
 					pop	eax;
 				};
 #endif //(0)
-				if (crc != *((unsigned long*)packet_buffer)) {
+				if (crc != *((uint32_t*)packet_buffer)) {
 					WWDEBUG_SAY(("PMC::Get_Packet: Socket %d, received packet %d bytes long from %s\n", socket, bytes, Addr_As_String(&addr)));
 					WWDEBUG_SAY(("PMC::Get_Packet: *** PACKET WRAPPER CRC ERROR ***"));
 					NumReceivePackets = 0;
@@ -1202,10 +1208,10 @@ WWPROFILE("Pmgr Get");
 				}
 #endif //WRAPPER_CRC
 			} else {
-				if (bytes == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK) {
+				if (bytes == SOCKET_ERROR && wwnet::SocketGetLastError() != WSAEWOULDBLOCK) {
 					int error_code = 0;
-					error_code = WSAGetLastError();// avoid release build compiler warning
-					WWDEBUG_SAY(("PacketManagerClass - recvfrom failed with error %d - %s\n", error_code, cNetUtil::Winsock_Error_Text(error_code)));
+					error_code = wwnet::SocketGetLastError();// avoid release build compiler warning
+					WWDEBUG_SAY(("PacketManagerClass - wwnet::SocketRecvFrom failed with error %d - %s\n", error_code, cNetUtil::Winsock_Error_Text(error_code)));
 					Clear_Socket_Error(socket);
 					if (error_code == WSAECONNRESET) {
 						WWDEBUG_SAY(("PacketManagerClass - WSAECONNRESET from address %s\n", Addr_As_String(&addr)));
@@ -1214,7 +1220,7 @@ WWPROFILE("Pmgr Get");
 						return(-1);
 					}
 				} else {
-					WWDEBUG_SAY(("PacketManagerClass - recvfrom failed with error WSAEWOULDBLOCK\n", WSAGetLastError()));
+					WWDEBUG_SAY(("PacketManagerClass - wwnet::SocketRecvFrom failed with error WSAEWOULDBLOCK\n", wwnet::SocketGetLastError()));
 				}
 			}
 		}
@@ -1292,7 +1298,7 @@ void PacketManagerClass::Reset_Stats(void)
  * HISTORY:                                                                                    *
  *   10/9/2001 8:54AM ST : Created                                                             *
  *=============================================================================================*/
-int PacketManagerClass::Get_Stats_Index(unsigned long ip_address, unsigned short port, bool can_create)
+int PacketManagerClass::Get_Stats_Index(uint32_t ip_address, uint16_t port, bool can_create)
 {
 	/*
 	** Find the stats struct entry for this ip/port.
@@ -1343,12 +1349,12 @@ int PacketManagerClass::Get_Stats_Index(unsigned long ip_address, unsigned short
  * HISTORY:                                                                                    *
  *   10/9/2001 8:56AM ST : Created                                                             *
  *=============================================================================================*/
-void PacketManagerClass::Register_Packet_In(unsigned char *ip_address, unsigned short port, unsigned long compressed_size, unsigned long uncompressed_size)
+void PacketManagerClass::Register_Packet_In(unsigned char *ip_address, uint16_t port, uint32_t compressed_size, uint32_t uncompressed_size)
 {
-	static unsigned long _last_ip = 0;
-	static unsigned short _last_port = 0;
+	static uint32_t _last_ip = 0;
+	static uint16_t _last_port = 0;
 	static int _last_stats = -1;
-	unsigned long long_ip = *((unsigned long*)ip_address);
+	uint32_t long_ip = *((uint32_t*)ip_address);
 
 	if (ResetStatsIn) {
 		_last_ip = 0;
@@ -1394,12 +1400,12 @@ void PacketManagerClass::Register_Packet_In(unsigned char *ip_address, unsigned 
  * HISTORY:                                                                                    *
  *   10/9/2001 8:56AM ST : Created                                                             *
  *=============================================================================================*/
-void PacketManagerClass::Register_Packet_Out(unsigned char *ip_address, unsigned short port, unsigned long compressed_size, unsigned long uncompressed_size)
+void PacketManagerClass::Register_Packet_Out(unsigned char *ip_address, uint16_t port, uint32_t compressed_size, uint32_t uncompressed_size)
 {
-	static unsigned long _last_ip = 0;
-	static unsigned short _last_port = 0;
+	static uint32_t _last_ip = 0;
+	static uint16_t _last_port = 0;
 	static int _last_stats = -1;
-	unsigned long long_ip = *((unsigned long*)ip_address);
+	uint32_t long_ip = *((uint32_t*)ip_address);
 
 	if (ResetStatsOut) {
 		_last_ip = 0;
@@ -1444,7 +1450,7 @@ void PacketManagerClass::Register_Packet_Out(unsigned char *ip_address, unsigned
 void PacketManagerClass::Update_Stats(bool forced)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
-	unsigned long time = TIMEGETTIME();
+	uint32_t time = TIMEGETTIME();
 
 	/*
 	** Handle timer resetting.
@@ -1476,28 +1482,28 @@ void PacketManagerClass::Update_Stats(bool forced)
 
 			if (stats->CompressedBytesOut) {
 				//stats->CompressedBandwidthOut = (stats->CompressedBytesOut * 8) / StatsFrequency;
-				stats->CompressedBandwidthOut = (int)((1000 * stats->CompressedBytesOut * 8) / (float) StatsFrequency);
+				stats->CompressedBandwidthOut = static_cast<uint32_t>((1000ULL * stats->CompressedBytesOut * 8ULL) / StatsFrequency);
 				stats->CompressedBytesOut = 0;
 				TotalCompressedBandwidthOut += stats->CompressedBandwidthOut;
 			}
 
 			if (stats->CompressedBytesIn) {
 				//stats->CompressedBandwidthIn = (stats->CompressedBytesIn * 8) / StatsFrequency;
-				stats->CompressedBandwidthIn = (int)((1000 * stats->CompressedBytesIn * 8) / (float) StatsFrequency);
+				stats->CompressedBandwidthIn = static_cast<uint32_t>((1000ULL * stats->CompressedBytesIn * 8ULL) / StatsFrequency);
 				stats->CompressedBytesIn = 0;
 				TotalCompressedBandwidthIn += stats->CompressedBandwidthIn;
 			}
 
 			if (stats->UncompressedBytesOut) {
 				//stats->UncompressedBandwidthOut = (stats->UncompressedBytesOut * 8) / StatsFrequency;
-				stats->UncompressedBandwidthOut = (int)((1000 * stats->UncompressedBytesOut * 8) / (float) StatsFrequency);
+				stats->UncompressedBandwidthOut = static_cast<uint32_t>((1000ULL * stats->UncompressedBytesOut * 8ULL) / StatsFrequency);
 				stats->UncompressedBytesOut = 0;
 				TotalUncompressedBandwidthOut += stats->UncompressedBandwidthOut;
 			}
 
 			if (stats->UncompressedBytesIn) {
 				//stats->UncompressedBandwidthIn = (stats->UncompressedBytesIn * 8) / StatsFrequency;
-				stats->UncompressedBandwidthIn = (int)((1000 * stats->UncompressedBytesIn * 8) / (float) StatsFrequency);
+				stats->UncompressedBandwidthIn = static_cast<uint32_t>((1000ULL * stats->UncompressedBytesIn * 8ULL) / StatsFrequency);
 				stats->UncompressedBytesIn = 0;
 				TotalUncompressedBandwidthIn += stats->UncompressedBandwidthIn;
 			}
@@ -1510,8 +1516,8 @@ void PacketManagerClass::Update_Stats(bool forced)
 		//WWDEBUG_SAY(("TotalCompressedBandwidthOut = %d bits per second\n", TotalCompressedBandwidthOut));
 		//WWDEBUG_SAY(("TotalUncompressedBandwidthIn = %d bits per second\n", TotalUncompressedBandwidthIn));
 		//WWDEBUG_SAY(("TotalCompressedBandwidthIn = %d bits per second\n", TotalCompressedBandwidthIn));
-		//unsigned long comp_out = 100 - ((100 * TotalCompressedBandwidthOut) / TotalUncompressedBandwidthOut);
-		//unsigned long comp_in = 100 - ((100 * TotalCompressedBandwidthIn) / TotalUncompressedBandwidthIn);
+		//uint32_t comp_out = 100 - ((100 * TotalCompressedBandwidthOut) / TotalUncompressedBandwidthOut);
+		//uint32_t comp_in = 100 - ((100 * TotalCompressedBandwidthIn) / TotalUncompressedBandwidthIn);
 		//WWDEBUG_SAY(("Compression out = %d percent\n", comp_out));
 		//WWDEBUG_SAY(("Compression in = %d percent\n", comp_in));
 	}
@@ -1534,7 +1540,7 @@ void PacketManagerClass::Update_Stats(bool forced)
  * HISTORY:                                                                                    *
  *   10/9/2001 8:59AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Total_Raw_Bandwidth_In(void)
+uint32_t PacketManagerClass::Get_Total_Raw_Bandwidth_In(void)
 {
 	return(TotalUncompressedBandwidthIn);
 }
@@ -1554,7 +1560,7 @@ unsigned long PacketManagerClass::Get_Total_Raw_Bandwidth_In(void)
  * HISTORY:                                                                                    *
  *   10/9/2001 8:59AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Total_Raw_Bandwidth_Out(void)
+uint32_t PacketManagerClass::Get_Total_Raw_Bandwidth_Out(void)
 {
 	return(TotalUncompressedBandwidthOut);
 
@@ -1575,7 +1581,7 @@ unsigned long PacketManagerClass::Get_Total_Raw_Bandwidth_Out(void)
  * HISTORY:                                                                                    *
  *   10/9/2001 8:59AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Total_Compressed_Bandwidth_In(void)
+uint32_t PacketManagerClass::Get_Total_Compressed_Bandwidth_In(void)
 {
 	return(TotalCompressedBandwidthIn);
 }
@@ -1595,7 +1601,7 @@ unsigned long PacketManagerClass::Get_Total_Compressed_Bandwidth_In(void)
  * HISTORY:                                                                                    *
  *   10/9/2001 8:59AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Total_Compressed_Bandwidth_Out(void)
+uint32_t PacketManagerClass::Get_Total_Compressed_Bandwidth_Out(void)
 {
 	return(TotalCompressedBandwidthOut);
 }
@@ -1615,14 +1621,14 @@ unsigned long PacketManagerClass::Get_Total_Compressed_Bandwidth_Out(void)
  * HISTORY:                                                                                    *
  *   10/9/2001 9:01AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Raw_Bandwidth_In(struct sockaddr_in *address)
+uint32_t PacketManagerClass::Get_Raw_Bandwidth_In(struct sockaddr_in *address)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
-	unsigned long ip = *((unsigned long*)&address->sin_addr.s_addr);
-	unsigned short port = address->sin_port;
+	uint32_t ip = *((uint32_t*)&address->sin_addr.s_addr);
+	uint16_t port = address->sin_port;
 	int stats = Get_Stats_Index(ip, port, false);
 
-	unsigned long bw = 0;
+	uint32_t bw = 0;
 	if (stats != -1) {
 		bw = BandwidthList[stats].UncompressedBandwidthIn;
 	}
@@ -1644,14 +1650,14 @@ unsigned long PacketManagerClass::Get_Raw_Bandwidth_In(struct sockaddr_in *addre
  * HISTORY:                                                                                    *
  *   10/9/2001 9:01AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Raw_Bandwidth_Out(struct sockaddr_in *address)
+uint32_t PacketManagerClass::Get_Raw_Bandwidth_Out(struct sockaddr_in *address)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
-	unsigned long ip = *((unsigned long*)&address->sin_addr.s_addr);
-	unsigned short port = address->sin_port;
+	uint32_t ip = *((uint32_t*)&address->sin_addr.s_addr);
+	uint16_t port = address->sin_port;
 	int stats = Get_Stats_Index(ip, port, false);
 
-	unsigned long bw = 0;
+	uint32_t bw = 0;
 	if (stats != -1) {
 		bw = BandwidthList[stats].UncompressedBandwidthOut;
 	}
@@ -1674,14 +1680,14 @@ unsigned long PacketManagerClass::Get_Raw_Bandwidth_Out(struct sockaddr_in *addr
  * HISTORY:                                                                                    *
  *   10/9/2001 9:01AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Raw_Bytes_Out(struct sockaddr_in *address)
+uint32_t PacketManagerClass::Get_Raw_Bytes_Out(struct sockaddr_in *address)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
-	unsigned long ip = *((unsigned long*)&address->sin_addr.s_addr);
-	unsigned short port = address->sin_port;
+	uint32_t ip = *((uint32_t*)&address->sin_addr.s_addr);
+	uint16_t port = address->sin_port;
 	int stats = Get_Stats_Index(ip, port, false);
 
-	unsigned long bytes = 0;
+	uint32_t bytes = 0;
 	if (stats != -1) {
 		bytes = BandwidthList[stats].UncompressedBytesOut;
 	}
@@ -1705,14 +1711,14 @@ unsigned long PacketManagerClass::Get_Raw_Bytes_Out(struct sockaddr_in *address)
  * HISTORY:                                                                                    *
  *   10/9/2001 9:01AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Compressed_Bandwidth_In(struct sockaddr_in *address)
+uint32_t PacketManagerClass::Get_Compressed_Bandwidth_In(struct sockaddr_in *address)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
-	unsigned long ip = *((unsigned long*)&address->sin_addr.s_addr);
-	unsigned short port = address->sin_port;
+	uint32_t ip = *((uint32_t*)&address->sin_addr.s_addr);
+	uint16_t port = address->sin_port;
 	int stats = Get_Stats_Index(ip, port, false);
 
-	unsigned long bw = 0;
+	uint32_t bw = 0;
 	if (stats != -1) {
 		bw = BandwidthList[stats].CompressedBandwidthIn;
 	}
@@ -1734,14 +1740,14 @@ unsigned long PacketManagerClass::Get_Compressed_Bandwidth_In(struct sockaddr_in
  * HISTORY:                                                                                    *
  *   10/9/2001 9:01AM ST : Created                                                             *
  *=============================================================================================*/
-unsigned long PacketManagerClass::Get_Compressed_Bandwidth_Out(struct sockaddr_in *address)
+uint32_t PacketManagerClass::Get_Compressed_Bandwidth_Out(struct sockaddr_in *address)
 {
 	CriticalSectionClass::LockClass lock(CriticalSection);
-	unsigned long ip = *((unsigned long*)&address->sin_addr.s_addr);
-	unsigned short port = address->sin_port;
+	uint32_t ip = *((uint32_t*)&address->sin_addr.s_addr);
+	uint16_t port = address->sin_port;
 	int stats = Get_Stats_Index(ip, port, false);
 
-	unsigned long bw = 0;
+	uint32_t bw = 0;
 	if (stats != -1) {
 		bw = BandwidthList[stats].CompressedBandwidthOut;
 	}
@@ -1763,7 +1769,7 @@ unsigned long PacketManagerClass::Get_Compressed_Bandwidth_Out(struct sockaddr_i
  * HISTORY:                                                                                    *
  *   10/9/2001 9:58AM ST : Created                                                             *
  *=============================================================================================*/
-void PacketManagerClass::Set_Stats_Sampling_Frequency_Delay(unsigned long time_ms)
+void PacketManagerClass::Set_Stats_Sampling_Frequency_Delay(uint32_t time_ms)
 {
 	assert(time_ms > 0);
 	StatsFrequency = time_ms;

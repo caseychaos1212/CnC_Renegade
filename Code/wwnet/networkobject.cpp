@@ -40,6 +40,7 @@
 #include "vector3.h"
 #include "wwprofile.h"
 #include "systimer.h"
+#include <cstdint>
 
 #define CLIENT_SIDE_UPDATE_FREQUENCY_SAMPLE_PERIOD (1000 * 10)
 
@@ -354,8 +355,7 @@ NetworkObjectClass::Belongs_To_Client (int client_id)
 //
 //	10/16/2001 2:45PM ST
 ////////////////////////////////////////////////////////////////
-unsigned long
-NetworkObjectClass::Get_Last_Update_Time(int client_id)
+uint32_t NetworkObjectClass::Get_Last_Update_Time(int client_id)
 {
 	// Is this assert right? ST - 10/16/2001 2:44PM
 	WWASSERT(client_id > 0 && client_id <= MAX_CLIENT_COUNT);
@@ -372,7 +372,7 @@ NetworkObjectClass::Get_Last_Update_Time(int client_id)
 //
 //	10/16/2001 2:45PM ST
 ////////////////////////////////////////////////////////////////
-unsigned short
+uint16_t
 NetworkObjectClass::Get_Update_Rate(int client_id)
 {
 	// Is this assert right? ST - 10/16/2001 2:44PM
@@ -391,7 +391,7 @@ NetworkObjectClass::Get_Update_Rate(int client_id)
 //	10/16/2001 2:45PM ST
 ////////////////////////////////////////////////////////////////
 void
-NetworkObjectClass::Set_Last_Update_Time(int client_id, unsigned long time)
+NetworkObjectClass::Set_Last_Update_Time(int client_id, uint32_t time)
 {
 	// Is this assert right? ST - 10/16/2001 2:44PM
 	WWASSERT(client_id > 0 && client_id <= MAX_CLIENT_COUNT);
@@ -409,7 +409,7 @@ NetworkObjectClass::Set_Last_Update_Time(int client_id, unsigned long time)
 //	10/16/2001 2:45PM ST
 ////////////////////////////////////////////////////////////////
 void
-NetworkObjectClass::Set_Update_Rate(int client_id, unsigned short rate)
+NetworkObjectClass::Set_Update_Rate(int client_id, uint16_t rate)
 {
 	// Is this assert right? ST - 10/16/2001 2:44PM
 	WWASSERT(client_id > 0 && client_id <= MAX_CLIENT_COUNT);
@@ -617,7 +617,7 @@ void NetworkObjectClass::Reset_Last_Clientside_Update_Time(void)
 //
 //	10/19/2001 12:19PM ST
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void NetworkObjectClass::Set_Last_Clientside_Update_Time (ULONG time)
+void NetworkObjectClass::Set_Last_Clientside_Update_Time(uint32_t time)
 {
 	LastClientsideUpdateTime = time;
 	ClientsideUpdateFrequencySampleCount++;
@@ -636,7 +636,7 @@ void NetworkObjectClass::Set_Last_Clientside_Update_Time (ULONG time)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int NetworkObjectClass::Get_Clientside_Update_Frequency(void)
 {
-	unsigned long time = TIMEGETTIME();
+	uint32_t time = TIMEGETTIME();
 
 	if (time - ClientsideUpdateFrequencySampleStartTime > CLIENT_SIDE_UPDATE_FREQUENCY_SAMPLE_PERIOD) {
 		// Say 10 seconds if we don't know.

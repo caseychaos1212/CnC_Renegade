@@ -111,7 +111,7 @@ public:
 	//
 	//	Class ID support
 	//
-	virtual uint32		Get_Network_Class_ID (void) const						{ return 0; }
+	virtual uint32_t		Get_Network_Class_ID (void) const						{ return 0; }
 
 	//
 	//	Server-to-client data importing/exporting
@@ -178,8 +178,8 @@ public:
 	void					Increment_Import_State_Count (void)				{ ImportStateCount ++; }
 	int					Get_Import_State_Count (void)						{ return ImportStateCount; }
 	void					Reset_Last_Clientside_Update_Time (void);
-	void					Set_Last_Clientside_Update_Time (ULONG time);
-	ULONG					Get_Last_Clientside_Update_Time (void)			{ return LastClientsideUpdateTime; }
+	void					Set_Last_Clientside_Update_Time (uint32_t time);
+	uint32_t					Get_Last_Clientside_Update_Time (void)			{ return LastClientsideUpdateTime; }
 	int					Get_Clientside_Update_Frequency(void);
 
 	//
@@ -192,10 +192,10 @@ public:
 	//
 	unsigned char		Get_Frequent_Update_Export_Size(void)						{return(FrequentExportPacketSize);}
 	void					Set_Frequent_Update_Export_Size(unsigned char size)	{FrequentExportPacketSize = size;}
-	unsigned long		Get_Last_Update_Time(int client_id);
-	unsigned short		Get_Update_Rate(int client_id);
-	void					Set_Last_Update_Time(int client_id, unsigned long time);
-	void					Set_Update_Rate(int client_id, unsigned short rate);
+	uint32_t		Get_Last_Update_Time(int client_id);
+	uint16_t		Get_Update_Rate(int client_id);
+	void					Set_Last_Update_Time(int client_id, uint32_t time);
+	void					Set_Update_Rate(int client_id, uint16_t rate);
 
 	//
 	//	Diagnostics
@@ -243,15 +243,15 @@ private:
 	// Per client update information. Bandwidth will be allocated per object, per client.
 	//
 	struct PerClientUpdateInfoStruct {
-		unsigned long	LastUpdateTime;
-		unsigned short	UpdateRate;
+		uint32_t	LastUpdateTime;
+		uint16_t	UpdateRate;
 		BYTE				ClientHintCount;
 	} UpdateInfo [MAX_CLIENT_COUNT];
 
 	BYTE					ClientStatus[MAX_CLIENT_COUNT];
 	int					ImportStateCount;
-	ULONG					LastClientsideUpdateTime;
-	ULONG					ClientsideUpdateFrequencySampleStartTime;
+	uint32_t					LastClientsideUpdateTime;
+	uint32_t					ClientsideUpdateFrequencySampleStartTime;
 	int					ClientsideUpdateFrequencySampleCount;
 	int					ClientsideUpdateRate;
 	bool					IsDeletePending;

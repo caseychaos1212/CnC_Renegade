@@ -45,7 +45,7 @@
 //const WORD cNetUtil::WS_VERSION_REQD = MAKEWORD(1, 1); // Winsock 1.1
 //USHORT cNetUtil::HeaderBytes;
 //USHORT cNetUtil::MaxPacketAppDataSize = MAX_LAN_PACKET_APP_DATA_SIZE;
-UINT cNetUtil::DefaultResendTimeoutMs = 200; // used for singleplayer
+uint32_t cNetUtil::DefaultResendTimeoutMs = 200; // used for singleplayer
 bool cNetUtil::IsInternet = false;
 
 static const int INVALID_VALUE = -999;
@@ -56,9 +56,9 @@ const USHORT	cNetUtil::MAX_RESENDS													= 50;
 const USHORT	cNetUtil::MULTI_SENDS													= 10;
 const USHORT	cNetUtil::RESEND_TIMEOUT_LAN_MS										= 300;
 const USHORT	cNetUtil::RESEND_TIMEOUT_INTERNET_MS								= 500;
-const	ULONG		cNetUtil::CLIENT_CONNECTION_LOSS_TIMEOUT							= 15000;		// Milliseconds til client gives up on server
-const	ULONG		cNetUtil::SERVER_CONNECTION_LOSS_TIMEOUT							= 15000;		// Milliseconds til server gives up on client
-const	ULONG		cNetUtil::SERVER_CONNECTION_LOSS_TIMEOUT_LOADING_ALLOWANCE	= 45000;		// Milliseconds extra allowed til server gives up on loading client.
+const	uint32_t		cNetUtil::CLIENT_CONNECTION_LOSS_TIMEOUT							= 15000;		// Milliseconds til client gives up on server
+const	uint32_t		cNetUtil::SERVER_CONNECTION_LOSS_TIMEOUT							= 15000;		// Milliseconds til server gives up on client
+const	uint32_t		cNetUtil::SERVER_CONNECTION_LOSS_TIMEOUT_LOADING_ALLOWANCE	= 45000;		// Milliseconds extra allowed til server gives up on loading client.
 
 
 //int cNetUtil::DefaultMultiSends							= INVALID_VALUE;
@@ -87,7 +87,7 @@ char cNetUtil::WorkingAddressBuffer[]					= "";
 
 void cNetUtil::Wsa_Error(LPCSTR sFile, unsigned uLine)
 {
-   WWDEBUG_SAY(("* %s:%d: WSA function returned error code: %s\n", sFile, uLine, Winsock_Error_Text(::WSAGetLastError())));
+   WWDEBUG_SAY(("* %s:%d: WSA function returned error code: %s\n", sFile, uLine, Winsock_Error_Text(wwnet::SocketGetLastError())));
    DIE;
 }
 
@@ -181,7 +181,7 @@ bool cNetUtil::Send_Resource_Failure(LPCSTR sFile, unsigned uLine, int ret_code)
 	bool return_code = false;
 
    if (ret_code == SOCKET_ERROR) {
-		int wsa_error = ::WSAGetLastError();
+		int wsa_error = wwnet::SocketGetLastError();
       if (wsa_error == WSAEWOULDBLOCK || wsa_error == WSAENOBUFS) {
 
 			/*
@@ -209,7 +209,7 @@ bool cNetUtil::Would_Block(LPCSTR sFile, unsigned uLine, int ret_code)
 	bool retcode = false;
 
    if (ret_code == SOCKET_ERROR) {
-      if (::WSAGetLastError() == WSAEWOULDBLOCK) {
+      if (wwnet::SocketGetLastError() == WSAEWOULDBLOCK) {
          retcode = true;
       } else {
          Wsa_Error(sFile, uLine);
@@ -234,14 +234,14 @@ int cNetUtil::Get_Local_Tcpip_Addresses(struct sockaddr_in ip_address[], USHORT 
 	// Get the local hostname
 	//
 	char local_host_name[200];
-	WSA_CHECK(::gethostname(local_host_name, sizeof(local_host_name)));
+	WSA_CHECK(wwnet::SocketGetHostName(local_host_name, sizeof(local_host_name)));
    WWDEBUG_SAY(("  Host name is %s\n", local_host_name));
 
 	//
 	// Resolve hostname for local adapter addresses. This does
    // a DNS lookup (name resolution)
 	//
-	LPHOSTENT p_hostent = ::gethostbyname(local_host_name);
+	LPHOSTENT p_hostent = wwnet::SocketGetHostByName(local_host_name);
 
    int num_adapters = 0;
 
@@ -253,7 +253,7 @@ int cNetUtil::Get_Local_Tcpip_Addresses(struct sockaddr_in ip_address[], USHORT 
 			ZeroMemory(&ip_address[num_adapters], sizeof(struct sockaddr_in));
 			ip_address[num_adapters].sin_family = AF_INET;
 	      ip_address[num_adapters].sin_addr.s_addr =
-				*((u_long *) (p_hostent->h_addr_list[num_adapters]));
+				*((uint32_t *) (p_hostent->h_addr_list[num_adapters]));
 		   WWDEBUG_SAY(("  Address: %s\n", Address_To_String(ip_address[num_adapters].sin_addr.s_addr)));
 			num_adapters++;
 		}
@@ -279,8 +279,8 @@ bool cNetUtil::Is_Same_Address(struct sockaddr_in* p_address1, const struct sock
 }
 
 //-------------------------------------------------------------------------------
-void cNetUtil::Address_To_String(struct sockaddr_in* p_address, char * str, UINT len,
-   USHORT & port)
+void cNetUtil::Address_To_String(struct sockaddr_in* p_address, char * str, size_t len,
+	uint16_t & port)
 {
 	WWASSERT(p_address != NULL);
    WWASSERT(str != NULL);
@@ -290,12 +290,12 @@ void cNetUtil::Address_To_String(struct sockaddr_in* p_address, char * str, UINT
 	::strcpy(temp_str, ::inet_ntoa(p_address->sin_addr));
    port = ::ntohs(p_address->sin_port);
 
-	WWASSERT(::strlen(temp_str) <= len);
+	WWASSERT(::strlen(temp_str) + 1 <= len);
 	::strcpy(str, temp_str);
 }
 
 //-------------------------------------------------------------------------------
-LPCSTR cNetUtil::Address_To_String(ULONG ip)
+LPCSTR cNetUtil::Address_To_String(uint32_t ip)
 {
 	IN_ADDR in_addr;
 	in_addr.s_addr = ip;
@@ -310,7 +310,7 @@ LPCSTR cNetUtil::Address_To_String(ULONG ip)
 }
 
 //-------------------------------------------------------------------------------
-void cNetUtil::String_To_Address(struct sockaddr_in* p_address, LPCSTR str, USHORT port)
+void cNetUtil::String_To_Address(struct sockaddr_in* p_address, LPCSTR str, uint16_t port)
 {
 	WWASSERT(p_address != NULL);
    ZeroMemory(p_address, sizeof(struct sockaddr_in));
@@ -331,15 +331,15 @@ bool cNetUtil::Is_Tcpip_Present(void)
 
 	bool retcode = true;
 
-   SOCKET test_socket = ::socket(AF_INET, SOCK_DGRAM, 0);
+	wwnet::SocketHandle test_socket = wwnet::SocketCreate(AF_INET, SOCK_DGRAM, 0);
    if (test_socket == INVALID_SOCKET) {
-      if (::WSAGetLastError() == WSAEAFNOSUPPORT) {
+	   if (wwnet::SocketGetLastError() == WSAEAFNOSUPPORT) {
          retcode = false;
       } else {
          WSA_ERROR;
       }
    } else {
-	   WSA_CHECK(::closesocket(test_socket));
+	   WSA_CHECK(wwnet::SocketClose(test_socket));
 	}
 
    return retcode;
@@ -352,8 +352,7 @@ void cNetUtil::Wsa_Init()
 	// winsock 1.1
 	//
 
-   WSADATA wsa_data;
-   if (::WSAStartup(MAKEWORD(1, 1), &wsa_data) != 0) {
+	if (wwnet::SocketStartup() != 0) {
       DIE;
    }
 }
@@ -398,7 +397,7 @@ float cNetUtil::Compute_Priority_Noise()
 */
 
 //-------------------------------------------------------------------------------
-void cNetUtil::Set_Socket_Buffer_Sizes(SOCKET sock, int new_size)
+void cNetUtil::Set_Socket_Buffer_Sizes(wwnet::SocketHandle sock, int new_size)
 {
    WWDEBUG_SAY(("cNetUtil::Set_Socket_Buffer_Sizes:\n"));
 
@@ -407,32 +406,32 @@ void cNetUtil::Set_Socket_Buffer_Sizes(SOCKET sock, int new_size)
 
 	buffersize = 0;
 	len = sizeof(int);
-   WSA_CHECK(::getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&buffersize, &len));
+	WSA_CHECK(wwnet::SocketGetSockOpt(sock, SOL_SOCKET, SO_SNDBUF, (char*)&buffersize, &len));
    //WWDEBUG_SAY(("  SO_SNDBUF = %d\n", buffersize));
 
    buffersize = 0;
    len = sizeof(int);
-   WSA_CHECK(::getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&buffersize, &len));
+   WSA_CHECK(wwnet::SocketGetSockOpt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&buffersize, &len));
    //WWDEBUG_SAY(("  SO_RCVBUF = %d\n", buffersize));
 
    buffersize = new_size;
    len = sizeof(int);
-   WSA_CHECK(setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&buffersize, len));
+   WSA_CHECK(wwnet::SocketSetSockOpt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&buffersize, len));
    //WWDEBUG_SAY(("  Attempting to set SO_SNDBUF = %d\n", buffersize));
 
    buffersize = new_size;
    len = sizeof(int);
-   WSA_CHECK(setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&buffersize, len));
+   WSA_CHECK(wwnet::SocketSetSockOpt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&buffersize, len));
    //WWDEBUG_SAY(("  Attempting to set SO_RCVBUF = %d\n", buffersize));
 
 	buffersize = 0;
 	len = sizeof(int);
-   WSA_CHECK(::getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&buffersize, &len));
+   WSA_CHECK(wwnet::SocketGetSockOpt(sock, SOL_SOCKET, SO_SNDBUF, (char *)&buffersize, &len));
    //WWDEBUG_SAY(("  SO_SNDBUF = %d\n", buffersize));
 
 	buffersize = 0;
 	len = sizeof(int);
-   WSA_CHECK(::getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&buffersize, &len));
+   WSA_CHECK(wwnet::SocketGetSockOpt(sock, SOL_SOCKET, SO_RCVBUF, (char *)&buffersize, &len));
    //WWDEBUG_SAY(("  SO_RCVBUF = %d\n", buffersize));
 }
 
@@ -525,9 +524,9 @@ void cNetUtil::Onetime_Init()
 }
 */
 
-void cNetUtil::Create_Unbound_Socket(SOCKET & sock)
+void cNetUtil::Create_Unbound_Socket(wwnet::SocketHandle& sock)
 {
-   sock = ::socket(AF_INET, SOCK_DGRAM, 0);
+   sock = wwnet::SocketCreate(AF_INET, SOCK_DGRAM, 0);
    if (sock == INVALID_SOCKET) {
       WSA_ERROR;
    }
@@ -536,17 +535,17 @@ void cNetUtil::Create_Unbound_Socket(SOCKET & sock)
    // Enable broadcasts
    //
    int optval = TRUE;
-   WSA_CHECK(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char *) &optval, sizeof(optval)));
+   WSA_CHECK(wwnet::SocketSetSockOpt(sock, SOL_SOCKET, SO_BROADCAST, (char *) &optval, sizeof(optval)));
 
    //
    // Make socket non-blocking
    //
-   u_long arg = 1L;
-   WSA_CHECK(ioctlsocket(sock, FIONBIO, (u_long *) &arg));
+   uint32_t arg = 1L;
+   WSA_CHECK(wwnet::SocketIoctl(sock, FIONBIO, (uint32_t*)&arg));
 }
 
 //-------------------------------------------------------------------------------
-bool cNetUtil::Create_Bound_Socket(SOCKET & sock, USHORT port, struct sockaddr_in & local_address)
+bool cNetUtil::Create_Bound_Socket(wwnet::SocketHandle& sock, uint16_t port, struct sockaddr_in& local_address)
 {
    //
    // TSS - is all this necessary or is above function OK?
@@ -560,7 +559,7 @@ bool cNetUtil::Create_Bound_Socket(SOCKET & sock, USHORT port, struct sockaddr_i
 		return true;
    } else {
       WWASSERT(result == SOCKET_ERROR);
-      //if (::WSAGetLastError() != WSAEADDRINUSE) {
+      //if (wwnet::SocketGetLastError() != WSAEADDRINUSE) {
          WSA_ERROR;
       //}
       return false;
@@ -568,20 +567,20 @@ bool cNetUtil::Create_Bound_Socket(SOCKET & sock, USHORT port, struct sockaddr_i
 }
 
 //-------------------------------------------------------------------------------
-void cNetUtil::Close_Socket(SOCKET & sock)
+void cNetUtil::Close_Socket(wwnet::SocketHandle& sock)
 {
-   ::closesocket(sock);
+	wwnet::SocketClose(sock);
 }
 
 //-----------------------------------------------------------------------------
-void cNetUtil::Broadcast(SOCKET & sock, USHORT port, cPacket & packet)
+void cNetUtil::Broadcast(wwnet::SocketHandle& sock, uint16_t port, cPacket& packet)
 {
    struct sockaddr_in broadcast_address;
    Create_Broadcast_Address(&broadcast_address, port);
    int bytes_sent;
-	//WSA_CHECK(bytes_sent = sendto(sock, packet.Data, packet.SendLength,
+   //WSA_CHECK(bytes_sent = wwnet::SocketSendTo(sock, packet.Data, packet.SendLength
    //   0, &broadcast_address, sizeof(struct sockaddr_in)));
-	bytes_sent = sendto(sock, packet.Get_Data(), packet.Get_Compressed_Size_Bytes(),
+   bytes_sent = wwnet::SocketSendTo(sock, packet.Get_Data(), packet.Get_Compressed_Size_Bytes(),
       0, (LPSOCKADDR) &broadcast_address, sizeof(struct sockaddr_in));
 // FIXME (TSS) WSAENOBUFS
    //WWDEBUG_SAY(("Sent broadcast, length = %d bytes\n", bytes_sent));
@@ -589,7 +588,7 @@ void cNetUtil::Broadcast(SOCKET & sock, USHORT port, cPacket & packet)
 
 //-------------------------------------------------------------------------------
 void cNetUtil::Create_Broadcast_Address(struct sockaddr_in* p_broadcast_address,
-   USHORT port)
+	uint16_t port)
 {
    WWASSERT(p_broadcast_address != NULL);
    ZeroMemory(p_broadcast_address, sizeof(struct sockaddr_in));
@@ -600,7 +599,7 @@ void cNetUtil::Create_Broadcast_Address(struct sockaddr_in* p_broadcast_address,
 }
 
 //-------------------------------------------------------------------------------
-void cNetUtil::Create_Local_Address(struct sockaddr_in* p_local_address, USHORT port)
+void cNetUtil::Create_Local_Address(struct sockaddr_in* p_local_address, uint16_t port)
 {
    WWASSERT(p_local_address != NULL);
    ZeroMemory(p_local_address, sizeof(struct sockaddr_in));
@@ -634,7 +633,7 @@ bool cNetUtil::Get_Local_Address(struct sockaddr_in* p_local_address)
 }
 
 //-----------------------------------------------------------------------------
-void cNetUtil::Lan_Servicing(SOCKET & sock, LanPacketHandlerCallback p_callback)
+void cNetUtil::Lan_Servicing(wwnet::SocketHandle& sock, LanPacketHandlerCallback p_callback)
 {
    int retcode;
 
@@ -645,14 +644,14 @@ void cNetUtil::Lan_Servicing(SOCKET & sock, LanPacketHandlerCallback p_callback)
 		int address_len = sizeof(struct sockaddr_in);
 
 		//
-		// If we appear to crash INSIDE recvfrom then this tends to indicate
+		// If we appear to crash INSIDE wwnet::SocketRecvFrom then this tends to indicate
 		// that net neighbourhood broke.
 		//
-		retcode = recvfrom(sock, packet.Get_Data(), packet.Get_Max_Size(),
+		retcode = wwnet::SocketRecvFrom(sock, packet.Get_Data(), packet.Get_Max_Size(),
 			0, (LPSOCKADDR) &packet.Get_From_Address_Wrapper()->FromAddress, &address_len);
 
 		if (retcode == SOCKET_ERROR) {
-			if (::WSAGetLastError() != WSAEWOULDBLOCK) {
+			if (wwnet::SocketGetLastError() != WSAEWOULDBLOCK) {
 				WSA_ERROR;
 			}
 		} else {
@@ -660,7 +659,7 @@ void cNetUtil::Lan_Servicing(SOCKET & sock, LanPacketHandlerCallback p_callback)
 			//
 			// diagnostic
 			//
-			ULONG ip = packet.Get_From_Address_Wrapper()->FromAddress.sin_addr.s_addr;
+			uint32_t ip = packet.Get_From_Address_Wrapper()->FromAddress.sin_addr.s_addr;
 			WWDEBUG_SAY(("cNetUtil::Lan_Servicing: %s\n", cNetUtil::Address_To_String(ip)));
 			*/
 
