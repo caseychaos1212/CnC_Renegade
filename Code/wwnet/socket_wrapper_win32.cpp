@@ -31,8 +31,8 @@ namespace wwnet {
         ::WSASetLastError(err);
     }
 
-    int SocketIoctl(SocketHandle s, long cmd, uint32_t* argp) {
-        return ::ioctlsocket(s, cmd, reinterpret_cast<u_long*>(argp));
+    int SocketIoctl(SocketHandle s, long cmd, SocketIoctlParam* argp) {
+        return ::ioctlsocket(s, cmd, argp);
     }
 
     int SocketGetSockOpt(SocketHandle s, int level, int optname, char* optval, int* optlen) {

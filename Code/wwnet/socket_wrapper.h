@@ -9,6 +9,7 @@ namespace wwnet {
 	using SocketHandle = SOCKET;
 	constexpr SocketHandle INVALID_SOCKET_VALUE = INVALID_SOCKET;
 	constexpr int SOCKET_ERROR_VALUE = SOCKET_ERROR;
+	using SocketIoctlParam = u_long;
 }
 #else
 #include <sys/types.h>
@@ -22,6 +23,7 @@ namespace wwnet {
 	using SocketHandle = int;
 	constexpr SocketHandle INVALID_SOCKET_VALUE = -1;
 	constexpr int SOCKET_ERROR_VALUE = -1;
+	using SocketIoctlParam = int;
 }
 #endif
 
@@ -33,7 +35,7 @@ namespace wwnet {
 	int SocketShutdown(SocketHandle s, int how);
 	int SocketGetLastError();
 	void SocketSetLastError(int err);
-	int SocketIoctl(SocketHandle s, long cmd, uint32_t* argp);
+	int SocketIoctl(SocketHandle s, long cmd, SocketIoctlParam* argp);
 	int SocketGetSockOpt(SocketHandle s, int level, int optname, char* optval, int* optlen);
 	int SocketSetSockOpt(SocketHandle s, int level, int optname, const char* optval, int optlen);
 	int SocketSendTo(SocketHandle s, const char* buf, int len, int flags, const struct sockaddr* to, int tolen);

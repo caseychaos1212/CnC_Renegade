@@ -169,8 +169,8 @@ cConnection::cConnection() :
       //
       // Make socket non-blocking
       //
-	  uint32_t arg = 1L;
-	  WSA_CHECK(wwnet::SocketIoctl(Sock, FIONBIO, (uint32_t*)&arg));
+	  wwnet::SocketIoctlParam arg = 1L;
+	  WSA_CHECK(wwnet::SocketIoctl(Sock, FIONBIO, &arg));
 
       //
       // Increase the send and rcv buffer sizes a bit

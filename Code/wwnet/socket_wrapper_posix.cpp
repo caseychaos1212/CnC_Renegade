@@ -30,7 +30,7 @@ namespace wwnet {
         errno = err;
     }
 
-    int SocketIoctl(SocketHandle s, long cmd, uint32_t* argp) {
+    int SocketIoctl(SocketHandle s, long cmd, SocketIoctlParam* argp) {
         return ::ioctl(s, cmd, argp);
     }
 
