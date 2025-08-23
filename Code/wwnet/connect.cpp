@@ -91,7 +91,7 @@ static const int		INVALID_RHOST_ID			= -1;
  *=============================================================================================*/
 
 #if defined(_WIN32) && (!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600)
-static const char* InetNtopA_Compat(int af, const void* src, char* dst, size_t size) {
+static const char* inet_ntop(int af, const void* src, char* dst, size_t size) {
 	if (af == AF_INET) {
 		auto a = static_cast<const in_addr*>(src);
 		const char* s = ::inet_ntoa(*a);
@@ -102,22 +102,19 @@ static const char* InetNtopA_Compat(int af, const void* src, char* dst, size_t s
 	::WSASetLastError(WSAEAFNOSUPPORT);
 	return nullptr;
 }
-#define InetNtopA InetNtopA_Compat
 #endif
 
 
 const char* Addr_As_String(const sockaddr_in* addr)
 {
 	static char out[128];
-	#if defined(_WIN32)
-		char ip[46] = { 0 };
-	    // ws2tcpip.h is needed somewhere for inet_ntop on Windows
-		InetNtopA(AF_INET, const_cast<IN_ADDR*>(&addr->sin_addr), ip, (DWORD)sizeof(ip));
-	#else
-		 char ip[INET_ADDRSTRLEN] = { 0 };
-	inet_ntop(AF_INET, &addr->sin_addr, ip, sizeof(ip));
-	#endif
-		 const unsigned port = (unsigned)ntohs(addr->sin_port);
+	char ip[INET_ADDRSTRLEN] = { 0 };
+	if (!inet_ntop(AF_INET, &addr->sin_addr, ip, sizeof(ip))) {
+		const auto* bytes = reinterpret_cast<const uint8_t*>(&addr->sin_addr);
+		std::snprintf(ip, sizeof(ip), "%u.%u.%u.%u", bytes[0], bytes[1], bytes[2], bytes[3]);
+	}
+
+	const unsigned port = (unsigned)ntohs(addr->sin_port);
 	std::snprintf(out, sizeof(out), "%s ; %u", ip[0] ? ip : "0.0.0.0", port);
 	return out;
 }
