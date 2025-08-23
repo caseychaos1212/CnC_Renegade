@@ -918,12 +918,12 @@ WWPROFILE("PMgr Flush");
 			memcpy(crc_and_buffer + sizeof(crc), (const char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength);
 
 			Register_Packet_Out(&SendBuffers[i].IPAddress[0], SendBuffers[i].Port, SendBuffers[i].PacketSendLength + UDP_HEADER_SIZE + sizeof(crc), 0);
-			int result = wwnet::SocketSendTo(socket, crc_and_buffer, SendBuffers[i].PacketSendLength + sizeof(crc), 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
+			int result = wwnet::SocketSendTo(socket, crc_and_buffer, SendBuffers[i].PacketSendLength + sizeof(crc), 0, (const sockaddr*) &addr, sizeof(struct sockaddr_in));
 
 #else //WRAPPER_CRC
 
 			Register_Packet_Out(&SendBuffers[i].IPAddress[0], SendBuffers[i].Port, SendBuffers[i].PacketSendLength + UDP_HEADER_SIZE, 0);
-			int result = wwnet::SocketSendTo(socket, (const char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength, 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
+			int result = wwnet::SocketSendTo(socket, (const char*)SendBuffers[i].PacketBuffer, SendBuffers[i].PacketSendLength, 0, (const sockaddr*) &addr, sizeof(struct sockaddr_in));
 
 #endif //WRAPPER_CRC
 
@@ -952,7 +952,7 @@ WWPROFILE("PMgr Flush");
 			//for (int i=0 ; i<540 ; i++) {
 			//	garbage[i] = rand();
 			//}
-			//wwnet::SocketSendTo(socket, (const char*)garbage, 540, 0, (LPSOCKADDR) &addr, sizeof(struct sockaddr_in));
+			//wwnet::SocketSendTo(socket, (const char*)garbage, 540, 0, (const sockaddr*) &addr, sizeof(struct sockaddr_in));
 
 		}
 	}
@@ -1162,7 +1162,7 @@ WWPROFILE("Pmgr Get");
 		int result = wwnet::SocketIoctl(socket, FIONREAD, (uint32_t*)&bytes);
 		if (result == 0 && bytes != 0) {
 
-			bytes = wwnet::SocketRecvFrom(socket, (char*)packet_buffer, packet_buffer_size, 0, (LPSOCKADDR) &addr, &address_size);
+			bytes = wwnet::SocketRecvFrom(socket, (char*)packet_buffer, packet_buffer_size, 0, (sockaddr*) &addr, &address_size);
 			if (bytes > 0) {
 #ifndef WRAPPER_CRC
 				Register_Packet_In((unsigned char*) &addr.sin_addr.s_addr, addr.sin_port, bytes + UDP_HEADER_SIZE, 0);
