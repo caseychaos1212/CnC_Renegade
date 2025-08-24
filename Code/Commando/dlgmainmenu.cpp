@@ -440,17 +440,28 @@ MainMenuDialogClass::Display (void)
 		MainMenuDialogClass *dialog = new MainMenuDialogClass;
 
 		//
-		//	Create the backdrop if necessary
+				//	Validate backdrop before using it
+		//
+		MenuBackDropClass* backdrop = dialog->Get_BackDrop();
+		if (backdrop == NULL) {
+			WWDEBUG_WARNING(("MainMenuDialogClass::Display called without a backdrop\n"));
+			Animated = false;
+			REF_PTR_RELEASE(dialog);
+			return;
+		}
+
+		//
+		//      Create the backdrop if necessary
 		//
 		if (Animated) {
 
-			if (dialog->Get_BackDrop ()->Peek_Model () == NULL) {
-				dialog->Get_BackDrop ()->Set_Model ("IF_BACK01");
-				dialog->Get_BackDrop ()->Set_Animation ("IF_BACK01.IF_BACK01");
+			if (backdrop->Peek_Model () == NULL) {
+				backdrop->Set_Model ("IF_BACK01");
+				backdrop->Set_Animation ("IF_BACK01.IF_BACK01");
 
 				/*RenderObjClass *model = WW3DAssetManager::Get_Instance ()->Create_Render_Obj ("IF_RENLOGO");
 				if (model != NULL) {
-					dialog->Get_BackDrop ()->Peek_Scene ()->Add_Render_Object(model);
+					backdrop->Peek_Scene ()->Add_Render_Object(model);
 				}*/
 			}
 		}
