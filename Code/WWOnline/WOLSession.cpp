@@ -191,7 +191,7 @@ bool Session::FinalizeCreate(void)
 
 		chatEvents->Init(*this);
 
-		hr = AtlAdvise(chatEvents.p, chatEvents, WOL::IID_IChatEvent, &mChatCookie);
+		hr = AtlAdvise(mChat, chatEvents, WOL::IID_IChatEvent, &mChatCookie);
 
 		if (FAILED(hr))
 			{
@@ -1298,7 +1298,7 @@ RefPtr<WaitCondition> Session::CreateChannel(const RefPtr<ChannelData>& channel,
 
 	if (mCurrentConnectionStatus != ConnectionConnected)
 		{
-		WWASSERT(mCurrentConnectionStatus == ConnectionConnected);
+//		WWASSERT(mCurrentConnectionStatus == ConnectionConnected);
 
 		RefPtr<SingleWait> wait = SingleWait::Create(WOLSTRING("WOL_CHANNELCREATE"));
 		wait->EndWait(WaitCondition::Error, WOLSTRING("WOL_NOTCONNECTED"));
