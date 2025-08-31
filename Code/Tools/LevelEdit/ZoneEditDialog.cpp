@@ -26,7 +26,7 @@
 #include "ww3d.h"
 #include "scene.h"
 #include "camera.h"
-#include "utils.h"
+#include "Utils.h"
 #include "mmsystem.h"
 #include "matrix3d.h"
 #include "rendobj.h"
@@ -322,12 +322,12 @@ ZoneEditDialogClass::Render_View (void)
 		//
 		//	Blit the frame to the client area of the window
 		//
-		m_SwapChain->Present (NULL, NULL, NULL, NULL);
+		m_SwapChain->Present (NULL, NULL, NULL, NULL, 0);
 		
 		//
 		//	Restore the render target
 		//
-		DX8Wrapper::Set_Render_Target ((LPDIRECT3DSURFACE8)NULL);
+		DX8Wrapper::Set_Render_Target ((LPDIRECT3DSURFACE9)NULL);
 
 		//
 		//	Cleanup
