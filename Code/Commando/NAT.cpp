@@ -909,7 +909,7 @@ FirewallHelperClass::FirewallBehaviorType FirewallHelperClass::Detect_Firewall_B
 	/*
 	** We need a certain number of manglers to be able to do the detection.
 	*/
-	fw_assert(num_mangler_addresses > 2);
+//	fw_assert(num_mangler_addresses > 2);
 	if (num_mangler_addresses < 3) {
 		WWDEBUG_SAY(("FirewallHelper: Not enough manglers - returning default behavior\n"));
 		if (Confidence > 0) {
