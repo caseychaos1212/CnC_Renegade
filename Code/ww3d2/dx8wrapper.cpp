@@ -105,7 +105,7 @@ D3DMATRIX						DX8Wrapper::old_prj;
 
 bool								DX8Wrapper::world_identity;
 unsigned							DX8Wrapper::RenderStates[256];
-unsigned							DX8Wrapper::TextureStageStates[MAX_TEXTURE_STAGES][32];
+unsigned							DX8Wrapper::TextureStageStates[MAX_TEXTURE_STAGES][33];
 unsigned							DX8Wrapper::TextureSamplerStates[MAX_TEXTURE_STAGES][14];
 IDirect3DBaseTexture9 *		DX8Wrapper::Textures[MAX_TEXTURE_STAGES];
 RenderStateStruct				DX8Wrapper::render_state;
@@ -350,13 +350,33 @@ void DX8Wrapper::Set_Default_Global_Render_States(void)
 	Set_DX8_Render_State(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);
 	Set_DX8_Render_State(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
 	Set_DX8_Render_State(D3DRS_COLORVERTEX, TRUE);
-	Set_DX8_Render_State(D3DRS_DEPTHBIAS,0);
+	Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, FALSE);
+	Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_ONE);
+	Set_DX8_Render_State(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	Set_DX8_Render_State(D3DRS_ZWRITEENABLE, TRUE);
+	Set_DX8_Render_State(D3DRS_ZENABLE, D3DZB_TRUE);
+	Set_DX8_Render_State(D3DRS_DEPTHBIAS, 0);
+
+	Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_PASSTHRU | 0);
+	Set_DX8_Texture_Stage_State(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+
+	Set_DX8_Texture_Stage_State(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	Set_DX8_Texture_Stage_State(1, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_PASSTHRU | 1);
+	Set_DX8_Texture_Stage_State(1, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+
 	Set_DX8_Texture_Stage_State(1, D3DTSS_BUMPENVLSCALE, F2DW(1.0f));
 	Set_DX8_Texture_Stage_State(1, D3DTSS_BUMPENVLOFFSET, F2DW(0.0f));
-	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT00,F2DW(1.0f));
-	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT01,F2DW(0.0f));
-	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT10,F2DW(0.0f));
-	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT11,F2DW(1.0f));
+	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT00, F2DW(1.0f));
+	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
+	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
+	Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT11, F2DW(1.0f));
 
 //	Set_DX8_Render_State(D3DRS_CULLMODE, D3DCULL_CW);
 	// Set dither mode here?
@@ -365,17 +385,17 @@ void DX8Wrapper::Set_Default_Global_Render_States(void)
 void DX8Wrapper::Invalidate_Cached_Render_States(void)
 {
 	int a;
-	for (a=0;a<sizeof(RenderStates)/sizeof(unsigned);++a) {
-		RenderStates[a]=0x12345678;
+	for (a = 0; a < sizeof(RenderStates) / sizeof(unsigned); ++a) {
+		RenderStates[a] = 0x12345678;
 	}
-	for (a=0;a<MAX_TEXTURE_STAGES;++a) {
-		for (int b=0; b<32;b++) {
-			TextureStageStates[a][b]=0x12345678;
+	for (a = 0; a < MAX_TEXTURE_STAGES; ++a) {
+		for (int b = 0; b < 33; b++) {
+			TextureStageStates[a][b] = 0x12345678;
 		}
-        for (int b=0; b<14;b++) {
-            TextureSamplerStates[a][b]=0x12345678;
-        }
-		Textures[a]=NULL;
+		for (int b = 0; b < 14; b++) {
+			TextureSamplerStates[a][b] = 0x12345678;
+		}
+		Textures[a] = NULL;
 	}
 	ShaderClass::Invalidate();
 }

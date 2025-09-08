@@ -517,7 +517,7 @@ protected:
 
 	static bool								world_identity;
 	static unsigned						RenderStates[256];
-	static unsigned						TextureStageStates[MAX_TEXTURE_STAGES][32];
+	static unsigned						TextureStageStates[MAX_TEXTURE_STAGES][33];
 	static unsigned						TextureSamplerStates[MAX_TEXTURE_STAGES][14];
 	static IDirect3DBaseTexture9 *	Textures[MAX_TEXTURE_STAGES];
 
@@ -657,7 +657,11 @@ WWINLINE void DX8Wrapper::Set_DX8_Light(int index, D3DLIGHT9* light)
 WWINLINE void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
 	// Can't monitor state changes because setShader call to GERD may change the states!
-	if (TextureStageStates[stage][(unsigned int)state]==value) return;
+	WWASSERT(stage < MAX_TEXTURE_STAGES);
+	WWASSERT((unsigned)state < 33);
+	if ((unsigned)state >= 33) {
+		return;
+	}
 #ifdef MESH_RENDER_SNAPSHOT_ENABLED
 	if (WW3D::Is_Snapshot_Activated()) {
 		StringClass value_name(0,true);

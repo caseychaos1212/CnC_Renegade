@@ -410,22 +410,34 @@ void ShaderClass::Apply()
 {
 	unsigned long diff;
 
-	unsigned int TextureOpCaps=DX8Wrapper::Get_Current_Caps()->Get_DX8_Caps().TextureOpCaps;
+	unsigned int TextureOpCaps = DX8Wrapper::Get_Current_Caps()->Get_DX8_Caps().TextureOpCaps;
+
+	// Track the highest texture stage used by this shader so that any
+		// remaining stages can be fully disabled.  Stage 0 is always used
+		// and stage 1 is only active when post-detail texturing is enabled.
+	unsigned highestStageUsed = 0;
+	if (Get_Texturing() == ShaderClass::TEXTURING_ENABLE) {
+		if (Uses_Post_Detail_Texture()) {
+			highestStageUsed = 1;
+		}
+	}
 
 	if (ShaderDirty)
 	{
-		diff=0xffffffff;
+		diff = 0xffffffff;
 	}
 	else
 	{
-		diff=CurrentShader^ShaderBits;
+		diff = CurrentShader ^ ShaderBits;
 	}
 
-	if(!diff) return;
+	if (!diff) return;
 
 
-	CurrentShader=ShaderBits;
-	ShaderDirty=false;
+	CurrentShader = ShaderBits;
+	ShaderDirty = false;
+
+
 	// COLOR MASK
 
 	if(diff & (ShaderClass::MASK_COLORMASK | ShaderClass::MASK_SRCBLEND | ShaderClass::MASK_DSTBLEND | ShaderClass::MASK_ALPHATEST))
@@ -481,14 +493,22 @@ void ShaderClass::Apply()
 			blendAlpha = true;
 			alphaTest = TRUE;
 		}
-		DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHATESTENABLE,alphaTest);
+		DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHATESTENABLE, alphaTest);
+
+		DX8Wrapper::Set_DX8_Render_State(D3DRS_SEPARATEALPHABLENDENABLE, blendAlpha);
+		if (blendAlpha) {
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLENDALPHA, sf);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_DESTBLENDALPHA, df);
+		}
+		else {
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLENDALPHA, D3DBLEND_ONE);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_DESTBLENDALPHA, D3DBLEND_ZERO);
+		}
 
 		diff &= ~(ShaderClass::MASK_COLORMASK | ShaderClass::MASK_SRCBLEND | ShaderClass::MASK_DSTBLEND | ShaderClass::MASK_ALPHATEST);
-		if(!diff)
-			return;
 	}
 
-	if(diff & (ShaderClass::MASK_FOG))
+	if (diff & (ShaderClass::MASK_FOG))
 	{
 		// Whenever fog is enabled or disabled, the entire shader is invalidated. This is why we
 		// can defer the "fog enabled" check inside the "fog settings changed" check.
@@ -496,14 +516,14 @@ void ShaderClass::Apply()
 
 			BOOL fm = FALSE;
 			D3DCOLOR fogColor = DX8Wrapper::Get_Fog_Color();
-			
-			switch(Get_Fog_Func())
+
+			switch (Get_Fog_Func())
 			{
 			case ShaderClass::FOG_ENABLE:
 				fm = TRUE;
 				break;
 			case ShaderClass::FOG_SCALE_FRAGMENT:
-				fogColor = 0;	
+				fogColor = 0;
 				fm = TRUE;
 				break;
 			case ShaderClass::FOG_WHITE:
@@ -515,23 +535,21 @@ void ShaderClass::Apply()
 				break;
 			}
 
-			DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGENABLE,fm);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGENABLE, fm);
 
-			if(fm)
+			if (fm)
 			{
-				DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGCOLOR,fogColor);
+				DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGCOLOR, fogColor);
 			}
 
-		} else {
-			DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGENABLE,FALSE);
 		}
-		
-		diff &= ~(ShaderClass::MASK_FOG);
-		if(!diff)
-			return;
-	}
+		else {
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGENABLE, FALSE);
+		}
 
-	if(diff & (ShaderClass::MASK_PRIGRADIENT|ShaderClass::MASK_TEXTURING))
+		diff &= ~(ShaderClass::MASK_FOG);
+
+	}
 	{
 		D3DTEXTUREOP	cOp = D3DTOP_SELECTARG1;
 		D3DTEXTUREOP	aOp = D3DTOP_SELECTARG1;
@@ -627,27 +645,27 @@ void ShaderClass::Apply()
 			{
 			case ShaderClass::GRADIENT_DISABLE:
 				cOp = D3DTOP_DISABLE;
-				cArg1 = D3DTA_TEXTURE;
-				cArg2 = D3DTA_CURRENT;
+				cArg1 = D3DTA_DIFFUSE;
+				cArg2 = D3DTA_DIFFUSE;
 				aOp = D3DTOP_DISABLE;
-				aArg1 = D3DTA_TEXTURE;
-				aArg2 = D3DTA_CURRENT;
+				aArg1 = D3DTA_DIFFUSE;
+				aArg2 = D3DTA_DIFFUSE;
 				break;
 			default:
 			case ShaderClass::GRADIENT_MODULATE:
 				cOp = D3DTOP_SELECTARG2;
-				cArg1 = D3DTA_TEXTURE;
+				cArg1 = D3DTA_DIFFUSE;
 				cArg2 = D3DTA_DIFFUSE;
 				aOp = D3DTOP_SELECTARG2;
-				aArg1 = D3DTA_TEXTURE;
+				aArg1 = D3DTA_DIFFUSE;
 				aArg2 = D3DTA_DIFFUSE;
 				break;
 			case ShaderClass::GRADIENT_ADD:
 				cOp = D3DTOP_SELECTARG2;
-				cArg1 = D3DTA_TEXTURE;
+				cArg1 = D3DTA_DIFFUSE;
 				cArg2 = D3DTA_DIFFUSE;
 				aOp = D3DTOP_SELECTARG2;
-				aArg1 = D3DTA_TEXTURE;
+				aArg1 = D3DTA_DIFFUSE;
 				aArg2 = D3DTA_DIFFUSE;
 				break;
 			}
@@ -662,11 +680,10 @@ void ShaderClass::Apply()
 		diff &= ~(ShaderClass::MASK_PRIGRADIENT);
 	}
 
-	if(diff & (ShaderClass::MASK_POSTDETAILCOLORFUNC|ShaderClass::MASK_TEXTURING))
 	{
-		D3DTEXTUREOP	cOp	= D3DTOP_DISABLE;
-		DWORD			cArg1 = D3DTA_TEXTURE;
-		DWORD			cArg2 = D3DTA_CURRENT;
+		D3DTEXTUREOP    cOp = D3DTOP_DISABLE;
+		DWORD                   cArg1 = D3DTA_DIFFUSE;
+		DWORD                   cArg2 = D3DTA_DIFFUSE;
 
 		if(Get_Texturing()== ShaderClass::TEXTURING_ENABLE)
 		{
@@ -783,11 +800,10 @@ void ShaderClass::Apply()
 	}
 	diff &= ~(ShaderClass::MASK_POSTDETAILCOLORFUNC);
 
-	if(diff & (ShaderClass::MASK_POSTDETAILALPHAFUNC|ShaderClass::MASK_TEXTURING))
 	{
-		D3DTEXTUREOP	aOp	= D3DTOP_DISABLE;
-		DWORD			aArg1 = D3DTA_TEXTURE;
-		DWORD			aArg2 = D3DTA_CURRENT;
+		D3DTEXTUREOP    aOp = D3DTOP_DISABLE;
+		DWORD                   aArg1 = D3DTA_DIFFUSE;
+		DWORD                   aArg2 = D3DTA_DIFFUSE;
 
 		if(Get_Texturing() == ShaderClass::TEXTURING_ENABLE)
 		{
@@ -841,10 +857,10 @@ void ShaderClass::Apply()
 	diff &= ~(ShaderClass::MASK_POSTDETAILALPHAFUNC);
 	diff &= ~(ShaderClass::MASK_TEXTURING);
 
-	if(!diff)
+	if (!diff)
 		return;
 
-	DX8Wrapper::Set_DX8_Render_State(D3DRS_SPECULARENABLE,BOOL(Get_Secondary_Gradient()));
+	DX8Wrapper::Set_DX8_Render_State(D3DRS_SPECULARENABLE, BOOL(Get_Secondary_Gradient()));
 
 	// DEPTH COMPARE FUNCTION
 	DX8Wrapper::Set_DX8_Render_State(D3DRS_ZFUNC,D3DCMPFUNC(int(Get_Depth_Compare())+1));
