@@ -857,6 +857,16 @@ void ShaderClass::Apply()
 	diff &= ~(ShaderClass::MASK_POSTDETAILALPHAFUNC);
 	diff &= ~(ShaderClass::MASK_TEXTURING);
 
+	// Ensure that any unused texture stages are fully disabled so that
+	// residual state from previous draws does not affect subsequent
+	// rendering.  This mirrors DirectX 8 behaviour where disabled stages
+	// are explicitly cleared.
+	for (unsigned stage = highestStageUsed + 1; stage < MAX_TEXTURE_STAGES; ++stage) {
+		DX8Wrapper::Set_Texture(stage, NULL);
+		DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	}
+
 	if (!diff)
 		return;
 
