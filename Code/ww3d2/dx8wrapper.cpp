@@ -344,7 +344,9 @@ void DX8Wrapper::Set_Default_Global_Render_States(void)
 {
 	DX8_THREAD_ASSERT();
 	const D3DCAPS9 &caps = Get_Current_Caps()->Get_DX8_Caps();
-
+	Set_DX8_Render_State(D3DRS_COLORWRITEENABLE,
+		D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN |
+		D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
 	Set_DX8_Render_State(D3DRS_RANGEFOGENABLE, (caps.RasterCaps & D3DPRASTERCAPS_FOGRANGE) ? TRUE : FALSE);
 	Set_DX8_Render_State(D3DRS_FOGTABLEMODE, D3DFOG_NONE);
 	Set_DX8_Render_State(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);
@@ -353,9 +355,11 @@ void DX8Wrapper::Set_Default_Global_Render_States(void)
 	Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, FALSE);
 	Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_ONE);
 	Set_DX8_Render_State(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+	Set_DX8_Render_State(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 	Set_DX8_Render_State(D3DRS_ZWRITEENABLE, TRUE);
 	Set_DX8_Render_State(D3DRS_ZENABLE, D3DZB_TRUE);
 	Set_DX8_Render_State(D3DRS_DEPTHBIAS, 0);
+	Set_DX8_Render_State(D3DRS_SRGBWRITEENABLE, FALSE);
 
 	Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
@@ -3428,20 +3432,22 @@ void DX8Wrapper::Set_DX8_ZBias(int zbias)
 
 void DX8Wrapper::Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value)
 {
-	// Can't monitor state changes because setShader call to GERD may change the states!
-	if (RenderStates[state]==value) return;
+	DX8_THREAD_ASSERT();
+	DX8_Assert();
 
-#ifdef MESH_RENDER_SNAPSHOT_ENABLED
-	if (WW3D::Is_Snapshot_Activated()) {
-		StringClass value_name(0,true);
-		Get_DX8_Render_State_Value_Name(value_name,state,value);
-		SNAPSHOT_SAY(("DX8 - SetRenderState(state: %s, value: %s)\n",
-			Get_DX8_Render_State_Name(state),
-			value_name));
+	// Normalize boolean writes to a proper color mask
+	if (state == D3DRS_COLORWRITEENABLE) {
+		if (value == TRUE) {
+			value = D3DCOLORWRITEENABLE_RED |
+				D3DCOLORWRITEENABLE_GREEN |
+				D3DCOLORWRITEENABLE_BLUE |
+				D3DCOLORWRITEENABLE_ALPHA;
+		}
+		else if (value == FALSE) {
+			value = 0;
+		}
 	}
-#endif
 
-	RenderStates[state]=value;
-	DX8CALL(SetRenderState( state, value ));
+	DX8CALL(SetRenderState(state, value));
 	DX8_RECORD_RENDER_STATE_CHANGE();
 }
