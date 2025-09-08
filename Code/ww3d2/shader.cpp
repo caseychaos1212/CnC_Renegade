@@ -437,6 +437,14 @@ void ShaderClass::Apply()
 	CurrentShader = ShaderBits;
 	ShaderDirty = false;
 
+	// Ensure that texture stages beyond those used by this shader are
+	// disabled so stale bindings do not affect rendering.
+	for (unsigned stage = highestStageUsed + 1; stage < MAX_TEXTURE_STAGES; ++stage) {
+		DX8Wrapper::Set_DX8_Texture(stage, NULL);
+		DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_COLOROP, D3DTOP_DISABLE);
+		DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+	}
+
 
 	// COLOR MASK
 
